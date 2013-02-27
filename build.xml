@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="rest-bundle" default="buildall">
+	<description>
+		Harmony Bundle Rest build file.
+	</description>
+	    
+	<!-- load environment variables as properties -->
+	<property environment="env" />
+
+	<!-- load properties files -->
+	<property file="build.properties" />
+	<property file="../build.properties" />
+	<property file="${user.home}/build.properties" />
+
+	<!-- default folder location properties -->
+	<property name="src.rel-dir" value="src" />
+	<!-- <property name="etc.rel-dir" value="etc" /-->
+	<property name="build.rel-dir" value="bin" />
+	<property name="lib.rel-dir" value="../../lib" />
+	<property name="ant-lib.rel-dir" value="${lib.rel-dir}/ant" />
+	<property name="tmp.rel-dir" value="tmp" />
+	<property name="dist.rel-dir" value="./" />
+	<property name="doc.rel-dir" value="${dist.rel-dir}/javadoc" />
+	<property name="jar.rel-file" value="${dist.rel-dir}/${ant.project.name}.jar" />
+	
+		
+	<property name="compile.debug" value="true" />
+	<property name="compile.debuglevel" value="lines,vars,source" />
+
+
+
+	<path id="project.classpath">
+		<pathelement location="../tact-core/harmony.jar" />
+		<!-- compiled classes -->
+		<pathelement location="${build.rel-dir}" />
+		<!-- libraries -->
+		<fileset dir="${lib.rel-dir}">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<!-- basic -->
+	<target name="init">
+		<mkdir dir="${build.rel-dir}"/>
+		<mkdir dir="${dist.rel-dir}"/>
+		<mkdir dir="${tmp.rel-dir}"/>
+	</target>
+
+	<target name="clean"
+		description="Delete temporary folders">
+		<delete dir="${build.rel-dir}" failonerror="false" deleteonexit="true" />
+		<delete dir="${tmp.rel-dir}" failonerror="false" deleteonexit="true" />
+	</target>
+
+	<!-- compile -->
+
+	<target name="prepare-resources" depends="init">
+	<!-- description="Prepare application resource files" -->
+		<copy todir="${build.rel-dir}" overwrite="true">
+			<fileset dir="${src.rel-dir}" includes="**/*.properties,**/*.xml" excludes="" />
+        	</copy>
+		<replace dir="${build.rel-dir}" includes="**/*.properties,**/*.xml" excludes="" summary="true">
+			<replacefilter token="@example-token@" value="${example-property}" />
+ 		</replace>
+	</target>	
+
+	<target name="compile" depends="init,prepare-resources">
+		<!-- description="Compile source code" excludes="**/com/tactfactory/mda/test/**" -->
+		<javac
+			srcdir="${src.rel-dir}"
+			destdir="${build.rel-dir}"
+			debug="${compile.debug}"
+			debuglevel="${compile.debuglevel}"
+			includeantruntime="false"
+	        	excludes="**/com/tactfactory/harmony/bundles/rest/test/**"
+			target="1.6"
+			source="1.6"
+
+			bootclasspath="jdk1.6.0/lib/rt.jar" >
+			<compilerarg line="" /> <!-- "-Xlint:all", "-Xlint:all,-path", "-Xlint:all,-path,-unchecked" -->
+			<classpath refid="project.classpath" />
+		</javac>
+	</target>
+
+	<target name="jar" depends="compile">
+		<!-- description="Create a jar file" -->
+		<pathconvert property="libs.project" pathsep=" ">
+			<mapper>
+				<chainedmapper>
+
+				<!-- remove absolute path -->
+				<flattenmapper />
+
+				<!-- add lib/ prefix -->
+				<globmapper from="*" to="../../lib/*" />
+				</chainedmapper>
+			</mapper>
+
+			<path>
+
+				<!-- lib.home contains all jar files, in several subdirectories -->
+				<fileset dir="${lib.rel-dir}">
+					<include name="**/*.jar" />
+				</fileset>
+			</path>
+		</pathconvert>
+		<jar destfile="${jar.rel-file}" compress="true" filesetmanifest="merge">
+			<zipfileset dir="${build.rel-dir}"
+			includes=""
+			excludes="" />
+			<!-- zipfileset dir="${lib.rel-dir}"
+			prefix="${lib.rel-dir}"
+			includes=""
+			excludes="" />
+			<zipfileset dir="tpl"
+			prefix="tpl"
+			includes=""
+			excludes="" /-->
+			<manifest>
+				<attribute name="Class-Path" value="${libs.project}"/>
+			</manifest>
+
+		</jar>
+	</target>
+
+	<target name="build" depends="compile"
+		description="Build the project">
+	</target>
+
+	<target name="rebuild" depends="clean,build"
+		description="Rebuild the project">
+	</target>
+
+	<target name="buildall" depends="rebuild,jar,post_build"
+		description="Build the project">
+	</target>
+
+	<target name="post_build" depends="compile"
+       		description="Build the project">
+		<!-- build a temporary lib dir, and flatten out the jars into one folder -->
+		<!--copy todir="${dist.rel-dir}/${lib.rel-dir}/${sherlock.rel-dir}">
+		  <fileset dir="${lib.rel-dir}/${sherlock.rel-dir}"/>
+		</copy-->
+        	<delete dir="${build.rel-dir}" failonerror="false" deleteonexit="true" />
+    	</target>
+</project>
+
