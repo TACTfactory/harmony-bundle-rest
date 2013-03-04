@@ -110,7 +110,7 @@ public class RestGenerator extends BaseGenerator {
 				+ "/" + this.getAdapter().getData() + "/"
 				+ fileName;
 		final String fullTemplatePath = 
-				this.getAdapter().getTemplateSourceProviderPath().substring(1) 
+				this.getAdapter().getTemplateSourceProviderPath()
 				+ templateName;
 		
 		super.makeSource(fullTemplatePath, fullFilePath, override);
