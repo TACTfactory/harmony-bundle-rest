@@ -198,6 +198,8 @@
 	</target>
 
 	<target name="tests" depends="run-tests" />
+	
+	<target name="reports" depends="run-checkstyle,run-findbugs,run-pmd" />
 
 	<target name="jar" depends="compile">
 		<!-- description="Create a jar file" -->
