@@ -306,7 +306,7 @@
 	</target>
 
 	<!-- emma -->   
-	<property name="emma.dir" value="${lib.rel-dir}/emma" />
+	<property name="emma.dir" value="../tact-core/lib/emma" />
 	<property name="emma.out-dir" value="${tmp.rel-dir}/coverage" />
 	<property name="emma.instr-dir" value="${tmp.rel-dir}/emmainstr" />
 	
