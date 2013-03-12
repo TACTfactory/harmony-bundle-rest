@@ -305,5 +305,26 @@
 		<delete dir="${build.rel-dir}" failonerror="false" deleteonexit="true" />
 	</target>
 
+	<!-- emma -->   
+	<property name="emma.dir" value="${lib.rel-dir}/emma" />
+	<property name="emma.out-dir" value="${tmp.rel-dir}/coverage" />
+	<property name="emma.instr-dir" value="${tmp.rel-dir}/emmainstr" />
+	
+	<path id="emma.lib" >
+	    <pathelement location="${emma.dir}/emma.jar" />
+	    <pathelement location="${emma.dir}/emma_ant.jar" />
+	</path>
+	
+	<taskdef resource="emma_ant.properties" classpathref="emma.lib" />
+	
+	<path id="emma.coverage.classes" >
+	    <pathelement location="${build.rel-dir}" />
+	</path>
+	
+	<target name="emma"> <!-- enable code coverage -->
+        <property name="emma.enabled" value="true" />
+        <property name="emma.filter" value="" />
+        <mkdir dir="${emma.instr-dir}" />        
+    </target>
 </project>
 
