@@ -3,7 +3,7 @@
 	<description>
 		Harmony Bundle Rest build file.
 	</description>
-	    
+
 	<!-- load environment variables as properties -->
 	<property environment="env" />
 
@@ -22,12 +22,10 @@
 	<property name="dist.rel-dir" value="./" />
 	<property name="doc.rel-dir" value="${dist.rel-dir}/javadoc" />
 	<property name="jar.rel-file" value="${dist.rel-dir}/${ant.project.name}.jar" />
-	
-		
+
+
 	<property name="compile.debug" value="true" />
 	<property name="compile.debuglevel" value="lines,vars,source" />
-
-
 
 	<path id="project.classpath">
 		<pathelement location="../tact-core/harmony.jar" />
@@ -41,46 +39,224 @@
 
 	<!-- basic -->
 	<target name="init">
-		<mkdir dir="${build.rel-dir}"/>
-		<mkdir dir="${dist.rel-dir}"/>
-		<mkdir dir="${tmp.rel-dir}"/>
+		<mkdir dir="${build.rel-dir}" />
+		<mkdir dir="${dist.rel-dir}" />
+		<mkdir dir="${tmp.rel-dir}" />
 	</target>
 
-	<target name="clean"
-		description="Delete temporary folders">
+	<target name="clean" description="Delete temporary folders">
 		<delete dir="${build.rel-dir}" failonerror="false" deleteonexit="true" />
 		<delete dir="${tmp.rel-dir}" failonerror="false" deleteonexit="true" />
+	</target>
+
+	<!-- javadoc -->
+
+	<target name="javadoc" depends="init" description="Generate Java classes documentation">
+		<echo message="Generating javadocs to directory ${doc.rel-dir}" />
+		<delete dir="${doc.rel-dir}" />
+		<javadoc destdir="${doc.rel-dir}" sourcepath="" excludepackagenames="com.tactfactory.harmony.bundles.rest.test" defaultexcludes="yes">
+			<fileset dir="${src.rel-dir}" includes="**/*.java" />
+			<classpath refid="project.classpath" />
+		</javadoc>
 	</target>
 
 	<!-- compile -->
 
 	<target name="prepare-resources" depends="init">
-	<!-- description="Prepare application resource files" -->
+		<!-- description="Prepare application resource files" -->
 		<copy todir="${build.rel-dir}" overwrite="true">
 			<fileset dir="${src.rel-dir}" includes="**/*.properties,**/*.xml" excludes="" />
-        	</copy>
+		</copy>
 		<replace dir="${build.rel-dir}" includes="**/*.properties,**/*.xml" excludes="" summary="true">
 			<replacefilter token="@example-token@" value="${example-property}" />
- 		</replace>
-	</target>	
+		</replace>
+	</target>
 
 	<target name="compile" depends="init,prepare-resources">
 		<!-- description="Compile source code" excludes="**/com/tactfactory/mda/test/**" -->
-		<javac
-			srcdir="${src.rel-dir}"
-			destdir="${build.rel-dir}"
-			debug="${compile.debug}"
-			debuglevel="${compile.debuglevel}"
-			includeantruntime="false"
-	        	excludes="**/com/tactfactory/harmony/bundles/rest/test/**"
-			target="1.6"
-			source="1.6"
-
-			bootclasspath="jdk1.6.0/lib/rt.jar" >
-			<compilerarg line="" /> <!-- "-Xlint:all", "-Xlint:all,-path", "-Xlint:all,-path,-unchecked" -->
+		<javac srcdir="${src.rel-dir}" destdir="${build.rel-dir}" debug="${compile.debug}" debuglevel="${compile.debuglevel}" includeantruntime="false" excludes="**/com/tactfactory/harmony/bundles/rest/test/**" target="1.6" source="1.6" bootclasspath="jdk1.6.0/lib/rt.jar">
+			<compilerarg line="" />
+			<!-- "-Xlint:all", "-Xlint:all,-path", "-Xlint:all,-path,-unchecked" -->
 			<classpath refid="project.classpath" />
 		</javac>
 	</target>
+
+	<!-- tests -->
+
+	<target name="compile-tests" depends="init,prepare-resources" description="Compile tests">
+		<javac srcdir="${src.rel-dir}" destdir="${build.rel-dir}" debug="${compile.debug}" debuglevel="${compile.debuglevel}" includeantruntime="false" target="1.6" source="1.6">
+			<compilerarg line="" />
+			<!-- "-Xlint:all", "-Xlint:all,-path", "-Xlint:all,-path,-unchecked" -->
+			<classpath refid="project.classpath" />
+		</javac>
+	</target>
+
+	<target name="run-tests" depends="compile-tests" description="Run tests">
+
+		<if condition="${emma.enabled}">
+			<then>
+				<emma enabled="${emma.enabled}">
+					<instr instrpathref="emma.coverage.classes" destdir="${emma.instr-dir}" metadatafile="${emma.out-dir}/metadata.emma" merge="true">
+						<filter value="${emma.filter}" />
+					</instr>
+				</emma>
+
+				<path id="emma.test.classpath">
+					<pathelement location="${emma.instr-dir}" />
+					<pathelement location="${emma.dir}" />
+					<fileset dir="${emma.dir}">
+						<include name="*.jar" />
+					</fileset>
+					<fileset dir="${lib.rel-dir}">
+						<include name="*.jar" />
+					</fileset>
+					<fileset dir="${dist.rel-dir}">
+						<include name="*.jar" />
+					</fileset>
+				</path>
+
+				<property name="test.classpath.id" value="emma.test.classpath" />
+			</then>
+			<else>
+				<property name="test.classpath.id" value="project.classpath" />
+			</else>
+		</if>
+
+		<junit haltonfailure="no" fork="yes">
+			<!-- <if condition="${emma.enabled}">
+		            <then> -->
+			<jvmarg value="-Demma.coverage.out.file=${emma.out-dir}/coverage.emma" />
+			<jvmarg value="-Demma.coverage.out.merge=false" />
+			<!-- <jvmarg value="-XX:-UseSplitVerifier" /> -->
+			<!-- </then>
+	      		</if>	 -->
+
+			<classpath refid="${test.classpath.id}" />
+			<formatter type="xml" />
+			<test name="com.tactfactory.harmony.bundles.rest.test.AllTests" todir="${tmp.rel-dir}/" />
+		</junit>
+
+		<if condition="${emma.enabled}">
+			<then>
+				<emma enabled="${emma.enabled}">
+					<report sourcepath="src">
+						<!-- collect all EMMA data dumps (metadata and runtime)
+						         [this can be done via nested <fileset> fileset elements
+						         or <file> elements pointing to a single file]:
+						    -->
+						<fileset dir="${emma.out-dir}">
+							<include name="*.emma" />
+						</fileset>
+
+						<!-- for every type of report desired, configure a nested
+						         element; various report parameters
+						         can be inherited from the parent <report>
+						         and individually overridden for each report type:
+						    -->
+						<xml outfile="${emma.out-dir}/coverage.xml" />
+					</report>
+				</emma>
+			</then>
+		</if>
+	</target>
+
+	<target name="run-findbugs" depends="jar" description="Run code analysis over code to check for problems.">
+
+		<!-- Fail this target if FindBugs is not installed. -->
+		<available file="${env.FINDBUGS_HOME}/lib/findbugs.jar" property="findbugs.available" />
+		<fail unless="findbugs.available" message="Error: FINDBUGS_HOME not set or findbugs.jar not found." />
+
+		<!-- Run this target if FindBugs is installed. -->
+		<taskdef name="findbugs" classpath="${env.FINDBUGS_HOME}/lib/findbugs-ant.jar" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" />
+		<findbugs home="${env.FINDBUGS_HOME}" workHard="true" output="xml:withMessages" outputFile="${tmp.rel-dir}/findbugs.xml" jvmargs="-Xmx1024m">
+			<auxClasspath refid="project.classpath" />
+			<sourcePath path="${src.rel-dir}" />
+			<class location="${jar.rel-file}" />
+		</findbugs>
+
+		<!-- Report -->
+		<xslt in="${tmp.rel-dir}/findbugs.xml" out="${tmp.rel-dir}/findbugs.html" style="${env.FINDBUGS_HOME}/src/xsl/fancy.xsl" />
+	</target>
+
+	<target name="run-checkstyle" depends="compile-tests" description="Report of code convention violations.">
+
+		<!-- Fail this target if CheckStyle is not installed. -->
+		<available file="${env.CHECKSTYLE_HOME}/checkstyle-5.6-all.jar" property="checkstyle.available" />
+		<fail unless="checkstyle.available" message="Error: CHECKSTYLE_HOME not set or checkstyle-5.6-all.jar not found." />
+
+		<!-- Run this target if CheckStyle is installed. -->
+		<taskdef resource="checkstyletask.properties" classpath="${env.CHECKSTYLE_HOME}/checkstyle-5.6-all.jar" />
+
+		<!-- run analysis-->
+		<checkstyle config="${env.CHECKSTYLE_HOME}/sun_checks.xml" failureProperty="checkstyle.failure" failOnViolation="false">
+			<formatter type="xml" tofile="${tmp.rel-dir}/checkstyle_report.xml" />
+			<fileset dir="${src.rel-dir}" includes="**/*.java" />
+		</checkstyle>
+
+		<!-- Report -->
+		<xslt in="${tmp.rel-dir}/checkstyle_report.xml" out="${tmp.rel-dir}/checkstyle_report.html" style="${env.CHECKSTYLE_HOME}/contrib/checkstyle-noframes.xsl" />
+	</target>
+
+	<target name="run-pmd" depends="compile-tests" description="Run pmd">
+
+		<!-- Fail this target if Pmd is not installed. -->
+		<available file="${env.PMD_HOME}/lib/pmd-5.0.2.jar" property="pmd.available" />
+		<fail unless="pmd.available" message="Error: PMD_HOME not set or pmd-5.0.2.jar not found." />
+
+		<path id="pmd.classpath">
+			<fileset dir="${env.PMD_HOME}/lib/">
+				<include name="**/*.jar" />
+			</fileset>
+		</path>
+
+		<!-- Run this target if Pmd is installed. -->
+		<taskdef name="pmd" classpathref="pmd.classpath" classpath="${env.PMD_HOME}/lib/pmd-5.0.2.jar" classname="net.sourceforge.pmd.ant.PMDTask" />
+		<pmd shortFilenames="true">
+			<ruleset>${env.PMD_HOME}/rules.xml</ruleset>
+			<formatter type="xml" toFile="${tmp.rel-dir}/pmd.xml" />
+			<fileset dir="${src.rel-dir}">
+				<include name="**/*.java" />
+				<exclude name="**/*Test*" />
+			</fileset>
+		</pmd>
+
+		<taskdef name="cpd" classpathref="pmd.classpath" classpath="${env.PMD_HOME}/lib/pmd-5.0.2.jar" classname="net.sourceforge.pmd.cpd.CPDTask" />
+		<cpd minimumTokenCount="100" language="java" format="xml" outputFile="${tmp.rel-dir}/cpd.xml">
+			<fileset dir="${src.rel-dir}">
+				<include name="**/*.java" />
+				<exclude name="**/*Test*" />
+			</fileset>
+		</cpd>
+
+		<!-- Report -->
+		<xslt in="${tmp.rel-dir}/pmd.xml" out="${tmp.rel-dir}/pmd.html" style="${env.PMD_HOME}/etc/xslt/pmd-report.xslt" />
+		<xslt in="${tmp.rel-dir}/cpd.xml" out="${tmp.rel-dir}/cpd.html" style="${env.PMD_HOME}/etc/xslt/cpdhtml.xslt" />
+	</target>
+
+	<target name="run-jdepend" depends="compile-tests" description="Run jdepend">
+		<jdepend outputfile="docs/jdepend.xml" fork="yes" format="xml">
+			<sourcespath>
+				<pathelement location="${src.rel-dir}" />
+			</sourcespath>
+			<classpath refid="project.classpath" />
+			<!--pathelement location="classes"/>
+			        <pathelement location="/usr/share/java/jdepend-2.9.jar"/>
+			    </classpath-->
+		</jdepend>
+	</target>
+
+	<!-- build -->
+
+	<target name="build" depends="compile" description="Build the project">
+	</target>
+
+	<target name="rebuild" depends="clean,build" description="Rebuild the project">
+	</target>
+
+	<target name="buildall" depends="rebuild,jar,post_build" description="Build the project">
+	</target>
+
+	<target name="tests" depends="run-tests" />
 
 	<target name="jar" depends="compile">
 		<!-- description="Create a jar file" -->
@@ -88,11 +264,11 @@
 			<mapper>
 				<chainedmapper>
 
-				<!-- remove absolute path -->
-				<flattenmapper />
+					<!-- remove absolute path -->
+					<flattenmapper />
 
-				<!-- add lib/ prefix -->
-				<globmapper from="*" to="../../lib/*" />
+					<!-- add lib/ prefix -->
+					<globmapper from="*" to="../../lib/*" />
 				</chainedmapper>
 			</mapper>
 
@@ -105,9 +281,7 @@
 			</path>
 		</pathconvert>
 		<jar destfile="${jar.rel-file}" compress="true" filesetmanifest="merge">
-			<zipfileset dir="${build.rel-dir}"
-			includes=""
-			excludes="" />
+			<zipfileset dir="${build.rel-dir}" includes="" excludes="" />
 			<!-- zipfileset dir="${lib.rel-dir}"
 			prefix="${lib.rel-dir}"
 			includes=""
@@ -117,45 +291,19 @@
 			includes=""
 			excludes="" /-->
 			<manifest>
-				<attribute name="Class-Path" value="${libs.project}"/>
+				<attribute name="Class-Path" value="${libs.project}" />
 			</manifest>
 
 		</jar>
 	</target>
-
-	<target name="build" depends="compile"
-		description="Build the project">
-	</target>
-
-	<target name="rebuild" depends="clean,build"
-		description="Rebuild the project">
-	</target>
-
-	<target name="buildall" depends="rebuild,jar,post_build"
-		description="Build the project">
-	</target>
-
-	<target name="post_build" depends="compile"
-       		description="Build the project">
+	
+	<target name="post_build" depends="compile" description="Build the project">
 		<!-- build a temporary lib dir, and flatten out the jars into one folder -->
 		<!--copy todir="${dist.rel-dir}/${lib.rel-dir}/${sherlock.rel-dir}">
 		  <fileset dir="${lib.rel-dir}/${sherlock.rel-dir}"/>
 		</copy-->
-        	<delete dir="${build.rel-dir}" failonerror="false" deleteonexit="true" />
-    </target>
-	
-	<!-- javadoc -->
+		<delete dir="${build.rel-dir}" failonerror="false" deleteonexit="true" />
+	</target>
 
-    <target name="javadoc" depends="init"
-        description="Generate Java classes documentation" >
-        <echo message="Generating javadocs to directory ${doc.rel-dir}" />
-        <delete dir="${doc.rel-dir}" />
-        <javadoc destdir="${doc.rel-dir}" sourcepath="" 
-        	excludepackagenames="com.tactfactory.mda.test" 
-        	defaultexcludes="yes">
-            <fileset dir="${src.rel-dir}" includes="**/*.java"/>
-            <classpath refid="project.classpath" />
-        </javadoc>
-    </target>
 </project>
 
