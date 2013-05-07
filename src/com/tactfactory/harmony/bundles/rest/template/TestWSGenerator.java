@@ -13,6 +13,7 @@ import com.tactfactory.mda.plateforme.BaseAdapter;
 import com.tactfactory.mda.template.BaseGenerator;
 import com.tactfactory.mda.template.TagConstant;
 import com.tactfactory.mda.utils.ConsoleUtils;
+import com.tactfactory.mda.utils.LibraryUtils;
 import com.tactfactory.mda.utils.PackageUtils;
 
 /**
@@ -38,7 +39,9 @@ public class TestWSGenerator extends BaseGenerator {
 	 */
 	public final void generateAll() {
 		ConsoleUtils.display(">> Generate Rest test...");
-		
+		LibraryUtils.addLibraryToTestProject(
+				this.getAdapter(), 
+				"mockwebserver-20130505.jar");
 		for (final ClassMetadata cm 
 				: this.getAppMetas().getEntities().values()) {
 			if (cm.getOptions().containsKey("rest") 
