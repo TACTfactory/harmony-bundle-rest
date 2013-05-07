@@ -62,11 +62,17 @@ public class RestClient {
     protected int statusCode;
     
     protected String serviceName;
+    protected int port = 80;
     protected String login, password;
     protected String sessionId, CSRFtoken;
  
     //The serviceName should be the name of the Service you are going to be using.
     public RestClient(String serviceName){    	
+	this(serviceName, 80);
+    }
+
+    //The serviceName should be the name of the Service you are going to be using.
+    public RestClient(String serviceName, int port){    	
         HttpParams myParams = new BasicHttpParams();
         
         // Set timeout
@@ -77,6 +83,7 @@ public class RestClient {
         
         this.httpClient = new DefaultHttpClient(myParams);
         this.serviceName = serviceName;
+	this.port = port;
     }
     
     public void setAuth(String login, String password) {
@@ -111,7 +118,7 @@ public class RestClient {
 		this.statusCode = 404;
 		
         HttpResponse response = null;
-        HttpHost targetHost = new HttpHost(this.serviceName);
+        HttpHost targetHost = new HttpHost(this.serviceName, this.port);
         //HttpEntity entity = this.buildMultipartEntity(params);
         HttpEntity entity = null;
         if (jsonParams != null && jsonParams.has("file")) {
