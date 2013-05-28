@@ -8,7 +8,7 @@
  */
 package com.tactfactory.harmony.bundles.rest.template;
 
-import com.tactfactory.mda.meta.ClassMetadata;
+import com.tactfactory.mda.meta.EntityMetadata;
 import com.tactfactory.mda.plateforme.BaseAdapter;
 import com.tactfactory.mda.template.BaseGenerator;
 import com.tactfactory.mda.template.TagConstant;
@@ -42,16 +42,16 @@ public class TestWSGenerator extends BaseGenerator {
 		LibraryUtils.addLibraryToTestProject(
 				this.getAdapter(), 
 				"mockwebserver-20130505.jar");
-		for (final ClassMetadata cm 
+		for (final EntityMetadata entityMeta 
 				: this.getAppMetas().getEntities().values()) {
-			if (cm.getOptions().containsKey("rest") 
-					&& !cm.isInternal() 
-					&& !cm.getFields().isEmpty()) {
+			if (entityMeta.getOptions().containsKey("rest") 
+					&& !entityMeta.isInternal() 
+					&& !entityMeta.getFields().isEmpty()) {
 				this.localNameSpace = 
-						this.getAdapter().getNameSpace(cm,
+						this.getAdapter().getNameSpace(entityMeta,
 								this.getAdapter().getTest());
 				this.getDatamodel().put(
-						TagConstant.CURRENT_ENTITY, cm.getName());
+						TagConstant.CURRENT_ENTITY, entityMeta.getName());
 				this.generate();
 			}
 		}
