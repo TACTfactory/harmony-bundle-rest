@@ -36,24 +36,37 @@ public abstract class WebServiceClientAdapterBase<T>{
 
 	
 
-	private String host;
+	protected String host;
+	protected int port;
 
 
 	public WebServiceClientAdapterBase(Context context){
+		this(context, null, 80);
+	}
 
+	public WebServiceClientAdapterBase(Context context, int port){
+		this(context, null, port);
+	}
+
+	public WebServiceClientAdapterBase(Context context, String host, int port){
 		this.headers.add(new BasicHeader("Content-Type","application/json"));
 		this.headers.add(new BasicHeader("Accept","application/json"));
 
 		this.context = context;
-		if (${project_name?cap_first}Application.DEBUG){
-			host = this.context.getString(R.string.rest_url_dev);
+		if (host == null) {
+			if (${project_name?cap_first}Application.DEBUG){
+				this.host = this.context.getString(R.string.rest_url_dev);
+			} else {
+				this.host = this.context.getString(R.string.rest_url_prod);
+			}
 		} else {
-			host = this.context.getString(R.string.rest_url_prod);
+			this.host = host;
 		}
+		this.port = port;
 	}
 
 	protected synchronized String invokeRequest(Verb verb, String request, JSONObject params) {
-		this.restClient = new RestClient(host);
+		this.restClient = new RestClient(host, port);
 		String response = "";
 		
 		StringBuilder error = new StringBuilder();
@@ -86,7 +99,7 @@ public abstract class WebServiceClientAdapterBase<T>{
 	}
 
 	protected int appendError(String response, StringBuilder error) throws JSONException {
-		int result = -1;
+		int result = 0;
 		StringBuilder builder = new StringBuilder();
 		
 		JSONObject json = new JSONObject(response);
@@ -122,7 +135,9 @@ public abstract class WebServiceClientAdapterBase<T>{
 	}
 	
 	protected void displayOups(final String message) {
-		if (context != null && !TextUtils.isEmpty(message)) {
+		if (context != null 
+			&& !TextUtils.isEmpty(message)
+			&& context instanceof FragmentActivity) {
 			
 			((FragmentActivity) context).runOnUiThread(new Runnable() {
 				@Override
@@ -215,7 +230,7 @@ public abstract class WebServiceClientAdapterBase<T>{
 	 * @param item The returned <T>
 	 * @return true if a <T> was found. false if not
 	 */
-	public abstract T extract(JSONObject json);
+	public abstract boolean extract(JSONObject json, T item);
 	
 		
 	/**
@@ -225,33 +240,7 @@ public abstract class WebServiceClientAdapterBase<T>{
 	 * @param paramName The name of the array
 	 * @return The number of <T> found in the JSON
 	 */
-	public int extractItems(JSONObject json, String paramName, List<T> items) throws JSONException{
-		JSONArray itemArray = json.optJSONArray(paramName);
-		
-		int result = -1;
-		
-		if (itemArray != null) {
-			int count = itemArray.length();			
-			
-			for (int i = 0; i < count; i++) {
-				JSONObject jsonItem = itemArray.getJSONObject(i);
-				
-				T item = extract(jsonItem);
-				if (item!=null){
-					synchronized (items) {
-						items.add(item);
-					}
-				}
-			}
-		}
-		
-		if (!json.isNull("Meta")){
-			JSONObject meta = json.optJSONObject("Meta");
-			result = meta.optInt("nbt",0);
-		}
-		
-		return result;
-	}
+	public abstract int extractItems(JSONObject json, String paramName, List<T> items) throws JSONException;
 	
 	/**
 	 * Delete a <T>. 
