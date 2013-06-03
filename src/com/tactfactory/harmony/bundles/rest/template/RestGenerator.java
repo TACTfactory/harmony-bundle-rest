@@ -22,8 +22,8 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
-import com.tactfactory.mda.meta.ClassMetadata;
 import com.tactfactory.mda.meta.ConfigMetadata;
+import com.tactfactory.mda.meta.EntityMetadata;
 import com.tactfactory.mda.meta.TranslationMetadata;
 import com.tactfactory.mda.meta.TranslationMetadata.Group;
 import com.tactfactory.mda.plateforme.BaseAdapter;
@@ -93,19 +93,20 @@ public class RestGenerator extends BaseGenerator {
 				"RestClient.java",
 				true);
 		
-		for (final ClassMetadata cm 
+		for (final EntityMetadata entityMeta
 				: this.getAppMetas().getEntities().values()) {
-			if (cm.getOptions().get("rest") != null) {
+			if (entityMeta.getOptions().get("rest") != null
+					&& !entityMeta.getFields().isEmpty()) {
 				this.getDatamodel().put(
-						TagConstant.CURRENT_ENTITY, cm.getName());
+						TagConstant.CURRENT_ENTITY, entityMeta.getName());
 				this.makeSource(
 						"base/TemplateWebServiceClientAdapterBase.java", 
-						"base/" + cm.getName() 
+						"base/" + entityMeta.getName() 
 							+ "WebServiceClientAdapterBase.java", 
 						true);
 				this.makeSource(
 						"TemplateWebServiceClientAdapter.java", 
-						cm.getName() + "WebServiceClientAdapter.java", 
+						entityMeta.getName() + "WebServiceClientAdapter.java", 
 						true);
 			}
 		}	

@@ -81,8 +81,8 @@ package ${curr.data_namespace}.base;
 
 
 <#assign importDate = false />
-<#list curr.fields as field>
-	<#if !importDate && (field.type=="date" || field.type=="time" || field.type=="datetime")>
+<#list curr.fields?values as field>
+	<#if !importDate && (field.type?lower_case == "datetime")>
 import org.joda.time.format.DateTimeFormatter;
 import ${curr.namespace}.harmony.util.DateUtils;
 		<#assign importDate = true />
@@ -138,7 +138,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 	private static final String TAG = "${curr.name}WSClientAdapter";
 
 	private static final String ${alias(curr.name)} = "${curr.name}";
-	<#list curr.fields as field>
+	<#list curr.fields?values as field>
 		<#if (!field.internal)>
 			<#if (!field.relation?? || isRestEntity(field.relation.targetEntity))>
 	private static final String ${alias(field.name)} = "${field.name?uncap_first}";
@@ -345,7 +345,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 
 		if (id != 0) {
 			result = true;
-			<#list curr.fields as field>
+			<#list curr.fields?values as field>
 				<#if (!field.internal)>
 					<#if (!field.relation??)>
 						<#if (curr.options.sync?? && field.name?lower_case=="id")>
@@ -357,7 +357,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 				${curr.name?uncap_first}.setServerId(server_id);	
 
 						<#else>
-							<#if (field.type=="date"||field.type=="datetime"||field.type=="time")>
+							<#if (field.type?lower_case == "datetime")>
 			DateTime ${field.name?uncap_first} = ${curr.name?uncap_first}.get${field.name?cap_first}();
 			if (${field.name?uncap_first} == null) {
 				${field.name?uncap_first} = new DateTime();
@@ -444,7 +444,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 	public JSONObject itemToJson(${curr.name} ${curr.name?uncap_first}){
 		JSONObject params = new JSONObject();
 		try {
-			<#list curr.fields as field>
+			<#list curr.fields?values as field>
 				<#if (!field.internal)>
 					<#if (!field.relation??)>
 						<#if (curr.options.sync?? && field.name?lower_case=="id")>
