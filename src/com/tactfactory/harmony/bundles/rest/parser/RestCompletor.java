@@ -9,8 +9,8 @@
 package com.tactfactory.harmony.bundles.rest.parser;
 
 import com.tactfactory.harmony.bundles.rest.meta.RestMetadata;
-import com.tactfactory.mda.meta.ApplicationMetadata;
-import com.tactfactory.mda.meta.ClassMetadata;
+import com.tactfactory.harmony.meta.ApplicationMetadata;
+import com.tactfactory.harmony.meta.ClassMetadata;
 
 /**
  * Completor for rest bundle.

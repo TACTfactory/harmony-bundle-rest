@@ -6,15 +6,15 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.tactfactory.harmony.Harmony;
 import com.tactfactory.harmony.bundles.rest.annotation.Rest;
 import com.tactfactory.harmony.bundles.rest.command.RestCommand;
 import com.tactfactory.harmony.bundles.rest.meta.RestMetadata;
-import com.tactfactory.mda.Harmony;
-import com.tactfactory.mda.command.OrmCommand;
-import com.tactfactory.mda.command.ProjectCommand;
-import com.tactfactory.mda.meta.ApplicationMetadata;
-import com.tactfactory.mda.meta.ClassMetadata;
-import com.tactfactory.mda.test.CommonTest;
+import com.tactfactory.harmony.command.OrmCommand;
+import com.tactfactory.harmony.command.ProjectCommand;
+import com.tactfactory.harmony.meta.ApplicationMetadata;
+import com.tactfactory.harmony.meta.ClassMetadata;
+import com.tactfactory.harmony.test.CommonTest;
 
 /**
  * Tests for Rest bundle generation.
@@ -22,7 +22,7 @@ import com.tactfactory.mda.test.CommonTest;
 public class RestGlobalTest extends CommonTest {
 	/** Data path. */
 	private static final String DATA_PATH = 
-			"android/src/com/tactfactory/mda/test/demact/data/";
+			"android/src/com/tactfactory/harmony/test/demact/data/";
 	
 	/** Post entity name. */
 	private static final String POST = "Post";

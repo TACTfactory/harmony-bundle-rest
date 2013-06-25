@@ -22,17 +22,17 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
-import com.tactfactory.mda.meta.ConfigMetadata;
-import com.tactfactory.mda.meta.EntityMetadata;
-import com.tactfactory.mda.meta.TranslationMetadata;
-import com.tactfactory.mda.meta.TranslationMetadata.Group;
-import com.tactfactory.mda.plateforme.BaseAdapter;
-import com.tactfactory.mda.template.BaseGenerator;
-import com.tactfactory.mda.template.ConfigGenerator;
-import com.tactfactory.mda.template.TagConstant;
-import com.tactfactory.mda.template.TranslationGenerator;
-import com.tactfactory.mda.utils.ConsoleUtils;
-import com.tactfactory.mda.utils.TactFileUtils;
+import com.tactfactory.harmony.meta.ConfigMetadata;
+import com.tactfactory.harmony.meta.EntityMetadata;
+import com.tactfactory.harmony.meta.TranslationMetadata;
+import com.tactfactory.harmony.meta.TranslationMetadata.Group;
+import com.tactfactory.harmony.plateforme.BaseAdapter;
+import com.tactfactory.harmony.template.BaseGenerator;
+import com.tactfactory.harmony.template.ConfigGenerator;
+import com.tactfactory.harmony.template.TagConstant;
+import com.tactfactory.harmony.template.TranslationGenerator;
+import com.tactfactory.harmony.utils.ConsoleUtils;
+import com.tactfactory.harmony.utils.TactFileUtils;
 
 /**
  * Generator for bundle Rest.
@@ -70,6 +70,7 @@ public class RestGenerator extends BaseGenerator {
 		this.addPermissionManifest("android.permission.INTERNET");
 		
 		this.updateLibrary("httpmime-4.1.1.jar");
+		this.updateLibrary("mockwebserver.jar");
 		
 		TranslationMetadata.addDefaultTranslation(
 				"common_network_error", "Connection error", Group.COMMON);

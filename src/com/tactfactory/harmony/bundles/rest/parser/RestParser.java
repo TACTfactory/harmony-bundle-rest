@@ -21,10 +21,10 @@ import java.util.List;
 
 import com.tactfactory.harmony.bundles.rest.annotation.Rest;
 import com.tactfactory.harmony.bundles.rest.meta.RestMetadata;
-import com.tactfactory.mda.meta.ClassMetadata;
-import com.tactfactory.mda.meta.FieldMetadata;
-import com.tactfactory.mda.parser.BaseParser;
-import com.tactfactory.mda.utils.PackageUtils;
+import com.tactfactory.harmony.meta.ClassMetadata;
+import com.tactfactory.harmony.meta.FieldMetadata;
+import com.tactfactory.harmony.parser.BaseParser;
+import com.tactfactory.harmony.utils.PackageUtils;
 
 /**
  * Parser for Rest bundle.

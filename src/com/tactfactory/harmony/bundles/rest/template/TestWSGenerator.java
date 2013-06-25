@@ -8,13 +8,13 @@
  */
 package com.tactfactory.harmony.bundles.rest.template;
 
-import com.tactfactory.mda.meta.EntityMetadata;
-import com.tactfactory.mda.plateforme.BaseAdapter;
-import com.tactfactory.mda.template.BaseGenerator;
-import com.tactfactory.mda.template.TagConstant;
-import com.tactfactory.mda.utils.ConsoleUtils;
-import com.tactfactory.mda.utils.LibraryUtils;
-import com.tactfactory.mda.utils.PackageUtils;
+import com.tactfactory.harmony.meta.EntityMetadata;
+import com.tactfactory.harmony.plateforme.BaseAdapter;
+import com.tactfactory.harmony.template.BaseGenerator;
+import com.tactfactory.harmony.template.TagConstant;
+import com.tactfactory.harmony.utils.ConsoleUtils;
+import com.tactfactory.harmony.utils.LibraryUtils;
+import com.tactfactory.harmony.utils.PackageUtils;
 
 /**
  * WebService tests generator.
