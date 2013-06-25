@@ -81,8 +81,8 @@ package ${curr.data_namespace}.base;
 
 
 <#assign importDate = false />
-<#list curr.fields as field>
-	<#if !importDate && (field.type=="date" || field.type=="time" || field.type=="datetime")>
+<#list curr.fields?values as field>
+	<#if !importDate && (field.type?lower_case == "datetime")>
 import org.joda.time.format.DateTimeFormatter;
 import ${curr.namespace}.harmony.util.DateUtils;
 		<#assign importDate = true />
@@ -138,7 +138,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 	private static final String TAG = "${curr.name}WSClientAdapter";
 
 	private static final String ${alias(curr.name)} = "${curr.name}";
-	<#list curr.fields as field>
+	<#list curr.fields?values as field>
 		<#if (!field.internal)>
 			<#if (!field.relation?? || isRestEntity(field.relation.targetEntity))>
 	private static final String ${alias(field.name)} = "${field.name?uncap_first}";
@@ -151,6 +151,14 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 
 	public ${curr.name}WebServiceClientAdapterBase(Context context){
 		super(context);
+	}
+
+	public ${curr.name}WebServiceClientAdapterBase(Context context, int port){
+		super(context, port);
+	}
+
+	public ${curr.name}WebServiceClientAdapterBase(Context context, String host, int port){
+		super(context, host, port);
 	}
 	
 	/**
@@ -196,8 +204,9 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 		if (this.isValidResponse(response) && this.isValidRequest()) {
 			try {
 				JSONObject json = new JSONObject(response);
-				${curr.name?uncap_first} = extract(json);
-				result = 0;
+				if (extract(json, ${curr.name?uncap_first})) {
+					result = 0;
+				}
 			} catch (JSONException e) {
 				Log.e(TAG, e.getMessage());
 				${curr.name?uncap_first} = null;
@@ -330,13 +339,13 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 	 * @param ${curr.name?uncap_first} The returned ${curr.name}
 	 * @return true if a ${curr.name} was found. false if not
 	 */
-	public ${curr.name?cap_first} extract(JSONObject json){
-		${curr.name?cap_first} ${curr.name?uncap_first} = new ${curr.name?cap_first}();
-		
+	public boolean extract(JSONObject json, ${curr.name} ${curr.name?uncap_first}){		
+		boolean result = false;
 		int id = json.optInt("id", 0);
 
 		if (id != 0) {
-			<#list curr.fields as field>
+			result = true;
+			<#list curr.fields?values as field>
 				<#if (!field.internal)>
 					<#if (!field.relation??)>
 						<#if (curr.options.sync?? && field.name?lower_case=="id")>
@@ -348,11 +357,13 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 				${curr.name?uncap_first}.setServerId(server_id);	
 
 						<#else>
-							<#if (field.type=="date"||field.type=="datetime"||field.type=="time")>
+							<#if (field.type?lower_case == "datetime")>
 			DateTime ${field.name?uncap_first} = ${curr.name?uncap_first}.get${field.name?cap_first}();
-			if (${field.name?uncap_first} ==null) ${field.name?uncap_first} = new DateTime();
+			if (${field.name?uncap_first} == null) {
+				${field.name?uncap_first} = new DateTime();
+			}
 			DateTimeFormatter ${field.name?uncap_first}Formatter = ${getFormatter(field.type)};
-			${curr.name?uncap_first}.set${field.name?cap_first}(DateUtils.formatISOStringToDateTime(json.opt${typeToJsonType(field)}(${alias(field.name)}, ${curr.name?uncap_first}.get${field.name?cap_first}().toString(${field.name?uncap_first}Formatter))));
+			${curr.name?uncap_first}.set${field.name?cap_first}(DateUtils.formatISOStringToDateTime(json.opt${typeToJsonType(field)}(${alias(field.name)}, ${field.name?uncap_first}.toString(${field.name?uncap_first}Formatter))));
 							<#elseif (field.type=="boolean")>
 			${curr.name?uncap_first}.set${field.name?cap_first}(json.opt${typeToJsonType(field)}(${alias(field.name)}, ${curr.name?uncap_first}.is${field.name?cap_first}()));		
 							<#else>
@@ -374,8 +385,10 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 				}
 							<#else>
 				${field.relation.targetEntity}WebServiceClientAdapter ${field.name}Adapter = new ${field.relation.targetEntity}WebServiceClientAdapter(this.context);
-				${field.relation.targetEntity} ${field.name?uncap_first} = ${field.name}Adapter.extract(json.opt${typeToJsonType(field)}(${alias(field.name)}));
-				${curr.name?uncap_first}.set${field.name?cap_first}(${field.name?uncap_first});
+				${field.relation.targetEntity} ${field.name?uncap_first} = new ${field.relation.targetEntity}();
+				if (${field.name}Adapter.extract(json.opt${typeToJsonType(field)}(${alias(field.name)}), ${field.name?uncap_first})) {
+					${curr.name?uncap_first}.set${field.name?cap_first}(${field.name?uncap_first});
+				}
 							</#if>
 			}
 						</#if>
@@ -384,9 +397,43 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 				</#if>
 			</#list>
 			
+		} 
+		return result;
+	}
+
+	/**
+	 * Extract a list of <T> from a JSONObject describing an array of <T> given the array name
+	 * @param json The JSONObject describing the array of <T>
+	 * @param items The returned list of <T>
+	 * @param paramName The name of the array
+	 * @return The number of <T> found in the JSON
+	 */
+	public int extractItems(JSONObject json, String paramName, List<${curr.name}> items) throws JSONException{
+		JSONArray itemArray = json.optJSONArray(paramName);
+		
+		int result = -1;
+		
+		if (itemArray != null) {
+			int count = itemArray.length();			
+			
+			for (int i = 0; i < count; i++) {
+				JSONObject jsonItem = itemArray.getJSONObject(i);
+				${curr.name} item = new ${curr.name}();
+				this.extract(jsonItem, item);
+				if (item!=null){
+					synchronized (items) {
+						items.add(item);
+					}
+				}
+			}
 		}
 		
-		return ${curr.name?uncap_first};
+		if (!json.isNull("Meta")){
+			JSONObject meta = json.optJSONObject("Meta");
+			result = meta.optInt("nbt",0);
+		}
+		
+		return result;
 	}
 	
 	/**
@@ -397,7 +444,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 	public JSONObject itemToJson(${curr.name} ${curr.name?uncap_first}){
 		JSONObject params = new JSONObject();
 		try {
-			<#list curr.fields as field>
+			<#list curr.fields?values as field>
 				<#if (!field.internal)>
 					<#if (!field.relation??)>
 						<#if (curr.options.sync?? && field.name?lower_case=="id")>

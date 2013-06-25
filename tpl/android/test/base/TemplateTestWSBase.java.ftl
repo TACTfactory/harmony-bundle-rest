@@ -1,12 +1,16 @@
 <#assign curr = entities[current_entity] />
-package ${curr.test_namespace}.base;
+package ${test_namespace}.base;
 
-import ${curr.test_namespace}.*;
+import ${test_namespace}.*;
 
 
-import ${curr.namespace}.data.${curr.name}WebServiceClientAdapter;
-import ${curr.namespace}.entity.${curr.name};
+import ${project_namespace}.data.${curr.name}WebServiceClientAdapter;
+import ${project_namespace}.entity.${curr.name};
+import ${test_namespace}.utils.${curr.name}Utils;<#if (curr.options.sync??)>
+import ${test_namespace}.utils.TestUtils;</#if>
 
+import com.google.mockwebserver.MockResponse;
+import com.google.mockwebserver.MockWebServer;
 import android.content.Context;
 import android.test.AndroidTestCase;
 
@@ -20,19 +24,27 @@ public class ${curr.name}TestWSBase extends AndroidTestCase {
 	private Context ctx;
 	private ${curr.name} model;
 	private ${curr.name}WebServiceClientAdapter web;
+	private MockWebServer server;
 
 	/* (non-Javadoc)
 	 * @see junit.framework.TestCase#setUp()
 	 */
 	protected void setUp() throws Exception {
 		super.setUp();
-		
 		this.ctx = this.getContext();
-		this.web = new ${curr.name}WebServiceClientAdapter(this.ctx);
+
+		this.server = new MockWebServer();
+		this.server.play();
+
+		String host = this.server.getHostName();
+		int port = this.server.getPort();
+
+		this.web = new ${curr.name}WebServiceClientAdapter(this.ctx, host, port);
 		
-		this.model = new ${curr.name}();
-		// TODO initial values of test
-		//this.model.setXxxx();
+		this.model = ${curr.name}Utils.generateRandom(this.ctx);
+		<#if (curr.options.sync??)>
+		this.model.setServerId(TestUtils.generateRandomInt(1, 200));
+		</#if>
 	}
 
 	/* (non-Javadoc)
@@ -51,34 +63,46 @@ public class ${curr.name}TestWSBase extends AndroidTestCase {
 	}*/
 	
 	/** Test case Create Entity */
-	public void create() {
+	public void testCreate() {
+		this.server.enqueue(new MockResponse().setBody("{'result'='0'}"));
+
 		int result = this.web.insert(this.model);
 		Assert.assertTrue(result >= 0);
 	}
 	
 	/** Test case Read Entity */
-	public void read() {
+	public void testRead() {
+		this.server.enqueue(new MockResponse().setBody(
+			this.web.itemToJson(this.model).toString()));
 		int result = this.web.get(this.model); // TODO Generate by @Id annotation
 		Assert.assertTrue(result >= 0);
 	}
 	
 	/** Test case Update Entity */
-	public void update() {
-		// TODO on all fields
-		//this.model.setXxxx(newValue);
+	public void testUpdate() {
+		this.server.enqueue(new MockResponse().setBody("{'result'='1'}"));
 		
 		int result = this.web.update(this.model);
 		Assert.assertTrue(result >= 0);
 		
-		result = this.web.get(this.model);
-		// TODO on all fields
-		//Assert.assertEquals(newValue, this.model.getXxxx()) 
+		this.server.enqueue(new MockResponse().setBody(
+			this.web.itemToJson(this.model).toString()));
+
+		${curr.name} item = new ${curr.name}();
+		item.setId(this.model.getId());
+
+		result = this.web.get(item);
+		${curr.name}Utils.equals(this.model, item);
 	}
 	
 	/** Test case Update Entity */
-	public void delete() {
+	public void testDelete() {
+		this.server.enqueue(new MockResponse().setBody("{'result'='1'}"));
 		int result = this.web.delete(this.model);
-		
+		Assert.assertTrue(result == 0);		
+
+		this.server.enqueue(new MockResponse().setBody("{}"));
+
 		result = this.web.get(this.model);
 		Assert.assertTrue(result < 0);
 	}

@@ -8,8 +8,22 @@
  */
 package com.tactfactory.harmony.bundles.rest.template;
 
-import com.tactfactory.harmony.meta.ClassMetadata;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.util.List;
+
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.Namespace;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
+
 import com.tactfactory.harmony.meta.ConfigMetadata;
+import com.tactfactory.harmony.meta.EntityMetadata;
 import com.tactfactory.harmony.meta.TranslationMetadata;
 import com.tactfactory.harmony.meta.TranslationMetadata.Group;
 import com.tactfactory.harmony.plateforme.BaseAdapter;
@@ -18,6 +32,7 @@ import com.tactfactory.harmony.template.ConfigGenerator;
 import com.tactfactory.harmony.template.TagConstant;
 import com.tactfactory.harmony.template.TranslationGenerator;
 import com.tactfactory.harmony.utils.ConsoleUtils;
+import com.tactfactory.harmony.utils.TactFileUtils;
 
 /**
  * Generator for bundle Rest.
@@ -51,6 +66,9 @@ public class RestGenerator extends BaseGenerator {
 	 * Generate WebService Adapter.
 	 */
 	protected final void generateWSAdapter() {
+		// Add internet permission to manifest :
+		this.addPermissionManifest("android.permission.INTERNET");
+		
 		this.updateLibrary("httpmime-4.1.1.jar");
 		this.updateLibrary("mockwebserver.jar");
 		
@@ -76,19 +94,20 @@ public class RestGenerator extends BaseGenerator {
 				"RestClient.java",
 				true);
 		
-		for (final ClassMetadata cm 
+		for (final EntityMetadata entityMeta
 				: this.getAppMetas().getEntities().values()) {
-			if (cm.getOptions().get("rest") != null) {
+			if (entityMeta.getOptions().get("rest") != null
+					&& !entityMeta.getFields().isEmpty()) {
 				this.getDatamodel().put(
-						TagConstant.CURRENT_ENTITY, cm.getName());
+						TagConstant.CURRENT_ENTITY, entityMeta.getName());
 				this.makeSource(
 						"base/TemplateWebServiceClientAdapterBase.java", 
-						"base/" + cm.getName() 
+						"base/" + entityMeta.getName() 
 							+ "WebServiceClientAdapterBase.java", 
 						true);
 				this.makeSource(
 						"TemplateWebServiceClientAdapter.java", 
-						cm.getName() + "WebServiceClientAdapter.java", 
+						entityMeta.getName() + "WebServiceClientAdapter.java", 
 						true);
 			}
 		}	
@@ -115,5 +134,67 @@ public class RestGenerator extends BaseGenerator {
 				+ templateName;
 		
 		super.makeSource(fullTemplatePath, fullFilePath, override);
+	}
+	
+	/**  Update Android Manifest.
+	 * 
+	 * @param permissionName The permission to add
+	 */
+	private void addPermissionManifest(final String permissionName) {
+		try { 
+			// Make engine
+			final SAXBuilder builder = new SAXBuilder();		
+			
+			// Load XML File
+			final File xmlFile = 
+					TactFileUtils.makeFile(
+							this.getAdapter().getManifestPathFile());
+			
+			final Document doc = builder.build(xmlFile); 	
+			
+			// Load Root element
+			final Element rootNode = doc.getRootElement(); 			
+			
+			// Load Name space (required for manipulate attributes)
+			final Namespace ns = rootNode.getNamespace("android");	
+			Element foundPermission = null;
+			// Find Permission Node
+			final List<Element> permissions = 
+					rootNode.getChildren("uses-permission");
+			
+			// Find many elements
+			for (final Element permission : permissions) {
+				if (permission.getAttributeValue("name", ns)
+						.equals(permissionName)) {	
+					// Load attribute value
+					foundPermission = permission;
+					break;
+				}
+			}
+			
+			// If not found Node, create it
+			if (foundPermission == null) {
+				// Create new element
+				foundPermission = new Element("uses-permission");
+				
+				// Add Attributes to element
+				foundPermission.setAttribute("name", permissionName, ns);	
+				rootNode.addContent(foundPermission);
+				
+				// Write to File
+				final XMLOutputter xmlOutput = new XMLOutputter();
+
+				// Make beautiful file with indent !!!
+				xmlOutput.setFormat(Format.getPrettyFormat());				
+				xmlOutput.output(doc, 
+						new OutputStreamWriter(
+								new FileOutputStream(xmlFile.getAbsoluteFile()),
+								TactFileUtils.DEFAULT_ENCODING));
+			}
+		} catch (final JDOMException e) {
+			ConsoleUtils.displayError(e);
+		} catch (final IOException e) {
+			ConsoleUtils.displayError(e);
+		}
 	}
 }
