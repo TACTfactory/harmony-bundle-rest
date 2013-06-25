@@ -11,8 +11,8 @@ package com.tactfactory.harmony.bundles.rest.meta;
 import java.util.HashMap;
 
 import com.tactfactory.harmony.bundles.rest.annotation.Rest.Security;
-import com.tactfactory.mda.meta.BaseMetadata;
-import com.tactfactory.mda.plateforme.BaseAdapter;
+import com.tactfactory.harmony.meta.BaseMetadata;
+import com.tactfactory.harmony.plateforme.BaseAdapter;
 
 /**
  * Metadata for Bundle Rest.

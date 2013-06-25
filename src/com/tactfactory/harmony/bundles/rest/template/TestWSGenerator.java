@@ -8,12 +8,12 @@
  */
 package com.tactfactory.harmony.bundles.rest.template;
 
-import com.tactfactory.mda.meta.ClassMetadata;
-import com.tactfactory.mda.plateforme.BaseAdapter;
-import com.tactfactory.mda.template.BaseGenerator;
-import com.tactfactory.mda.template.TagConstant;
-import com.tactfactory.mda.utils.ConsoleUtils;
-import com.tactfactory.mda.utils.PackageUtils;
+import com.tactfactory.harmony.meta.ClassMetadata;
+import com.tactfactory.harmony.plateforme.BaseAdapter;
+import com.tactfactory.harmony.template.BaseGenerator;
+import com.tactfactory.harmony.template.TagConstant;
+import com.tactfactory.harmony.utils.ConsoleUtils;
+import com.tactfactory.harmony.utils.PackageUtils;
 
 /**
  * WebService tests generator.
@@ -42,7 +42,7 @@ public class TestWSGenerator extends BaseGenerator {
 		for (final ClassMetadata cm 
 				: this.getAppMetas().getEntities().values()) {
 			if (cm.getOptions().containsKey("rest") 
-					&& !cm.isInternal() 
+					//&& !cm.isInternal() 
 					&& !cm.getFields().isEmpty()) {
 				this.localNameSpace = 
 						this.getAdapter().getNameSpace(cm,

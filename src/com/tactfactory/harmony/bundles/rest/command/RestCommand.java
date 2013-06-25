@@ -10,14 +10,14 @@ package com.tactfactory.harmony.bundles.rest.command;
 
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 
+import com.tactfactory.harmony.Console;
 import com.tactfactory.harmony.bundles.rest.parser.RestCompletor;
 import com.tactfactory.harmony.bundles.rest.parser.RestParser;
 import com.tactfactory.harmony.bundles.rest.template.RestGenerator;
-import com.tactfactory.mda.Console;
-import com.tactfactory.mda.command.BaseCommand;
-import com.tactfactory.mda.meta.ApplicationMetadata;
-import com.tactfactory.mda.plateforme.AndroidAdapter;
-import com.tactfactory.mda.utils.ConsoleUtils;
+import com.tactfactory.harmony.command.BaseCommand;
+import com.tactfactory.harmony.meta.ApplicationMetadata;
+import com.tactfactory.harmony.plateforme.AndroidAdapter;
+import com.tactfactory.harmony.utils.ConsoleUtils;
 
 /**
  * Command class for rest bundle.

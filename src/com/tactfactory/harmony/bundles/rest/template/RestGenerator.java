@@ -8,16 +8,16 @@
  */
 package com.tactfactory.harmony.bundles.rest.template;
 
-import com.tactfactory.mda.meta.ClassMetadata;
-import com.tactfactory.mda.meta.ConfigMetadata;
-import com.tactfactory.mda.meta.TranslationMetadata;
-import com.tactfactory.mda.meta.TranslationMetadata.Group;
-import com.tactfactory.mda.plateforme.BaseAdapter;
-import com.tactfactory.mda.template.BaseGenerator;
-import com.tactfactory.mda.template.ConfigGenerator;
-import com.tactfactory.mda.template.TagConstant;
-import com.tactfactory.mda.template.TranslationGenerator;
-import com.tactfactory.mda.utils.ConsoleUtils;
+import com.tactfactory.harmony.meta.ClassMetadata;
+import com.tactfactory.harmony.meta.ConfigMetadata;
+import com.tactfactory.harmony.meta.TranslationMetadata;
+import com.tactfactory.harmony.meta.TranslationMetadata.Group;
+import com.tactfactory.harmony.plateforme.BaseAdapter;
+import com.tactfactory.harmony.template.BaseGenerator;
+import com.tactfactory.harmony.template.ConfigGenerator;
+import com.tactfactory.harmony.template.TagConstant;
+import com.tactfactory.harmony.template.TranslationGenerator;
+import com.tactfactory.harmony.utils.ConsoleUtils;
 
 /**
  * Generator for bundle Rest.
@@ -52,6 +52,7 @@ public class RestGenerator extends BaseGenerator {
 	 */
 	protected final void generateWSAdapter() {
 		this.updateLibrary("httpmime-4.1.1.jar");
+		this.updateLibrary("mockwebserver.jar");
 		
 		TranslationMetadata.addDefaultTranslation(
 				"common_network_error", "Connection error", Group.COMMON);

@@ -17,7 +17,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 
-import com.tactfactory.mda.utils.ConsoleUtils;
+import com.tactfactory.harmony.utils.ConsoleUtils;
 
 /**
  * To mark a entity for remote/central 
