@@ -82,7 +82,7 @@ public class RestClient {
 	 * @param serviceName The serviceName should be the name of the Service
 	 * 	you are going to be using.
 	 */
-    public RestClient(String serviceName, int port String scheme) {
+    public RestClient(String serviceName, int port, String scheme) {
 		HttpParams myParams = new BasicHttpParams();
 		
 		// Set timeout
