@@ -135,7 +135,7 @@ import java.util.ArrayList;
  *
  */
 public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}{
-	private static final String TAG = "${curr.name}WSClientAdapter";
+	protected static final String TAG = "${curr.name}WSClientAdapter";
 
 	private static final String ${alias(curr.name)} = "${curr.name}";
 	<#list curr.fields?values as field>

@@ -66,7 +66,7 @@ public abstract class WebServiceClientAdapterBase<T>{
 	}
 
 	protected synchronized String invokeRequest(Verb verb, String request, JSONObject params) {
-		this.restClient = new RestClient(host, port);
+		this.restClient = new RestClient(host, port, RestClient.SCHEME_HTTP);
 		String response = "";
 		
 		StringBuilder error = new StringBuilder();
