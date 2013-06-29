@@ -82,7 +82,7 @@ public class RestClient {
 	 * @param serviceName The serviceName should be the name of the Service
 	 * 	you are going to be using.
 	 */
-    public RestClient(String serviceName, int port) {
+    public RestClient(String serviceName, int port String scheme) {
 		HttpParams myParams = new BasicHttpParams();
 		
 		// Set timeout
@@ -95,6 +95,7 @@ public class RestClient {
 		this.httpClient = new DefaultHttpClient(myParams);
 		this.serviceName = serviceName;
 		this.port = port;
+		this.scheme = scheme;
 	}
 	
 	public void setAuth(String login, String password) {
