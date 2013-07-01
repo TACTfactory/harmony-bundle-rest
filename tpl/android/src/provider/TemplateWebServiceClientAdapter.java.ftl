@@ -17,4 +17,8 @@ public class ${curr.name}WebServiceClientAdapter extends ${curr.name}WebServiceC
 	public ${curr.name}WebServiceClientAdapter(Context context, String host, int port){
 		super(context, host, port);
 	}
+	
+	public ${curr.name}WebServiceClientAdapter(Context context, String host, int port, String scheme){
+		super(context, host, port, scheme);
+	}
 }

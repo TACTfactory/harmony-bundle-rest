@@ -161,6 +161,10 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 		super(context, host, port);
 	}
 	
+	public ${curr.name}WebServiceClientAdapterBase(Context context, String host, int port, String scheme){
+		super(context, host, port, scheme);
+	}
+	
 	/**
 	 * Retrieve all the ${curr.name}s in the given list. Uses the route : ${curr.options.rest.uri?lower_case}
 	 * @param ${curr.name?uncap_first}s : The list in which the ${curr.name}s will be returned
