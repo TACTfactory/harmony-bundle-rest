@@ -34,11 +34,12 @@ public abstract class WebServiceClientAdapterBase<T>{
 	protected int errorCode;
 	protected String error;
 
-	
-
 	protected String host;
 	protected int port;
-
+	proctected String scheme;
+	
+	protected String login = null;
+	protected String password = null;
 
 	public WebServiceClientAdapterBase(Context context){
 		this(context, null, 80);
@@ -49,6 +50,10 @@ public abstract class WebServiceClientAdapterBase<T>{
 	}
 
 	public WebServiceClientAdapterBase(Context context, String host, int port){
+		this(context, host, port, RestClient.SCHEME_HTTP);
+	}
+	
+	public WebServiceClientAdapterBase(Context context, String host, int port, String scheme){
 		this.headers.add(new BasicHeader("Content-Type","application/json"));
 		this.headers.add(new BasicHeader("Accept","application/json"));
 
@@ -62,11 +67,19 @@ public abstract class WebServiceClientAdapterBase<T>{
 		} else {
 			this.host = host;
 		}
+		
 		this.port = port;
+		this.scheme = scheme;
 	}
 
 	protected synchronized String invokeRequest(Verb verb, String request, JSONObject params) {
-		this.restClient = new RestClient(host, port);
+		this.restClient = new RestClient(this.host, this.port, this.scheme);
+		
+		if (this.login != null && !this.login.isEmpty()
+				&& this.password != null && !this.password.isEmpty()) {
+			this.restClient.setAuth(this.login, this.password);
+		}
+		
 		String response = "";
 		
 		StringBuilder error = new StringBuilder();

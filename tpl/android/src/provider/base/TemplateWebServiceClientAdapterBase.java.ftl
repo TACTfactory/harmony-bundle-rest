@@ -135,18 +135,18 @@ import java.util.ArrayList;
  *
  */
 public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}{
-	private static final String TAG = "${curr.name}WSClientAdapter";
+	protected static final String TAG = "${curr.name}WSClientAdapter";
 
-	private static final String ${alias(curr.name)} = "${curr.name}";
+	protected static String ${alias(curr.name)} = "${curr.name}";
 	<#list curr.fields?values as field>
 		<#if (!field.internal)>
 			<#if (!field.relation?? || isRestEntity(field.relation.targetEntity))>
-	private static final String ${alias(field.name)} = "${field.name?uncap_first}";
+	protected static final String ${alias(field.name)} = "${field.name?uncap_first}";
 			</#if>
 		</#if>
 	</#list>
 	<#if (curr.options.sync??)>
-	private static final String JSON_MOBILE_ID = "mobile_id";
+	protected static final String JSON_MOBILE_ID = "mobile_id";
 	</#if>
 
 	public ${curr.name}WebServiceClientAdapterBase(Context context){
@@ -159,6 +159,10 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 
 	public ${curr.name}WebServiceClientAdapterBase(Context context, String host, int port){
 		super(context, host, port);
+	}
+	
+	public ${curr.name}WebServiceClientAdapterBase(Context context, String host, int port, String scheme){
+		super(context, host, port, scheme);
 	}
 	
 	/**
