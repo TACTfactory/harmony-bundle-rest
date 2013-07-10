@@ -175,7 +175,7 @@ public class RestClient {
 			// we assume that the response body contains the error message
 			HttpEntity resultEntity = response.getEntity();
 			
-			if (resultEntity != null)
+			if (resultEntity != null) {
 				result = EntityUtils.toString(resultEntity, HTTP.UTF_8);
 			}
 			

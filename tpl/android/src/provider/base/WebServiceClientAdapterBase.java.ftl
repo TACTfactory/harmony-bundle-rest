@@ -36,7 +36,7 @@ public abstract class WebServiceClientAdapterBase<T>{
 
 	protected String host;
 	protected int port;
-	proctected String scheme;
+	protected String scheme;
 	
 	protected String login = null;
 	protected String password = null;
