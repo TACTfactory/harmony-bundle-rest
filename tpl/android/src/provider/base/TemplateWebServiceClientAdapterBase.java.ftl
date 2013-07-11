@@ -466,17 +466,11 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 						</#if>
 					<#else>
 						<#if (isRestEntity(field.relation.targetEntity))>
-			if (${curr.name?uncap_first}.get${field.name?cap_first}()!=null){
-				${field.relation.targetEntity?cap_first}WebServiceClientAdapter ${field.name}Adapter = new ${field.relation.targetEntity?cap_first}WebServiceClientAdapter(this.context);
-							<#if (field.relation.type=="OneToMany" || field.relation.type=="ManyToMany")>
-				params.put(${alias(field.name)}, ${field.name}Adapter.itemsIdToJson(${curr.name?uncap_first}.get${field.name?cap_first}()));
-							<#else>
-				${field.relation.targetEntity?cap_first}SQLiteAdapter ${field.name}SQLAdapter = new ${field.relation.targetEntity?cap_first}SQLiteAdapter(this.context);
-				${field.name}SQLAdapter.open();
-				${curr.name?uncap_first}.set${field.name?cap_first}(${field.name}SQLAdapter.getByID(${curr.name?uncap_first}.get${field.name?cap_first}().getId()));
-				${field.name}SQLAdapter.close();
-				params.put(${alias(field.name)}, ${field.name}Adapter.itemIdToJson(${curr.name?uncap_first}.get${field.name?cap_first}()));
-							</#if>
+			if (${curr.name?uncap_first}.get${field.name?cap_first}() != null) {
+				${field.relation.targetEntity?cap_first}WebServiceClientAdapter ${field.name}Adapter =
+					new ${field.relation.targetEntity?cap_first}WebServiceClientAdapter(this.context);
+				params.put(${alias(field.name)}, ${field.name}Adapter
+					.itemIdToJson(${curr.name?uncap_first}.get${field.name?cap_first}()));
 			}
 						</#if>
 					</#if>
