@@ -41,7 +41,7 @@ public class TestWSGenerator extends BaseGenerator {
 		ConsoleUtils.display(">> Generate Rest test...");
 		LibraryUtils.addLibraryToTestProject(
 				this.getAdapter(), 
-				"mockwebserver-20130505.jar");
+				"mockwebserver.jar");
 		for (final EntityMetadata entityMeta 
 				: this.getAppMetas().getEntities().values()) {
 			if (entityMeta.getOptions().containsKey("rest") 
