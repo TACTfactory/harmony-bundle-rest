@@ -108,7 +108,7 @@ public class RestGenerator extends BaseGenerator {
 				this.makeSource(
 						"TemplateWebServiceClientAdapter.java", 
 						entityMeta.getName() + "WebServiceClientAdapter.java", 
-						true);
+						false);
 			}
 		}	
 		try {
