@@ -53,6 +53,9 @@ public class RestGenerator extends BaseGenerator {
 	 * Generates everything.
 	 */
 	public final void generateAll() {
+		// Import Bundle for annotation
+		this.updateLibrary("rest-bundle.jar");
+				
 		this.generateWSAdapter();
 		try {
 			new TestWSGenerator(this.getAdapter()).generateAll();

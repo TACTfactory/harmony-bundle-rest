@@ -16,8 +16,9 @@
 	<property name="src.rel-dir" value="src" />
 	<!-- <property name="etc.rel-dir" value="etc" /-->
 	<property name="build.rel-dir" value="bin" />
+	<property name="core-lib.rel-dir" value="../tact-core/lib" />
 	<property name="lib.rel-dir" value="lib" />
-	<property name="ant-lib.rel-dir" value="${lib.rel-dir}/ant" />
+	<property name="ant-lib.rel-dir" value="${core-lib.rel-dir}/ant" />
 	<property name="tmp.rel-dir" value="tmp" />
 	<property name="dist.rel-dir" value="./" />
 	<property name="doc.rel-dir" value="${dist.rel-dir}/javadoc" />
