@@ -239,7 +239,7 @@ public class RestGlobalTest extends CommonTest {
 					.replaceAll("\\.", "/");
 
 		String srcDir = 
-				String.format("%s/tact-rest/src/%s/%s/",
+				String.format("%s/tact-rest/resources/%s/%s/",
 						Harmony.getBundlePath(),
 						pathNameSpace, 
 						"entity");
