@@ -14,6 +14,7 @@ import com.tactfactory.harmony.bundles.rest.command.RestCommand;
 import com.tactfactory.harmony.bundles.rest.meta.RestMetadata;
 import com.tactfactory.harmony.command.OrmCommand;
 import com.tactfactory.harmony.command.ProjectCommand;
+import com.tactfactory.harmony.fixture.command.FixtureCommand;
 import com.tactfactory.harmony.meta.ApplicationMetadata;
 import com.tactfactory.harmony.meta.ClassMetadata;
 import com.tactfactory.harmony.test.CommonTest;
@@ -73,6 +74,8 @@ public class RestGlobalTest extends CommonTest {
 				OrmCommand.GENERATE_ENTITIES, new String[] {}, null);
 		getHarmony().findAndExecute(
 				OrmCommand.GENERATE_CRUD, new String[] {}, null);
+		getHarmony().findAndExecute(
+				FixtureCommand.FIXTURE_INIT, new String[] {}, null);
 		getHarmony().findAndExecute(
 				RestCommand.GENERATE_ADAPTERS, new String[] {}, null);
 				
