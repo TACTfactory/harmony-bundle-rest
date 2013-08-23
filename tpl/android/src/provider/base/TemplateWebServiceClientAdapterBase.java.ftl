@@ -466,11 +466,16 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 						</#if>
 					<#else>
 						<#if (isRestEntity(field.relation.targetEntity))>
+							<#if (field.relation.type == "ManyToMany" || field.relation.type == "OneToMany")>
+								<#assign converter = "itemsIdToJson" />
+							<#else>
+								<#assign converter = "itemIdToJson" />
+							</#if>
 			if (${curr.name?uncap_first}.get${field.name?cap_first}() != null) {
 				${field.relation.targetEntity?cap_first}WebServiceClientAdapter ${field.name}Adapter =
 					new ${field.relation.targetEntity?cap_first}WebServiceClientAdapter(this.context);
 				params.put(${alias(field.name)}, ${field.name}Adapter
-					.itemIdToJson(${curr.name?uncap_first}.get${field.name?cap_first}()));
+					.${converter}(${curr.name?uncap_first}.get${field.name?cap_first}()));
 			}
 						</#if>
 					</#if>
