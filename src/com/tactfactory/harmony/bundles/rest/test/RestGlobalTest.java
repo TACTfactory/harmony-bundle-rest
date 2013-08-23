@@ -1,5 +1,7 @@
 package com.tactfactory.harmony.bundles.rest.test;
 
+import java.io.File;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -12,9 +14,12 @@ import com.tactfactory.harmony.bundles.rest.command.RestCommand;
 import com.tactfactory.harmony.bundles.rest.meta.RestMetadata;
 import com.tactfactory.harmony.command.OrmCommand;
 import com.tactfactory.harmony.command.ProjectCommand;
+import com.tactfactory.harmony.fixture.command.FixtureCommand;
 import com.tactfactory.harmony.meta.ApplicationMetadata;
 import com.tactfactory.harmony.meta.ClassMetadata;
 import com.tactfactory.harmony.test.CommonTest;
+import com.tactfactory.harmony.utils.ConsoleUtils;
+import com.tactfactory.harmony.utils.TactFileUtils;
 
 /**
  * Tests for Rest bundle generation.
@@ -69,6 +74,8 @@ public class RestGlobalTest extends CommonTest {
 				OrmCommand.GENERATE_ENTITIES, new String[] {}, null);
 		getHarmony().findAndExecute(
 				OrmCommand.GENERATE_CRUD, new String[] {}, null);
+		getHarmony().findAndExecute(
+				FixtureCommand.FIXTURE_INIT, new String[] {}, null);
 		getHarmony().findAndExecute(
 				RestCommand.GENERATE_ADAPTERS, new String[] {}, null);
 				
@@ -226,4 +233,32 @@ public class RestGlobalTest extends CommonTest {
 					.getSecurity().equals(value));
 	}
 	
+	/**
+	 * Copy the test entities in the test project. 
+	 */
+	protected static void makeEntities() {
+		final String pathNameSpace = 
+				ApplicationMetadata.INSTANCE.getProjectNameSpace()
+					.replaceAll("\\.", "/");
+
+		String srcDir = 
+				String.format("%s/tact-rest/resources/%s/%s/",
+						Harmony.getBundlePath(),
+						pathNameSpace, 
+						"entity");
+		
+		String destDir = 
+				String.format("%s/src/%s/%s/", 
+						Harmony.getProjectAndroidPath(), 
+						pathNameSpace, 
+						"entity");
+
+		System.out.println(destDir);
+		
+		// FileUtils.copyDirectory(new File(srcDir), new File(destDir));
+		TactFileUtils.makeFolderRecursive(srcDir, destDir, true);
+		if (new File(destDir + "Post.java").exists()) {
+			ConsoleUtils.displayDebug("Entity is copy to generated package !");
+		}
+	}
 }
