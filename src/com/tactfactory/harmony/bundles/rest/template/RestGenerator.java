@@ -71,12 +71,16 @@ public class RestGenerator extends BaseGenerator {
 	protected final void generateWSAdapter() {
 		// Add internet permission to manifest :
 		this.addPermissionManifest("android.permission.INTERNET");
+		this.addPermissionManifest("android.permission.ACCESS_NETWORK_STATE");
 		
 		this.updateLibrary("httpmime-4.1.1.jar");
 		this.updateLibrary("mockwebserver.jar");
 		
 		TranslationMetadata.addDefaultTranslation(
 				"common_network_error", "Connection error", Group.COMMON);
+		
+		TranslationMetadata.addDefaultTranslation(
+				"no_network_error", "No internet connection available", Group.COMMON);
 		
 		ConfigMetadata.addConfiguration(
 				"rest_url_prod", "https://domain.tlk:443/");
