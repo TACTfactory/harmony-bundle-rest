@@ -18,6 +18,8 @@ import ${project_namespace}.${project_name?cap_first}Application;
 
 import android.content.Context;
 
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -73,34 +75,38 @@ public abstract class WebServiceClientAdapterBase<T>{
 	}
 
 	protected synchronized String invokeRequest(Verb verb, String request, JSONObject params) {
-		this.restClient = new RestClient(this.host, this.port, this.scheme);
-		
-		if (this.login != null && !this.login.isEmpty()
-				&& this.password != null && !this.password.isEmpty()) {
-			this.restClient.setAuth(this.login, this.password);
-		}
-		
 		String response = "";
+		if (this.isOnline()) {
+			this.restClient = new RestClient(this.host, this.port, this.scheme);
 		
-		StringBuilder error = new StringBuilder();
-
-		try {
-			synchronized (this.restClient) {
-				response = this.restClient.invoke(verb, request, params, this.headers);
-				this.statusCode = this.restClient.getStatusCode();
-				if (isValidResponse(response)){
-					this.errorCode = this.appendError(response,error);
-					this.error = error.toString();
-				}
+			if (this.login != null && !this.login.isEmpty()
+					&& this.password != null && !this.password.isEmpty()) {
+				this.restClient.setAuth(this.login, this.password);
 			}
+		
+			StringBuilder error = new StringBuilder();
 
-		} catch (Exception e) {
-			this.displayOups();
+			try {
+				synchronized (this.restClient) {
+					response = this.restClient.invoke(verb, request, params, this.headers);
+					this.statusCode = this.restClient.getStatusCode();
+					if (isValidResponse(response)){
+						this.errorCode = this.appendError(response,error);
+						this.error = error.toString();
+					}
+				}
+
+			} catch (Exception e) {
+				this.displayOups();
 			
-			if (${project_name?cap_first}Application.DEBUG)
-				Log.d(TAG, e.getMessage());
+				if (${project_name?cap_first}Application.DEBUG)
+					Log.d(TAG, e.getMessage());
+			}
+		} else {
+			Toast.makeText(this.context,
+				R.string.no_network_error,
+				Toast.LENGTH_SHORT).show();
 		}
-
 		return response;
 	}
 
@@ -311,5 +317,20 @@ public abstract class WebServiceClientAdapterBase<T>{
 	 * 
 	 */
 	public abstract String getUri();
+
+	/**
+	 * Checks network connection.
+	 * @return true if available
+	 */
+	public boolean isOnline() {
+		boolean result = false;
+		ConnectivityManager cm = (ConnectivityManager) 
+				this.context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo netInfo = cm.getActiveNetworkInfo();
+		if (netInfo != null && netInfo.isConnectedOrConnecting()) {
+		    result = true;
+		}
+		return result;
+	}
 	
 }
