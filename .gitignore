@@ -10,6 +10,8 @@
 /doc/stats/*
 /doc/API/*
 
+/javadoc
+
 /.classpath
 /.project
 /local.properties
@@ -28,3 +30,4 @@
 /findbugs.xml
 /findbugs-default.html
 /*.jar
+/lib/rest-bundle-annotations.jar
