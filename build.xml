@@ -190,7 +190,7 @@
 <!-- 		</junit> -->
 <!-- 	</target> -->
 
-	<target name="run-findbugs" depends="jar" description="Run code analysis over code to check for problems.">
+	<target name="run-findbugs" depends="compile-tests" description="Run code analysis over code to check for problems.">
 
 		<!-- Fail this target if FindBugs is not installed. -->
 		<available file="${env.FINDBUGS_HOME}/lib/findbugs.jar" property="findbugs.available" />
