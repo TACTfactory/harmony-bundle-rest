@@ -64,9 +64,10 @@ public class RestGlobalTest extends CommonTest {
 	 * Test initialization.
 	 */
 	private static void initAll() {
-		System.out.println("\nTest Orm generate entity");
+		System.out.println("\nTest Rest generate adapters");
 		System.out.println("########################################"
 				+ "#######################################");
+		
 		
 		getHarmony().findAndExecute(ProjectCommand.INIT_ANDROID, null, null);
 		makeEntities();
@@ -242,8 +243,8 @@ public class RestGlobalTest extends CommonTest {
 					.replaceAll("\\.", "/");
 
 		String srcDir = 
-				String.format("%s/tact-rest/resources/%s/%s/",
-						Harmony.getBundlePath(),
+				String.format("%s/resources/%s/%s/",
+						Harmony.getCommandPath(RestCommand.class),
 						pathNameSpace, 
 						"entity");
 		
