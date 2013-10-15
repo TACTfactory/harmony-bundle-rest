@@ -412,13 +412,36 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 	 * @param paramName The name of the array
 	 * @return The number of <T> found in the JSON
 	 */
-	public int extractItems(JSONObject json, String paramName, List<${curr.name}> items) throws JSONException{
+	public int extractItems(JSONObject json,
+			String paramName,
+			List<${curr.name}> items) throws JSONException {
+			
+		return this.extractItems(json, paramName, items, 0);
+	}
+	
+	/**
+	 * Extract a list of <T> from a JSONObject describing an array of <T> given the array name
+	 * @param json The JSONObject describing the array of <T>
+	 * @param items The returned list of <T>
+	 * @param paramName The name of the array
+	 * @param limit Limit the number of items to parse
+	 * @return The number of <T> found in the JSON
+	 */
+	public int extractItems(JSONObject json,
+			String paramName,
+			List<${curr.name}> items,
+			int limit) throws JSONException {
+			
 		JSONArray itemArray = json.optJSONArray(paramName);
 		
 		int result = -1;
 		
 		if (itemArray != null) {
-			int count = itemArray.length();			
+			int count = itemArray.length();
+			
+			if (limit > 0 && count > limit) {
+				count = limit;
+			}
 			
 			for (int i = 0; i < count; i++) {
 				JSONObject jsonItem = itemArray.getJSONObject(i);
@@ -432,7 +455,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 			}
 		}
 		
-		if (!json.isNull("Meta")){
+		if (!json.isNull("Meta")) {
 			JSONObject meta = json.optJSONObject("Meta");
 			result = meta.optInt("nbt",0);
 		}

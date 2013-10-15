@@ -262,6 +262,16 @@ public abstract class WebServiceClientAdapterBase<T>{
 	public abstract int extractItems(JSONObject json, String paramName, List<T> items) throws JSONException;
 	
 	/**
+	 * Extract a list of <T> from a JSONObject describing an array of <T> given the array name
+	 * @param json The JSONObject describing the array of <T>
+	 * @param items The returned list of <T>
+	 * @param paramName The name of the array
+	 * @param limit Limit the number of items to parse
+	 * @return The number of <T> found in the JSON
+	 */
+	public abstract int extractItems(JSONObject json, String paramName, List<T> items, int limit) throws JSONException;
+	
+	/**
 	 * Delete a <T>. 
 	 * @param item : The <T> to delete (only the id is necessary)
 	 * @return -1 if an error has occurred. 0 if not.
