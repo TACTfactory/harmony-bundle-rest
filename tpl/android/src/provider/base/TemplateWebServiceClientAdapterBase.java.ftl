@@ -469,6 +469,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 	 * @return The converted ${curr.name}
 	 */
 	public JSONObject itemToJson(${curr.name} ${curr.name?uncap_first}){
+		JSONObject result = new JSONObject();
 		JSONObject params = new JSONObject();
 		try {
 			<#list curr.fields?values as field>
@@ -504,10 +505,12 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 					</#if>
 				</#if>
 			</#list>
+
+			result.put(JSON_${curr.name?upper_case}, params);
 		} catch (JSONException e) {
 			Log.e(TAG, e.getMessage());
 		}
-		return params;
+		return result;
 	}
 
 	
