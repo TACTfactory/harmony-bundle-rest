@@ -37,6 +37,7 @@ public abstract class WebServiceClientAdapterBase<T>{
 	protected String error;
 
 	protected String host;
+	protected String prefix;
 	protected int port;
 	protected String scheme;
 	
@@ -44,18 +45,18 @@ public abstract class WebServiceClientAdapterBase<T>{
 	protected String password = null;
 
 	public WebServiceClientAdapterBase(Context context){
-		this(context, null, 80);
+		this(context, null, null);
 	}
 
-	public WebServiceClientAdapterBase(Context context, int port){
+	public WebServiceClientAdapterBase(Context context, Integer port){
 		this(context, null, port);
 	}
 
-	public WebServiceClientAdapterBase(Context context, String host, int port){
+	public WebServiceClientAdapterBase(Context context, String host, Integer port){
 		this(context, host, port, RestClient.SCHEME_HTTP);
 	}
 	
-	public WebServiceClientAdapterBase(Context context, String host, int port, String scheme){
+	public WebServiceClientAdapterBase(Context context, String host, Integer port, String scheme){
 		this.headers.add(new BasicHeader("Content-Type","application/json"));
 		this.headers.add(new BasicHeader("Accept","application/json"));
 
@@ -69,8 +70,23 @@ public abstract class WebServiceClientAdapterBase<T>{
 		} else {
 			this.host = host;
 		}
+
+		if (port == null) {
+			if (${project_name?cap_first}Application.DEBUG){
+				this.port = Integer.parseInt(this.context.getString(R.string.rest_port_dev));
+			} else {
+				this.port = Integer.parseInt(this.context.getString(R.string.rest_port_prod));
+			}
+		} else {
+			this.port = port;
+		}
 		
-		this.port = port;
+		if (${project_name?cap_first}Application.DEBUG){
+			this.prefix = this.context.getString(R.string.rest_uri_prefix_dev);
+		} else {
+			this.prefix = this.context.getString(R.string.rest_uri_prefix_prod);
+		}
+
 		this.scheme = scheme;
 	}
 
@@ -88,7 +104,7 @@ public abstract class WebServiceClientAdapterBase<T>{
 
 			try {
 				synchronized (this.restClient) {
-					response = this.restClient.invoke(verb, request, params, this.headers);
+					response = this.restClient.invoke(verb, this.prefix + request, params, this.headers);
 					this.statusCode = this.restClient.getStatusCode();
 					if (isValidResponse(response)){
 						this.errorCode = this.appendError(response,error);
