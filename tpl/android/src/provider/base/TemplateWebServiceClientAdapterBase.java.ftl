@@ -101,6 +101,8 @@ import java.util.List;
 
 import android.util.Log;
 import android.content.Context;
+import android.database.Cursor;
+import android.database.MatrixCursor;
 
 <#assign import_array = [curr.name] />
 <#assign alreadyImportArrayList=false />
@@ -148,6 +150,22 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 	<#if (curr.options.sync??)>
 	protected static final String JSON_MOBILE_ID = "mobile_id";
 	</#if>
+
+	public static final String[] REST_COLS = new String[]{
+			<#list curr.fields?values as field>
+				<#if (!field.internal)>
+					<#if (!field.relation??)>
+			${curr.name}SQLiteAdapter.COL_${field.name?upper_case}<#if field_has_next>,</#if>
+					<#else>
+						<#if (isRestEntity(field.relation.targetEntity))>
+							<#if (field.relation.type=="OneToOne" || field.relation.type=="ManyToOne")>
+			${curr.name}SQLiteAdapter.COL_${field.name?upper_case}<#if field_has_next>,</#if>
+							</#if>
+						</#if>
+					</#if>
+				</#if>
+			</#list>
+		};
 
 	public ${curr.name}WebServiceClientAdapterBase(Context context){
 		super(context);
@@ -214,6 +232,33 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 			} catch (JSONException e) {
 				Log.e(TAG, e.getMessage());
 				${curr.name?uncap_first} = null;
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Retrieve one ${curr.name}. Uses the route : ${curr.options.rest.uri?lower_case}/%id%
+	 * @param ${curr.name?uncap_first} : The ${curr.name} to retrieve (set the ID)
+	 * @return -1 if an error has occurred. 0 if not.
+	 */
+	public Cursor query(String id){
+		MatrixCursor result = new MatrixCursor(${curr.name}SQLiteAdapter.COLS);
+		String response = this.invokeRequest(
+					Verb.GET,
+					String.format(
+						"${curr.options.rest.uri?lower_case}/%s%s",
+						id, 
+						REST_FORMAT),
+					null);
+		if (this.isValidResponse(response) && this.isValidRequest()) {
+			try {
+				JSONObject json = new JSONObject(response);
+				this.extractCursor(json, result);
+			} catch (JSONException e) {
+				Log.e(TAG, e.getMessage());
+				result = null;
 			}
 		}
 
@@ -401,6 +446,41 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 				</#if>
 			</#list>
 			
+		} 
+		return result;
+	}
+
+	/**
+	 * Extract a Cursor from a JSONObject describing a User
+	 * @param json The JSONObject describing the User
+	 * @param cursor The returned Cursor
+	 * @return true if a User was found. false if not
+	 */
+	public boolean extractCursor(JSONObject json, MatrixCursor cursor){
+		boolean result = false;
+		int id = json.optInt("id", 0);
+
+		if (id != 0) {
+			String[] row = new String[${curr.name}SQLiteAdapter.COLS.length];
+			<#assign i = 0 />
+			<#list curr.fields?values as field>
+				<#if (!field.internal)>
+					<#if (!field.relation??)>
+			row[${i}] = json.optString(${alias(field.name)});	
+						<#assign i = i + 1 />
+					<#else>
+						<#if (isRestEntity(field.relation.targetEntity))>
+							<#if (field.relation.type=="OneToOne" || field.relation.type=="ManyToOne")>
+			row[${i}] = json.optString(${alias(field.name)});	
+								<#assign i = i + 1 />
+							</#if>
+						</#if>
+					</#if>
+				</#if>
+			</#list>
+			
+			cursor.addRow(row);
+			result = true;
 		} 
 		return result;
 	}
