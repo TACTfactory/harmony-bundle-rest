@@ -1,3 +1,4 @@
+<#include utilityPath + "all_imports.ftl" />
 <#assign curr = entities[current_entity] />
 <#function alias name>
 	<#return "JSON_"+name?upper_case />
@@ -100,6 +101,7 @@ import org.json.*;
 import java.util.List;
 
 import android.util.Log;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.MatrixCursor;
@@ -184,7 +186,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 	}
 	
 	/**
-	 * Retrieve all the ${curr.name}s in the given list. Uses the route : ${curr.options.rest.uri?lower_case}
+	 * Retrieve all the ${curr.name}s in the given list. Uses the route : ${curr.options.rest.uri}
 	 * @param ${curr.name?uncap_first}s : The list in which the ${curr.name}s will be returned
 	 * @return The number of ${curr.name}s returned
 	 */
@@ -210,7 +212,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 	}
 
 	/**
-	 * Retrieve one ${curr.name}. Uses the route : ${curr.options.rest.uri?lower_case}/%id%
+	 * Retrieve one ${curr.name}. Uses the route : ${curr.options.rest.uri}/%id%
 	 * @param ${curr.name?uncap_first} : The ${curr.name} to retrieve (set the ID)
 	 * @return -1 if an error has occurred. 0 if not.
 	 */
@@ -219,7 +221,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 		String response = this.invokeRequest(
 					Verb.GET,
 					String.format(
-						"${curr.options.rest.uri?lower_case}/%s%s",
+						this.getUri() + "/%s%s",
 						${curr.name?uncap_first}.getId(), 
 						REST_FORMAT),
 					null);
@@ -239,7 +241,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 	}
 
 	/**
-	 * Retrieve one ${curr.name}. Uses the route : ${curr.options.rest.uri?lower_case}/%id%
+	 * Retrieve one ${curr.name}. Uses the route : ${curr.options.rest.uri}/%id%
 	 * @param ${curr.name?uncap_first} : The ${curr.name} to retrieve (set the ID)
 	 * @return -1 if an error has occurred. 0 if not.
 	 */
@@ -248,7 +250,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 		String response = this.invokeRequest(
 					Verb.GET,
 					String.format(
-						"${curr.options.rest.uri?lower_case}/%s%s",
+						this.getUri() + "/%s%s",
 						id, 
 						REST_FORMAT),
 					null);
@@ -270,7 +272,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 	}
 
 	/**
-	 * Update a ${curr.name}. Uses the route : ${curr.options.rest.uri?lower_case}/%id%
+	 * Update a ${curr.name}. Uses the route : ${curr.options.rest.uri}/%id%
 	 * @param ${curr.name?uncap_first} : The ${curr.name} to update
 	 * @return -1 if an error has occurred. 0 if not.
 	 */
@@ -279,7 +281,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 		String response = this.invokeRequest(
 					Verb.PUT,
 					String.format(
-						"${curr.options.rest.uri?lower_case}/%s%s",
+						this.getUri() + "/%s%s",
 						${curr.name?uncap_first}.getId(),
 						REST_FORMAT),
 					itemToJson(${curr.name?uncap_first}));
@@ -291,7 +293,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 	}
 
 	/**
-	 * Delete a ${curr.name}. Uses the route : ${curr.options.rest.uri?lower_case}/%id%
+	 * Delete a ${curr.name}. Uses the route : ${curr.options.rest.uri}/%id%
 	 * @param ${curr.name?uncap_first} : The ${curr.name} to delete (only the id is necessary)
 	 * @return -1 if an error has occurred. 0 if not.
 	 */
@@ -300,7 +302,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 		String response = this.invokeRequest(
 					Verb.DELETE,
 					String.format(
-						"${curr.options.rest.uri?lower_case}/%s%s",
+						this.getUri() + "/%s%s",
 						${curr.name?uncap_first}.getId(), 
 						REST_FORMAT),
 					null);
@@ -327,7 +329,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 		String response = this.invokeRequest(
 					Verb.GET,
 					String.format(
-						"${curr.options.rest.uri?lower_case}/${relation.name?lower_case}/%s%s",
+						this.getUri() + "/${relation.name?lower_case}/%s%s",
 						${relation.relation.targetEntity?lower_case}.getId(), 
 						REST_FORMAT),
 					null);
@@ -358,7 +360,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 		String response = this.invokeRequest(
 					Verb.GET,
 					String.format(
-						"${curr.options.rest.uri?lower_case}/${relation.name?lower_case}/%s%s",
+						this.getUri() + "/${relation.name?lower_case}/%s%s",
 						${relation.relation.targetEntity?uncap_first}.getId(), 
 						REST_FORMAT),
 					null);
@@ -609,4 +611,34 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 		return params;
 	}
 
+
+	/**
+	 * Converts a content value reprensenting a ${curr.name} to a JSONObject.
+	 * @param The content values
+	 * @return The JSONObject
+	 */
+	public JSONObject contentValuesToJson(ContentValues values) {
+		JSONObject result = new JSONObject();
+		JSONObject params = new JSONObject();
+		try {
+			<#list curr.fields?values as field>
+				<#if (!field.internal)>
+					<#if (!field.relation?? || ((field.relation.type == "ManyToOne" || field.relation.type == "OneToOne") && entities[field.relation.targetEntity].options.rest??))>
+						<#if (curr.options.sync?? && field.name?lower_case=="id")>
+			params.put(JSON_ID, values.get(${curr.name}SQLiteAdapter.COL_SERVER_ID));
+						<#elseif (curr.options.sync?? && field.name=="serverId")>
+			params.put(JSON_MOBILE_ID, values.get(${curr.name}SQLiteAdapter.COL_ID));			
+						<#else>
+			params.put(${alias(field.name)}, values.get(${curr.name}SQLiteAdapter.${NamingUtils.alias(field.name)}));
+						</#if>
+					</#if>
+				</#if>
+			</#list>
+
+			result.put(JSON_${curr.name?upper_case}, params);
+		} catch (JSONException e) {
+			Log.e(TAG, e.getMessage());
+		}
+		return result;
+	}
 }

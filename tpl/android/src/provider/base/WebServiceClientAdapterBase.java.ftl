@@ -16,6 +16,7 @@ import ${data_namespace}.RestClient.Verb;
 import ${project_namespace}.R;
 import ${project_namespace}.${project_name?cap_first}Application;
 
+import android.content.ContentValues;
 import android.content.Context;
 
 import android.net.ConnectivityManager;
@@ -218,6 +219,13 @@ public abstract class WebServiceClientAdapterBase<T>{
 	 * @return The converted <T>
 	 */
 	public abstract JSONObject itemToJson(T item);
+
+	/**
+	 * Convert a <T> ContentValues representation to a JSONObject	
+	 * @param values The ContentValues to convert
+	 * @return The converted ContentValues
+	 */
+	public abstract JSONObject contentValuesToJson(ContentValues values);
 	
 	/**
 	 * Convert a <T> to a JSONObject	
@@ -317,8 +325,8 @@ public abstract class WebServiceClientAdapterBase<T>{
 	
 	
 	/**
-	 * Insert the User. Uses the route : user-uri
-	 * @param user : The User to insert
+	 * Insert the T.
+	 * @param item : The T to insert
 	 * @return -1 if an error has occurred. 0 if not.
 	 */
 	public int insert(T item){
@@ -329,7 +337,29 @@ public abstract class WebServiceClientAdapterBase<T>{
 						"%s%s",
 						this.getUri(),
 						REST_FORMAT),
-					itemToJson(item));
+					this.itemToJson(item));
+		if (this.isValidResponse(response) && this.isValidRequest()) {
+			result = 0;
+		}
+
+		return result;
+	}
+
+
+	/**
+	 * Insert the T (represented by a ContentValues)
+	 * @param values : The values to insert
+	 * @return -1 if an error has occurred. 0 if not.
+	 */
+	public int insert(ContentValues values){
+		int result = -1;
+		String response = this.invokeRequest(
+					Verb.POST,
+					String.format(
+						"%s%s",
+						this.getUri(),
+						REST_FORMAT),
+					this.contentValuesToJson(values));
 		if (this.isValidResponse(response) && this.isValidRequest()) {
 			result = 0;
 		}
