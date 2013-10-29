@@ -186,16 +186,6 @@
        		</condition>
    		</fail>
     </target>
-    
-<!-- 	<target name="run-tests" depends="compile-tests" description="Run tests"> -->
-<!-- 		<property name="test.classpath.id" value="project.classpath" /> -->
-
-<!-- 		<junit haltonfailure="no" fork="yes"> -->
-<!-- 			<classpath refid="${test.classpath.id}" /> -->
-<!-- 			<formatter type="xml" /> -->
-<!-- 			<test name="com.tactfactory.harmony.bundles.rest.test.AllTests" todir="${tmp.rel-dir}/" /> -->
-<!-- 		</junit> -->
-<!-- 	</target> -->
 
 	<target name="run-findbugs" depends="compile-tests" description="Run code analysis over code to check for problems.">
 
