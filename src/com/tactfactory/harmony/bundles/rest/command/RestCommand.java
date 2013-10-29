@@ -9,6 +9,8 @@
 package com.tactfactory.harmony.bundles.rest.command;
 
 import net.xeoh.plugins.base.annotations.PluginImplementation;
+import net.xeoh.plugins.base.annotations.meta.Author;
+import net.xeoh.plugins.base.annotations.meta.Version;
 
 import com.tactfactory.harmony.Console;
 import com.tactfactory.harmony.bundles.rest.parser.RestCompletor;
@@ -23,6 +25,8 @@ import com.tactfactory.harmony.utils.ConsoleUtils;
  * Command class for rest bundle.
  */
 @PluginImplementation
+@Author(name = "TACTfactory")
+@Version(version = 00600)
 public class RestCommand extends BaseCommand {
 	
 	//bundle name
