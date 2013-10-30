@@ -83,19 +83,9 @@ public class RestGenerator extends BaseGenerator {
 				"no_network_error", "No internet connection available", Group.COMMON);
 		
 		ConfigMetadata.addConfiguration(
-				"rest_url_prod", "127.0.0.1");
+				"rest_url_prod", "http://127.0.0.1:80/api/");
 		ConfigMetadata.addConfiguration(
-				"rest_url_dev", "127.0.0.1");
-
-		ConfigMetadata.addConfiguration(
-				"rest_port_prod", "80");
-		ConfigMetadata.addConfiguration(
-				"rest_port_dev", "80");
-
-		ConfigMetadata.addConfiguration(
-				"rest_uri_prefix_prod", "/");
-		ConfigMetadata.addConfiguration(
-				"rest_uri_prefix_dev", "/");
+				"rest_url_dev", "http://127.0.0.1:80/api_dev/");
 		
 		ConfigMetadata.addConfiguration("rest_check_ssl", "true");
 		ConfigMetadata.addConfiguration("rest_ssl", "ca.cert");
