@@ -40,7 +40,7 @@ public abstract class WebServiceClientAdapterBase<T>{
 
 	protected String host;
 	protected String prefix;
-	protected int port;
+	protected Integer port;
 	protected String scheme;
 	
 	protected String login = null;
@@ -74,6 +74,12 @@ public abstract class WebServiceClientAdapterBase<T>{
 		} else {
 			configUri = Uri.parse(this.context.getString(R.string.rest_url_prod));
 		}
+
+		if (scheme == null) {
+			this.scheme = configUri.getScheme();
+		} else {
+			this.scheme = scheme;
+		}
 		
 		if (host == null) {
 			this.host = configUri.getHost();
@@ -87,10 +93,14 @@ public abstract class WebServiceClientAdapterBase<T>{
 			this.port = port;
 		}
 
-		if (scheme == null) {
-			this.scheme = configUri.getScheme();
-		} else {
-			this.scheme = scheme;
+		// If port was not set in config string, 
+		// deduct it from scheme.
+		if (this.port == null) {
+			if (this.scheme.equalsIgnoreCase("https") {
+				this.port = 443;
+			} else {
+				this.port = 80;
+			}
 		}
 
 		if (prefix == null) {
