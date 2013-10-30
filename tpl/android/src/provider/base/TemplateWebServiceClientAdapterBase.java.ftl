@@ -625,7 +625,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 				<#if (!field.internal)>
 					<#if (!field.relation?? || ((field.relation.type == "ManyToOne" || field.relation.type == "OneToOne") && entities[field.relation.targetEntity].options.rest??))>
 						<#if (curr.options.sync?? && field.name?lower_case=="id")>
-			params.put(JSON_ID, values.get(${curr.name}SQLiteAdapter.COL_SERVER_ID));
+			params.put(JSON_ID, values.get(${curr.name}SQLiteAdapter.COL_SERVERID));
 						<#elseif (curr.options.sync?? && field.name=="serverId")>
 			params.put(JSON_MOBILE_ID, values.get(${curr.name}SQLiteAdapter.COL_ID));			
 						<#else>
