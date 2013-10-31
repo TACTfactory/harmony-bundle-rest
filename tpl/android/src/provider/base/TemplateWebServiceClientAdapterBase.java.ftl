@@ -91,6 +91,7 @@ import ${curr.namespace}.harmony.util.DateUtils;
 </#list>
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
+<#if curr.options.sync??>import org.joda.time.format.DateTimeFormat;</#if>
 
 import ${data_namespace}.*;
 import ${curr.namespace}.entity.${curr.name};
