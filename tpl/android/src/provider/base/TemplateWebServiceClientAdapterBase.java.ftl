@@ -639,4 +639,12 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 		}
 		return result;
 	}
+
+
+<#if (curr.options.sync??)>
+	@Override
+	public String getSyncUri() {
+		return "${curr.options.sync.syncUri}";
+	}
+</#if>
 }
