@@ -21,6 +21,7 @@ import android.content.Context;
 
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -39,14 +40,14 @@ public abstract class WebServiceClientAdapterBase<T>{
 
 	protected String host;
 	protected String prefix;
-	protected int port;
+	protected Integer port;
 	protected String scheme;
 	
 	protected String login = null;
 	protected String password = null;
 
 	public WebServiceClientAdapterBase(Context context){
-		this(context, null, null);
+		this(context, null);
 	}
 
 	public WebServiceClientAdapterBase(Context context, Integer port){
@@ -54,41 +55,61 @@ public abstract class WebServiceClientAdapterBase<T>{
 	}
 
 	public WebServiceClientAdapterBase(Context context, String host, Integer port){
-		this(context, host, port, RestClient.SCHEME_HTTP);
+		this(context, host, port, null);
+	}
+
+	public WebServiceClientAdapterBase(Context context, String host, Integer port, String scheme){
+		this(context, host, port, scheme, null);
 	}
 	
-	public WebServiceClientAdapterBase(Context context, String host, Integer port, String scheme){
+	public WebServiceClientAdapterBase(Context context, String host, Integer port, String scheme, String prefix){
 		this.headers.add(new BasicHeader("Content-Type","application/json"));
 		this.headers.add(new BasicHeader("Accept","application/json"));
 
 		this.context = context;
+
+		Uri configUri;
+		if (${project_name?cap_first}Application.DEBUG) {
+			configUri = Uri.parse(this.context.getString(R.string.rest_url_dev));
+		} else {
+			configUri = Uri.parse(this.context.getString(R.string.rest_url_prod));
+		}
+
+		if (scheme == null) {
+			this.scheme = configUri.getScheme();
+		} else {
+			this.scheme = scheme;
+		}
+		
 		if (host == null) {
-			if (${project_name?cap_first}Application.DEBUG){
-				this.host = this.context.getString(R.string.rest_url_dev);
-			} else {
-				this.host = this.context.getString(R.string.rest_url_prod);
-			}
+			this.host = configUri.getHost();
 		} else {
 			this.host = host;
 		}
 
 		if (port == null) {
-			if (${project_name?cap_first}Application.DEBUG){
-				this.port = Integer.parseInt(this.context.getString(R.string.rest_port_dev));
-			} else {
-				this.port = Integer.parseInt(this.context.getString(R.string.rest_port_prod));
-			}
+			this.port = configUri.getPort();	
 		} else {
 			this.port = port;
 		}
-		
-		if (${project_name?cap_first}Application.DEBUG){
-			this.prefix = this.context.getString(R.string.rest_uri_prefix_dev);
-		} else {
-			this.prefix = this.context.getString(R.string.rest_uri_prefix_prod);
+
+		// If port was not set in config string, 
+		// deduct it from scheme.
+		if (this.port == null || this.port < 0) {
+			if (this.scheme.equalsIgnoreCase("https")) {
+				this.port = 443;
+			} else {
+				this.port = 80;
+			}
 		}
 
-		this.scheme = scheme;
+		if (prefix == null) {
+			this.prefix = configUri.toString();
+		} else {
+			this.prefix = prefix;
+		}
+
+
 	}
 
 	protected synchronized String invokeRequest(Verb verb, String request, JSONObject params) {
