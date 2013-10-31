@@ -204,15 +204,6 @@ public abstract class WebServiceClientAdapterBase<T>{
 	}
 	
 	
-	public DateTime syncTime() {
-		String uri = String.format(
-				"sync%s",
-				REST_FORMAT);
-		String response = this.invokeRequest(Verb.GET, uri , null).replace("\"", "");
-		return ISODateTimeFormat.dateTimeNoMillis().parseDateTime(response);
-	}
-	
-	
 	/**
 	 * Convert a <T> to a JSONObject	
 	 * @param item The <T> to convert
