@@ -151,6 +151,9 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 	</#list>
 	<#if (curr.options.sync??)>
 	protected static final String JSON_MOBILE_ID = "mobile_id";
+
+	/** Date Format pattern. */
+	public static final String UPDATE_DATE_FORMAT = "${curr.options.sync.updateDateFormatJava}";
 	</#if>
 
 	public static final String[] REST_COLS = new String[]{
@@ -168,10 +171,6 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 				</#if>
 			</#list>
 		};
-
-	<#if (curr.options.sync??)>
-	public static final String UPDATE_DATE_FORMAT = "${curr.options.sync.updateDateFormat}";
-	</#if>
 
 	public ${curr.name}WebServiceClientAdapterBase(Context context){
 		super(context);
