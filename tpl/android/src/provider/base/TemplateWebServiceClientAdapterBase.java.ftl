@@ -169,6 +169,10 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 			</#list>
 		};
 
+	<#if (curr.options.sync??)>
+	public static final String UPDATE_DATE_FORMAT = "${curr.options.sync.updateDateFormat}";
+	</#if>
+
 	public ${curr.name}WebServiceClientAdapterBase(Context context){
 		super(context);
 	}
@@ -404,17 +408,17 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 						<#elseif (curr.options.sync?? && field.name=="serverId")>
 			int server_id = json.optInt(JSON_ID);
 			
-			if (server_id != 0)
+			if (server_id != 0) {
 				${curr.name?uncap_first}.setServerId(server_id);	
-
+			}			
 						<#else>
 							<#if (field.type?lower_case == "datetime")>
 			DateTime ${field.name?uncap_first} = ${curr.name?uncap_first}.get${field.name?cap_first}();
 			if (${field.name?uncap_first} == null) {
 				${field.name?uncap_first} = new DateTime();
 			}
-			DateTimeFormatter ${field.name?uncap_first}Formatter = ${getFormatter(field.type)};
-			${curr.name?uncap_first}.set${field.name?cap_first}(DateUtils.formatISOStringToDateTime(json.opt${typeToJsonType(field)}(${alias(field.name)}, ${field.name?uncap_first}.toString(${field.name?uncap_first}Formatter))));
+			DateTimeFormatter ${field.name?uncap_first}Formatter = <#if (curr.options.sync?? && field.name=="sync_uDate")>DateTimeFormat.forPattern(UPDATE_DATE_FORMAT)<#else>${getFormatter(field.type)}</#if>;
+			${curr.name?uncap_first}.set${field.name?cap_first}(${field.name?uncap_first}Formatter.parseDateTime(json.opt${typeToJsonType(field)}(${alias(field.name)}, ${field.name?uncap_first}.toString(${field.name?uncap_first}Formatter))));
 							<#elseif (field.type=="boolean")>
 			${curr.name?uncap_first}.set${field.name?cap_first}(json.opt${typeToJsonType(field)}(${alias(field.name)}, ${curr.name?uncap_first}.is${field.name?cap_first}()));		
 							<#else>
@@ -559,7 +563,9 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 						<#if (curr.options.sync?? && field.name?lower_case=="id")>
 			params.put(JSON_ID, ${curr.name?uncap_first}.getServerId());
 						<#elseif (curr.options.sync?? && field.name=="serverId")>
-			params.put(JSON_MOBILE_ID, ${curr.name?uncap_first}.getId());			
+			params.put(JSON_MOBILE_ID, ${curr.name?uncap_first}.getId());
+						<#elseif (curr.options.sync?? && field.name=="sync_uDate")>
+			params.put(${alias(field.name)}, ${curr.name?uncap_first}.get${field.name?cap_first}().toString(UPDATE_DATE_FORMAT));
 						<#elseif (field.type=="date" || field.type=="time" || field.type=="datetime")>
 			if (${curr.name?uncap_first}.get${field.name?cap_first}()!=null){
 				params.put(${alias(field.name)}, ${curr.name?uncap_first}.get${field.name?cap_first}().toString());
@@ -625,7 +631,9 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 						<#if (curr.options.sync?? && field.name?lower_case=="id")>
 			params.put(JSON_ID, values.get(${curr.name}SQLiteAdapter.COL_SERVERID));
 						<#elseif (curr.options.sync?? && field.name=="serverId")>
-			params.put(JSON_MOBILE_ID, values.get(${curr.name}SQLiteAdapter.COL_ID));			
+			params.put(JSON_MOBILE_ID, values.get(${curr.name}SQLiteAdapter.COL_ID));	
+						<#elseif (curr.options.sync?? && field.name=="sync_uDate")>		
+			params.put(${alias(field.name)}, new DateTime(values.get(${curr.name}SQLiteAdapter.${NamingUtils.alias(field.name)})).toString(UPDATE_DATE_FORMAT));
 						<#else>
 			params.put(${alias(field.name)}, values.get(${curr.name}SQLiteAdapter.${NamingUtils.alias(field.name)}));
 						</#if>
