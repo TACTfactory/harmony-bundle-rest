@@ -95,7 +95,7 @@ public abstract class WebServiceClientAdapterBase<T>{
 
 		// If port was not set in config string, 
 		// deduct it from scheme.
-		if (this.port == null || this.port < 0) {
+		if (this.port == null || this.port < 0) {
 			if (this.scheme.equalsIgnoreCase("https")) {
 				this.port = 443;
 			} else {
