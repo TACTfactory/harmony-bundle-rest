@@ -39,6 +39,8 @@ public class RestParser extends BaseParser {
 	private static final String ANNOT_REST_SECURITY = "security";
 	/** URI argument name. */
 	private static final String ANNOT_REST_URI = "uri";
+	/** DateFormat argument name. */
+	private static final String ANNOT_REST_DATE_FORMAT = "dateFormat";
 	@Override
 	public void visitClass(final ClassOrInterfaceDeclaration field, 
 			final ClassMetadata meta) {
@@ -92,15 +94,25 @@ public class RestParser extends BaseParser {
 							
 							rm.setSecurity(Rest.Security.fromName(security));
 						} else
-						
-						if (pair.getName().equals(ANNOT_REST_URI)) {
-							if (pair.getValue() instanceof StringLiteralExpr) {
-								rm.setUri(((StringLiteralExpr)
-										pair.getValue()).getValue());
-							} else {
-								rm.setUri(pair.getValue().toString());
+							
+							if (pair.getName().equals(ANNOT_REST_URI)) {
+								if (pair.getValue() instanceof StringLiteralExpr) {
+									rm.setUri(((StringLiteralExpr)
+											pair.getValue()).getValue());
+								} else {
+									rm.setUri(pair.getValue().toString());
+								}
+						} else
+							
+							if (pair.getName().equals(ANNOT_REST_DATE_FORMAT)) {
+								if (pair.getValue() instanceof StringLiteralExpr) {
+									rm.setDateFormat(((StringLiteralExpr)
+											pair.getValue()).getValue());
+								} else {
+									rm.setDateFormat(
+											pair.getValue().toString());
+								}
 							}
-						}
 					}
 				}
 			}
