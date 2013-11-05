@@ -394,9 +394,11 @@ public abstract class WebServiceClientAdapterBase<T>{
 		boolean result = false;
 		ConnectivityManager cm = (ConnectivityManager) 
 				this.context.getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo netInfo = cm.getActiveNetworkInfo();
-		if (netInfo != null && netInfo.isConnectedOrConnecting()) {
-		    result = true;
+		if (cm != null) {
+			NetworkInfo netInfo = cm.getActiveNetworkInfo();
+			if (netInfo != null && netInfo.isConnectedOrConnecting()) {
+				result = true;
+			}
 		}
 		return result;
 	}
