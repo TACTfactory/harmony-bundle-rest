@@ -59,11 +59,11 @@
 <#function getFormatter datetype>
 	<#assign ret="ISODateTimeFormat." />
 	<#if (datetype?lower_case=="datetime")>
-		<#assign ret=ret+"dateTimeNoMillis()" />
+		<#assign ret=ret+"dateTime()" />
 	<#elseif (datetype?lower_case=="time")>
-		<#assign ret=ret+"dateTimeNoMillis()" />
+		<#assign ret=ret+"dateTime()" />
 	<#elseif (datetype?lower_case=="date")>
-		<#assign ret=ret+"dateTimeNoMillis()" />
+		<#assign ret=ret+"dateTime()" />
 	</#if>
 	<#return ret />
 </#function>
@@ -439,11 +439,19 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 					Log.e(TAG, e.getMessage());
 				}
 							<#else>
+								<#if (curr.options.sync??)>
+				${field.relation.targetEntity}SQLiteAdapter ${field.name}Adapter = new ${field.relation.targetEntity}SQLiteAdapter(this.context);
+				${field.name}Adapter.open();
+				${curr.name?uncap_first}.set${field.name?cap_first}(${field.name}Adapter.getByServerID(
+						json.optJSONObject(JSON_${field.name?upper_case}).optInt(JSON_SERVERID)));
+				${field.name}Adapter.close();
+								<#else>
 				${field.relation.targetEntity}WebServiceClientAdapter ${field.name}Adapter = new ${field.relation.targetEntity}WebServiceClientAdapter(this.context);
 				${field.relation.targetEntity} ${field.name?uncap_first} = new ${field.relation.targetEntity}();
 				if (${field.name}Adapter.extract(json.opt${typeToJsonType(field)}(${alias(field.name)}), ${field.name?uncap_first})) {
 					${curr.name?uncap_first}.set${field.name?cap_first}(${field.name?uncap_first});
 				}
+								</#if>
 							</#if>
 			}
 						</#if>
@@ -608,7 +616,11 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 	public JSONObject itemIdToJson(${curr.name?cap_first} item){
 		JSONObject params = new JSONObject();
 		try {
+			<#if curr.options.sync??>
+			params.put(${alias(curr.ids[0].name)}, item.getServerId());
+			<#else>
 			params.put(${alias(curr.ids[0].name)}, item.getId());
+			</#if>
 		} catch (JSONException e) {
 			Log.e(TAG, e.getMessage());
 		}
