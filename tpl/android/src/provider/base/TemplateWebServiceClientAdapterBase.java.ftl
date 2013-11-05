@@ -91,7 +91,7 @@ import ${curr.namespace}.harmony.util.DateUtils;
 </#list>
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
-<#if curr.options.sync??>import org.joda.time.format.DateTimeFormat;</#if>
+import org.joda.time.format.DateTimeFormat;
 
 import ${data_namespace}.*;
 import ${curr.namespace}.entity.${curr.name};
@@ -158,7 +158,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 	</#if>
 
 	/** Rest Date Format pattern. */
-	public static final String REST_UPDATE_DATE_FORMAT = "${curr.options.rest.updateDateFormat}";
+	public static final String REST_UPDATE_DATE_FORMAT = "${curr.options.rest.dateFormat}";
 
 	public static final String[] REST_COLS = new String[]{
 			<#list curr.fields?values as field>
