@@ -99,7 +99,7 @@ public class RestMetadata extends BaseMetadata {
 	}
 	
 	/**
-	 * @param The rest date format
+	 * @param dateFormat The rest date format
 	 */
 	public final void setDateFormat(final String dateFormat) {
 		this.dateFormat = dateFormat;
