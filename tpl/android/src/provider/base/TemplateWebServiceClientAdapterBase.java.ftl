@@ -91,7 +91,7 @@ import ${curr.namespace}.harmony.util.DateUtils;
 </#list>
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
-<#if curr.options.sync??>import org.joda.time.format.DateTimeFormat;</#if>
+import org.joda.time.format.DateTimeFormat;
 
 import ${data_namespace}.*;
 import ${curr.namespace}.entity.${curr.name};
@@ -153,9 +153,12 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 	<#if (curr.options.sync??)>
 	protected static final String JSON_MOBILE_ID = "mobile_id";
 
-	/** Date Format pattern. */
-	public static final String UPDATE_DATE_FORMAT = "${curr.options.sync.updateDateFormatJava}";
+	/** Sync Date Format pattern. */
+	public static final String SYNC_UPDATE_DATE_FORMAT = "${curr.options.sync.updateDateFormatJava}";
 	</#if>
+
+	/** Rest Date Format pattern. */
+	public static final String REST_UPDATE_DATE_FORMAT = "${curr.options.rest.dateFormat}";
 
 	public static final String[] REST_COLS = new String[]{
 			<#list curr.fields?values as field>
@@ -417,7 +420,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 			if (${field.name?uncap_first} == null) {
 				${field.name?uncap_first} = new DateTime();
 			}
-			DateTimeFormatter ${field.name?uncap_first}Formatter = <#if (curr.options.sync?? && field.name=="sync_uDate")>DateTimeFormat.forPattern(UPDATE_DATE_FORMAT)<#else>${getFormatter(field.type)}</#if>;
+			DateTimeFormatter ${field.name?uncap_first}Formatter = <#if (curr.options.sync?? && field.name=="sync_uDate")>DateTimeFormat.forPattern(SYNC_UPDATE_DATE_FORMAT)<#else>DateTimeFormat.forPattern(REST_UPDATE_DATE_FORMAT)</#if>;
 			${curr.name?uncap_first}.set${field.name?cap_first}(${field.name?uncap_first}Formatter.parseDateTime(json.opt${typeToJsonType(field)}(${alias(field.name)}, ${field.name?uncap_first}.toString(${field.name?uncap_first}Formatter))));
 							<#elseif (field.type=="boolean")>
 			${curr.name?uncap_first}.set${field.name?cap_first}(json.opt${typeToJsonType(field)}(${alias(field.name)}, ${curr.name?uncap_first}.is${field.name?cap_first}()));		
@@ -573,10 +576,10 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 						<#elseif (curr.options.sync?? && field.name=="serverId")>
 			params.put(JSON_MOBILE_ID, ${curr.name?uncap_first}.getId());
 						<#elseif (curr.options.sync?? && field.name=="sync_uDate")>
-			params.put(${alias(field.name)}, ${curr.name?uncap_first}.get${field.name?cap_first}().toString(UPDATE_DATE_FORMAT));
+			params.put(${alias(field.name)}, ${curr.name?uncap_first}.get${field.name?cap_first}().toString(SYNC_UPDATE_DATE_FORMAT));
 						<#elseif (field.type=="date" || field.type=="time" || field.type=="datetime")>
 			if (${curr.name?uncap_first}.get${field.name?cap_first}()!=null){
-				params.put(${alias(field.name)}, ${curr.name?uncap_first}.get${field.name?cap_first}().toString());
+				params.put(${alias(field.name)}, ${curr.name?uncap_first}.get${field.name?cap_first}().toString(REST_UPDATE_DATE_FORMAT));
 			}
 						<#elseif (field.type=="boolean")>
 			params.put(${alias(field.name)}, ${curr.name?uncap_first}.is${field.name?cap_first}());
@@ -645,9 +648,13 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 						<#elseif (curr.options.sync?? && field.name=="serverId")>
 			params.put(JSON_MOBILE_ID, values.get(${curr.name}SQLiteAdapter.COL_ID));	
 						<#elseif (curr.options.sync?? && field.name=="sync_uDate")>		
-			params.put(${alias(field.name)}, new DateTime(values.get(${curr.name}SQLiteAdapter.${NamingUtils.alias(field.name)})).toString(UPDATE_DATE_FORMAT));
+			params.put(${alias(field.name)}, new DateTime(values.get(${curr.name}SQLiteAdapter.${NamingUtils.alias(field.name)})).toString(SYNC_UPDATE_DATE_FORMAT));
 						<#else>
+							<#if field.type?lower_case == "datetime">
+			params.put(${alias(field.name)}, new DateTime(values.get(${curr.name}SQLiteAdapter.${NamingUtils.alias(field.name)})).toString(REST_UPDATE_DATE_FORMAT));
+							<#else>
 			params.put(${alias(field.name)}, values.get(${curr.name}SQLiteAdapter.${NamingUtils.alias(field.name)}));
+							</#if>
 						</#if>
 					</#if>
 				</#if>

@@ -113,4 +113,9 @@ public @interface Rest {
 	 * The security level.
 	 */
 	Security security() default Security.NONE;
+	
+	/**
+	 * Format for dates in rest communication.
+	 */
+	String dateFormat() default "";
 }

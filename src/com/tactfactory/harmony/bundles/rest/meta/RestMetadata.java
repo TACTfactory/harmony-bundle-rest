@@ -26,6 +26,8 @@ public class RestMetadata extends BaseMetadata {
 	private Security security = Security.NONE;
 	/** URI. */
 	private String uri;
+	/** DateFormat. */
+	private String dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ";
 	
 	/**
 	 * Constructor.
@@ -43,6 +45,7 @@ public class RestMetadata extends BaseMetadata {
 		ret.put("isEnabled", this.isEnabled);
 		ret.put("uri", this.uri);
 		ret.put("security", this.security.getValue());
+		ret.put("dateFormat", this.dateFormat);
 		
 		return ret;
 	}
@@ -93,5 +96,19 @@ public class RestMetadata extends BaseMetadata {
 	 */
 	public final void setUri(final String uri) {
 		this.uri = uri;
+	}
+	
+	/**
+	 * @param dateFormat The rest date format
+	 */
+	public final void setDateFormat(final String dateFormat) {
+		this.dateFormat = dateFormat;
+	}
+	
+	/**
+	 * @return The rest date format
+	 */
+	public final String getDateFormat() {
+		return this.dateFormat;
 	}
 }
