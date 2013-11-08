@@ -30,4 +30,4 @@
 /findbugs.xml
 /findbugs-default.html
 /*.jar
-/lib/rest-bundle-annotations.jar
+/lib/bundle-rest-annotations.jar
