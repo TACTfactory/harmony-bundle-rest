@@ -422,12 +422,11 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 	 * @return true if a ${curr.name} was found. false if not
 	 */
 	public boolean extract(JSONObject json, ${curr.name} ${curr.name?uncap_first}){		
-		boolean result = false;		
+		boolean result = this.isValidJSON(json);		
 		<#if (joinedInheritance || (singleTabInheritance && curr.inheritance.superclass??))>
 		this.motherAdapter.extract(json, ${curr.name?uncap_first});
 		</#if>
-		if (this.isValidJSON(json)) {
-			result = true;
+		if (result) {
 			<#list curr.fields?values as field>
 				<#if (!field.internal)>
 					<#if (!field.relation??)>
