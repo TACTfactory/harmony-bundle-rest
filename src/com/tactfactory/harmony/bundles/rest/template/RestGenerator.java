@@ -100,7 +100,7 @@ public class RestGenerator extends BaseGenerator {
 		this.makeSource(
 				"RestClient.java", 
 				"RestClient.java",
-				true);
+				false);
 		
 		for (final EntityMetadata entityMeta
 				: this.getAppMetas().getEntities().values()) {
