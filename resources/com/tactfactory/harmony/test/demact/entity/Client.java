@@ -4,6 +4,7 @@ package com.tactfactory.harmony.test.demact.entity;
 import java.io.Serializable;
 import com.tactfactory.harmony.annotation.Column;
 import com.tactfactory.harmony.annotation.Entity;
+import com.tactfactory.harmony.bundles.rest.annotation.Rest;
 
 @Entity
 @Rest
