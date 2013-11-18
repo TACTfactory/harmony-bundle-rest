@@ -176,20 +176,28 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 			</#list>
 		};
 
+
+	<#if (joinedInheritance || (singleTabInheritance && curr.inheritance.superclass??))>
+	protected ${curr.inheritance.superclass.name}WebServiceClientAdapter motherAdapter;
+	</#if>
+
 	public ${curr.name}WebServiceClientAdapterBase(Context context){
-		super(context);
+		this(context, null);
 	}
 
-	public ${curr.name}WebServiceClientAdapterBase(Context context, int port){
-		super(context, port);
+	public ${curr.name}WebServiceClientAdapterBase(Context context, Integer port){
+		this(context, null, port);
 	}
 
-	public ${curr.name}WebServiceClientAdapterBase(Context context, String host, int port){
-		super(context, host, port);
+	public ${curr.name}WebServiceClientAdapterBase(Context context, String host, Integer port){
+		this(context, host, port, null);
 	}
 	
-	public ${curr.name}WebServiceClientAdapterBase(Context context, String host, int port, String scheme){
+	public ${curr.name}WebServiceClientAdapterBase(Context context, String host, Integer port, String scheme){
 		super(context, host, port, scheme);
+		<#if (joinedInheritance || (singleTabInheritance && curr.inheritance.superclass??))>
+		this.motherAdapter = new ${curr.inheritance.superclass.name}WebServiceClientAdapter(context, host, port, scheme);
+		</#if>
 	}
 	
 	/**
@@ -400,7 +408,10 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 	public boolean extract(JSONObject json, ${curr.name} ${curr.name?uncap_first}){		
 		boolean result = false;
 		int id = json.optInt("id", 0);
-
+		
+		<#if (joinedInheritance || (singleTabInheritance && curr.inheritance.superclass??))>
+		this.motherAdapter.extract(json, ${curr.name?uncap_first});
+		</#if>
 		if (id != 0) {
 			result = true;
 			<#list curr.fields?values as field>
@@ -477,6 +488,9 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 		boolean result = false;
 		int id = json.optInt("id", 0);
 
+		<#if (joinedInheritance || (singleTabInheritance && curr.inheritance.superclass??))>
+		this.motherAdapter.extractCursor(json, cursor);
+		</#if>
 		if (id != 0) {
 			String[] row = new String[${curr.name}SQLiteAdapter.COLS.length];
 			<#assign i = 0 />
@@ -566,7 +580,11 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 	 * @return The converted ${curr.name}
 	 */
 	public JSONObject itemToJson(${curr.name} ${curr.name?uncap_first}){
+		<#if (joinedInheritance || (singleTabInheritance && curr.inheritance.superclass??))>
+		JSONObject params = this.motherAdapter.itemToJson(${curr.name?uncap_first});
+		<#else>
 		JSONObject params = new JSONObject();
+		</#if>
 		try {
 			<#list curr.fields?values as field>
 				<#if (!field.internal)>
@@ -620,9 +638,9 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 		JSONObject params = new JSONObject();
 		try {
 			<#if curr.options.sync??>
-			params.put(${alias(curr.ids[0].name)}, item.getServerId());
+			params.put(${curr.ids[0].owner}WebServiceClientAdapter.${alias(curr.ids[0].name)}, item.getServerId());
 			<#else>
-			params.put(${alias(curr.ids[0].name)}, item.getId());
+			params.put(${curr.ids[0].owner}WebServiceClientAdapter.${alias(curr.ids[0].name)}, item.getId());
 			</#if>
 		} catch (JSONException e) {
 			Log.e(TAG, e.getMessage());
@@ -637,8 +655,11 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 	 * @return The JSONObject
 	 */
 	public JSONObject contentValuesToJson(ContentValues values) {
-		JSONObject result = new JSONObject();
+		<#if (joinedInheritance || (singleTabInheritance && curr.inheritance.superclass??))>
+		JSONObject params = this.motherAdapter.contentValuesToJson(values);
+		<#else>
 		JSONObject params = new JSONObject();
+		</#if>
 		try {
 			<#list curr.fields?values as field>
 				<#if (!field.internal)>
@@ -660,11 +681,10 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 				</#if>
 			</#list>
 
-			result.put(JSON_${curr.name?upper_case}, params);
 		} catch (JSONException e) {
 			Log.e(TAG, e.getMessage());
 		}
-		return result;
+		return params;
 	}
 
 
