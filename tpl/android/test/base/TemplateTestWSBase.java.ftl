@@ -20,11 +20,11 @@ import junit.framework.Assert;
  * 
  * @see android.app.Fragment
  */
-public class ${curr.name}TestWSBase extends AndroidTestCase {
-	private Context ctx;
-	private ${curr.name} model;
-	private ${curr.name}WebServiceClientAdapter web;
-	private MockWebServer server;
+public abstract class ${curr.name}TestWSBase extends AndroidTestCase {
+	protected Context ctx;
+	protected ${curr.name} model;
+	protected ${curr.name}WebServiceClientAdapter web;
+	protected MockWebServer server;
 
 	/* (non-Javadoc)
 	 * @see junit.framework.TestCase#setUp()
