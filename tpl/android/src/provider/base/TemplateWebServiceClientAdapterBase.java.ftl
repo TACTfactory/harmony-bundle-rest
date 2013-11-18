@@ -400,19 +400,33 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 	</#list>
 
 	/**
+	 * Tests if the json is a valid ${curr.name} Object.
+	 *
+	 * @param json The json
+	 *
+	 * @return True if valid
+	 */
+	public boolean isValidJSON(JSONObject json) {
+		boolean result = false;
+		int id = json.optInt(${curr.ids[0].owner}WebServiceClientAdapter.${alias(curr.ids[0].name)}, 0);
+
+		result = (id != 0);
+
+		return result;
+	}
+
+	/**
 	 * Extract a ${curr.name} from a JSONObject describing a ${curr.name}
 	 * @param json The JSONObject describing the ${curr.name}
 	 * @param ${curr.name?uncap_first} The returned ${curr.name}
 	 * @return true if a ${curr.name} was found. false if not
 	 */
 	public boolean extract(JSONObject json, ${curr.name} ${curr.name?uncap_first}){		
-		boolean result = false;
-		int id = json.optInt("id", 0);
-		
+		boolean result = false;		
 		<#if (joinedInheritance || (singleTabInheritance && curr.inheritance.superclass??))>
 		this.motherAdapter.extract(json, ${curr.name?uncap_first});
 		</#if>
-		if (id != 0) {
+		if (this.isValidJSON(json)) {
 			result = true;
 			<#list curr.fields?values as field>
 				<#if (!field.internal)>
