@@ -396,7 +396,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 		if (this.isValidResponse(response) && this.isValidRequest()) {
 			try {
 				JSONObject json = new JSONObject(response);
-				${curr.name}WebServiceClientAdapter.extract(json, ${curr.name?uncap_first});
+				this.extract(json, ${curr.name?uncap_first});
 				result = 0;
 
 			} catch (JSONException e) {
