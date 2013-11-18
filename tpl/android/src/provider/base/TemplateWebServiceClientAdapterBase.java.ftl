@@ -159,12 +159,12 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 	<#list curr.fields?values as field>
 		<#if (!field.internal)>
 			<#if (!field.relation?? || isRestEntity(field.relation.targetEntity))>
-	protected static final String ${alias(field.name)} = "${field.name?uncap_first}";
+	protected static String ${alias(field.name)} = "${field.name?uncap_first}";
 			</#if>
 		</#if>
 	</#list>
 	<#if (curr.options.sync??)>
-	protected static final String JSON_MOBILE_ID = "mobile_id";
+	protected static String JSON_MOBILE_ID = "mobile_id";
 
 	/** Sync Date Format pattern. */
 	public static final String SYNC_UPDATE_DATE_FORMAT = "${curr.options.sync.updateDateFormatJava}";
@@ -173,7 +173,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 	/** Rest Date Format pattern. */
 	public static final String REST_UPDATE_DATE_FORMAT = "${curr.options.rest.dateFormat}";
 
-	public static final String[] REST_COLS = new String[]{
+	public static String[] REST_COLS = new String[]{
 			<#list curr.fields?values as field>
 				<#if (!field.internal)>
 					<#if (!field.relation??)>
@@ -433,7 +433,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 						<#if (curr.options.sync?? && field.name?lower_case=="id")>
 			${curr.name?uncap_first}.setId(json.optInt(JSON_MOBILE_ID, 0));			
 						<#elseif (curr.options.sync?? && field.name=="serverId")>
-			int server_id = json.optInt(JSON_ID);
+			int server_id = json.optInt(${curr.name}WebServiceClientAdapter.JSON_ID);
 			
 			if (server_id != 0) {
 				${curr.name?uncap_first}.setServerId(server_id);	
@@ -445,32 +445,32 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 				${field.name?uncap_first} = new DateTime();
 			}
 			DateTimeFormatter ${field.name?uncap_first}Formatter = <#if (curr.options.sync?? && field.name=="sync_uDate")>DateTimeFormat.forPattern(SYNC_UPDATE_DATE_FORMAT)<#else>DateTimeFormat.forPattern(REST_UPDATE_DATE_FORMAT)</#if>;
-			${curr.name?uncap_first}.set${field.name?cap_first}(${field.name?uncap_first}Formatter.parseDateTime(json.opt${typeToJsonType(field)}(${alias(field.name)}, ${field.name?uncap_first}.toString(${field.name?uncap_first}Formatter))));
+			${curr.name?uncap_first}.set${field.name?cap_first}(${field.name?uncap_first}Formatter.parseDateTime(json.opt${typeToJsonType(field)}(${field.owner}WebServiceClientAdapter.${alias(field.name)}, ${field.name?uncap_first}.toString(${field.name?uncap_first}Formatter))));
 							<#elseif (field.type=="boolean")>
-			${curr.name?uncap_first}.set${field.name?cap_first}(json.opt${typeToJsonType(field)}(${alias(field.name)}, ${curr.name?uncap_first}.is${field.name?cap_first}()));		
+			${curr.name?uncap_first}.set${field.name?cap_first}(json.opt${typeToJsonType(field)}(${field.owner}WebServiceClientAdapter.${alias(field.name)}, ${curr.name?uncap_first}.is${field.name?cap_first}()));	
 							<#elseif (field.harmony_type == "enum")>
 								<#if enums[field.type].id??>
 			${curr.name?uncap_first}.set${field.name?cap_first}(${field.type}.fromValue(json.opt${typeToJsonType(field)}(
-								${alias(field.name)},
+								${field.owner}WebServiceClientAdapter.${alias(field.name)},
 								${curr.name?uncap_first}.get${field.name?cap_first}().getValue())));	
 								<#else>
 			${curr.name?uncap_first}.set${field.name?cap_first}(${field.type}.valueOf(json.opt${typeToJsonType(field)}(
-								${alias(field.name)},
+								${field.owner}WebServiceClientAdapter.${alias(field.name)},
 								${curr.name?uncap_first}.get${field.name?cap_first}().getValue())));	
 								</#if>
 							<#else>
-			${curr.name?uncap_first}.set${field.name?cap_first}(json.opt${typeToJsonType(field)}(${alias(field.name)}, ${curr.name?uncap_first}.get${field.name?cap_first}()));	
+			${curr.name?uncap_first}.set${field.name?cap_first}(json.opt${typeToJsonType(field)}(${field.owner}WebServiceClientAdapter.${alias(field.name)}, ${curr.name?uncap_first}.get${field.name?cap_first}()));	
 							</#if>
 						</#if>
 					<#else>
 						<#if (isRestEntity(field.relation.targetEntity))>
-			if (json.has(${alias(field.name)})){
+			if (json.has(${field.owner}WebServiceClientAdapter.${alias(field.name)})){
 							<#if (field.relation.type=="OneToMany" || field.relation.type=="ManyToMany")>
 				ArrayList<${field.relation.targetEntity}> ${field.name?uncap_first} = new ArrayList<${field.relation.targetEntity}>();
 				${field.relation.targetEntity}WebServiceClientAdapter ${field.name}Adapter = new ${field.relation.targetEntity}WebServiceClientAdapter(this.context);
 				try {
-					//.opt${typeToJsonType(field)}(${alias(field.name)})
-					${field.name}Adapter.extractItems(json, ${alias(field.name)}, ${field.name?uncap_first});
+					//.opt${typeToJsonType(field)}(${field.owner}WebServiceClientAdapter.${alias(field.name)})
+					${field.name}Adapter.extractItems(json, ${field.owner}WebServiceClientAdapter.${alias(field.name)}, ${field.name?uncap_first});
 					${curr.name?uncap_first}.set${field.name?cap_first}(${field.name?uncap_first});
 				} catch (JSONException e){
 					Log.e(TAG, e.getMessage());
@@ -485,7 +485,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 								<#else>
 				${field.relation.targetEntity}WebServiceClientAdapter ${field.name}Adapter = new ${field.relation.targetEntity}WebServiceClientAdapter(this.context);
 				${field.relation.targetEntity} ${field.name?uncap_first} = new ${field.relation.targetEntity}();
-				if (${field.name}Adapter.extract(json.opt${typeToJsonType(field)}(${alias(field.name)}), ${field.name?uncap_first})) {
+				if (${field.name}Adapter.extract(json.opt${typeToJsonType(field)}(${field.owner}WebServiceClientAdapter.${alias(field.name)}), ${field.name?uncap_first})) {
 					${curr.name?uncap_first}.set${field.name?cap_first}(${field.name?uncap_first});
 				}
 								</#if>
@@ -520,12 +520,12 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 			<#list curr.fields?values as field>
 				<#if (!field.internal)>
 					<#if (!field.relation??)>
-			row[${i}] = json.optString(${alias(field.name)});	
+			row[${i}] = json.optString(${field.owner}WebServiceClientAdapter.${alias(field.name)});	
 						<#assign i = i + 1 />
 					<#else>
 						<#if (isRestEntity(field.relation.targetEntity))>
 							<#if (field.relation.type=="OneToOne" || field.relation.type=="ManyToOne")>
-			row[${i}] = json.optString(${alias(field.name)});	
+			row[${i}] = json.optString(${field.owner}WebServiceClientAdapter.${alias(field.name)});	
 								<#assign i = i + 1 />
 							</#if>
 						</#if>
@@ -613,25 +613,25 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 				<#if (!field.internal)>
 					<#if (!field.relation??)>
 						<#if (curr.options.sync?? && field.name?lower_case=="id")>
-			params.put(JSON_ID, ${curr.name?uncap_first}.getServerId());
+			params.put(${curr.name}WebServiceClientAdapter.JSON_ID, ${curr.name?uncap_first}.getServerId());
 						<#elseif (curr.options.sync?? && field.name=="serverId")>
-			params.put(JSON_MOBILE_ID, ${curr.name?uncap_first}.getId());
+			params.put(${curr.name}WebServiceClientAdapter.JSON_MOBILE_ID, ${curr.name?uncap_first}.getId());
 						<#elseif (curr.options.sync?? && field.name=="sync_uDate")>
-			params.put(${alias(field.name)}, ${curr.name?uncap_first}.get${field.name?cap_first}().toString(SYNC_UPDATE_DATE_FORMAT));
+			params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)}, ${curr.name?uncap_first}.get${field.name?cap_first}().toString(SYNC_UPDATE_DATE_FORMAT));
 						<#elseif (field.type=="date" || field.type=="time" || field.type=="datetime")>
 			if (${curr.name?uncap_first}.get${field.name?cap_first}()!=null){
-				params.put(${alias(field.name)}, ${curr.name?uncap_first}.get${field.name?cap_first}().toString(REST_UPDATE_DATE_FORMAT));
+				params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)}, ${curr.name?uncap_first}.get${field.name?cap_first}().toString(REST_UPDATE_DATE_FORMAT));
 			}
 						<#elseif (field.type=="boolean")>
-			params.put(${alias(field.name)}, ${curr.name?uncap_first}.is${field.name?cap_first}());
+			params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)}, ${curr.name?uncap_first}.is${field.name?cap_first}());
 						<#elseif (field.harmony_type=="enum")>
 							<#if enums[field.type].id??>
-			params.put(${alias(field.name)}, ${curr.name?uncap_first}.get${field.name?cap_first}().getValue());
+			params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)}, ${curr.name?uncap_first}.get${field.name?cap_first}().getValue());
 							<#else>
-			params.put(${alias(field.name)}, ${curr.name?uncap_first}.get${field.name?cap_first}().name());
+			params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)}, ${curr.name?uncap_first}.get${field.name?cap_first}().name());
 							</#if>
 						<#else>
-			params.put(${alias(field.name)}, ${curr.name?uncap_first}.get${field.name?cap_first}());
+			params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)}, ${curr.name?uncap_first}.get${field.name?cap_first}());
 						</#if>
 					<#else>
 						<#if (isRestEntity(field.relation.targetEntity))>
@@ -643,7 +643,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 			if (${curr.name?uncap_first}.get${field.name?cap_first}() != null) {
 				${field.relation.targetEntity?cap_first}WebServiceClientAdapter ${field.name}Adapter =
 					new ${field.relation.targetEntity?cap_first}WebServiceClientAdapter(this.context);
-				params.put(${alias(field.name)}, ${field.name}Adapter
+				params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)}, ${field.name}Adapter
 					.${converter}(${curr.name?uncap_first}.get${field.name?cap_first}()));
 			}
 						</#if>
@@ -694,16 +694,16 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 				<#if (!field.internal)>
 					<#if (!field.relation?? || ((field.relation.type == "ManyToOne" || field.relation.type == "OneToOne") && entities[field.relation.targetEntity].options.rest??))>
 						<#if (curr.options.sync?? && field.name?lower_case=="id")>
-			params.put(JSON_ID, values.get(${curr.name}SQLiteAdapter.COL_SERVERID));
+			params.put(${curr.name}WebServiceClientAdapter.JSON_ID, values.get(${curr.name}SQLiteAdapter.COL_SERVERID));
 						<#elseif (curr.options.sync?? && field.name=="serverId")>
-			params.put(JSON_MOBILE_ID, values.get(${curr.name}SQLiteAdapter.COL_ID));	
+			params.put(${curr.name}WebServiceClientAdapter.JSON_MOBILE_ID, values.get(${curr.name}SQLiteAdapter.COL_ID));	
 						<#elseif (curr.options.sync?? && field.name=="sync_uDate")>		
-			params.put(${alias(field.name)}, new DateTime(values.get(${curr.name}SQLiteAdapter.${NamingUtils.alias(field.name)})).toString(SYNC_UPDATE_DATE_FORMAT));
+			params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)}, new DateTime(values.get(${curr.name}SQLiteAdapter.${NamingUtils.alias(field.name)})).toString(SYNC_UPDATE_DATE_FORMAT));
 						<#else>
 							<#if field.type?lower_case == "datetime">
-			params.put(${alias(field.name)}, new DateTime(values.get(${curr.name}SQLiteAdapter.${NamingUtils.alias(field.name)})).toString(REST_UPDATE_DATE_FORMAT));
+			params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)}, new DateTime(values.get(${curr.name}SQLiteAdapter.${NamingUtils.alias(field.name)})).toString(REST_UPDATE_DATE_FORMAT));
 							<#else>
-			params.put(${alias(field.name)}, values.get(${curr.name}SQLiteAdapter.${NamingUtils.alias(field.name)}));
+			params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)}, values.get(${curr.name}SQLiteAdapter.${NamingUtils.alias(field.name)}));
 							</#if>
 						</#if>
 					</#if>
