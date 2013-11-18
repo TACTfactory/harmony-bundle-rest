@@ -15,6 +15,18 @@
 			<#return "Long" />
 		<#elseif (field.type=="boolean")>
 			<#return "Boolean" />
+		<#elseif (field.harmony_type=="enum")>
+			<#assign enumType = enums[field.type] />
+			<#if enumType.id??>
+				<#assign idEnum = enumType.fields[enumType.id] />
+				<#if (idEnum.type?lower_case == "int" || idEnum.type?lower_case == "integer") >
+					<#return "Int" />
+				<#else>
+					<#return "String" />
+				</#if>
+			<#else>
+				<#return "String" />
+			</#if>
 		<#else>
 			<#return "String" />
 		</#if>
@@ -121,6 +133,7 @@ import ${curr.namespace}.entity.${relation.relation.targetEntity};
 		</#if>
 	</#if>
 </#list>
+${ImportUtils.importRelatedEnums(curr)}
 <#if (curr.options.sync??)>
 import ${curr.namespace}.entity.base.EntityBase;
 	<#if !alreadyImportArrayList>
@@ -424,6 +437,16 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 			${curr.name?uncap_first}.set${field.name?cap_first}(${field.name?uncap_first}Formatter.parseDateTime(json.opt${typeToJsonType(field)}(${alias(field.name)}, ${field.name?uncap_first}.toString(${field.name?uncap_first}Formatter))));
 							<#elseif (field.type=="boolean")>
 			${curr.name?uncap_first}.set${field.name?cap_first}(json.opt${typeToJsonType(field)}(${alias(field.name)}, ${curr.name?uncap_first}.is${field.name?cap_first}()));		
+							<#elseif (field.harmony_type == "enum")>
+								<#if enums[field.type].id??>
+			${curr.name?uncap_first}.set${field.name?cap_first}(${field.type}.fromValue(json.opt${typeToJsonType(field)}(
+								${alias(field.name)},
+								${curr.name?uncap_first}.get${field.name?cap_first}().getValue())));	
+								<#else>
+			${curr.name?uncap_first}.set${field.name?cap_first}(${field.type}.valueOf(json.opt${typeToJsonType(field)}(
+								${alias(field.name)},
+								${curr.name?uncap_first}.get${field.name?cap_first}().getValue())));	
+								</#if>
 							<#else>
 			${curr.name?uncap_first}.set${field.name?cap_first}(json.opt${typeToJsonType(field)}(${alias(field.name)}, ${curr.name?uncap_first}.get${field.name?cap_first}()));	
 							</#if>
@@ -583,6 +606,12 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 			}
 						<#elseif (field.type=="boolean")>
 			params.put(${alias(field.name)}, ${curr.name?uncap_first}.is${field.name?cap_first}());
+						<#elseif (field.harmony_type=="enum")>
+							<#if enums[field.type].id??>
+			params.put(${alias(field.name)}, ${curr.name?uncap_first}.get${field.name?cap_first}().getValue());
+							<#else>
+			params.put(${alias(field.name)}, ${curr.name?uncap_first}.get${field.name?cap_first}().name());
+							</#if>
 						<#else>
 			params.put(${alias(field.name)}, ${curr.name?uncap_first}.get${field.name?cap_first}());
 						</#if>
