@@ -6,6 +6,7 @@ import com.tactfactory.harmony.annotation.Column;
 import com.tactfactory.harmony.annotation.Entity;
 
 @Entity
+@Rest
 public class Client extends User implements Serializable {
 
 	@Column
