@@ -131,7 +131,7 @@ import java.util.ArrayList;
 <#if (curr.options.sync??)>
 	<#assign extends="SyncClientAdapterBase<${curr.name?cap_first}>" />
 <#else>
-	<#assign extends="WebServiceClientAdapterBase<${curr.name?cap_first}>" />
+	<#assign extends="WebServiceClientAdapter<${curr.name?cap_first}>" />
 </#if>
 /**
  * 

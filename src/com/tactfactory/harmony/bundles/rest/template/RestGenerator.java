@@ -89,12 +89,18 @@ public class RestGenerator extends BaseGenerator {
 		
 		ConfigMetadata.addConfiguration("rest_check_ssl", "true");
 		ConfigMetadata.addConfiguration("rest_ssl", "ca.cert");
-		
+
 		// Make Abstract Adapter Base general for all entities
 		this.makeSource(
 				"base/WebServiceClientAdapterBase.java", 
 				"base/WebServiceClientAdapterBase.java",
 				true);
+
+		// Make Abstract Adapter Base general for all entities
+		this.makeSource(
+				"WebServiceClientAdapter.java", 
+				"WebServiceClientAdapter.java",
+				false);
 		
 		// Make RestClient
 		this.makeSource(
