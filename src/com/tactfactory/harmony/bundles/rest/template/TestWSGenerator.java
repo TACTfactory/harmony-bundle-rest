@@ -43,6 +43,8 @@ public class TestWSGenerator extends BaseGenerator {
 				this.getAdapter(), 
 				"mockwebserver.jar");
 		
+		this.localNameSpace = this.getAppMetas().getProjectNameSpace();
+		
 		this.makeSourceTest(
 				"base/TestWSBase.java",
 				"base/TestWSBase.java",
