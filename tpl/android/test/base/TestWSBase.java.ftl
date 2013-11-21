@@ -1,9 +1,4 @@
-<#assign curr = entities[current_entity] />
 package ${test_namespace}.base;
-
-
-<#if (curr.options.sync??)>
-import ${test_namespace}.utils.TestUtils;</#if>
 
 import com.google.mockwebserver.MockResponse;
 import com.google.mockwebserver.MockWebServer;
