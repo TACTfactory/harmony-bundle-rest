@@ -1,8 +1,6 @@
 <#assign curr = entities[current_entity] />
 package ${test_namespace}.base;
 
-import ${test_namespace}.*;
-
 
 import ${project_namespace}.data.${curr.name}WebServiceClientAdapter;
 import ${project_namespace}.entity.${curr.name};
@@ -10,9 +8,6 @@ import ${test_namespace}.utils.${curr.name}Utils;<#if (curr.options.sync??)>
 import ${test_namespace}.utils.TestUtils;</#if>
 
 import com.google.mockwebserver.MockResponse;
-import com.google.mockwebserver.MockWebServer;
-import android.content.Context;
-import android.test.AndroidTestCase;
 
 import junit.framework.Assert;
 
