@@ -42,6 +42,14 @@ public class TestWSGenerator extends BaseGenerator {
 		LibraryUtils.addLibraryToTestProject(
 				this.getAdapter(), 
 				"mockwebserver.jar");
+		
+		this.localNameSpace = this.getAppMetas().getProjectNameSpace();
+		
+		this.makeSourceTest(
+				"base/TestWSBase.java",
+				"test/base/TestWSBase.java",
+				true);
+		
 		for (final EntityMetadata entityMeta 
 				: this.getAppMetas().getEntities().values()) {
 			if (entityMeta.getOptions().containsKey("rest") 
@@ -107,5 +115,4 @@ public class TestWSGenerator extends BaseGenerator {
 		
 		super.makeSource(fullTemplatePath, fullFilePath, override);
 	}
-
 }

@@ -27,7 +27,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
-public abstract class WebServiceClientAdapterBase<T>{
+public abstract class WebServiceClientAdapterBase<T> {
 	protected static final String TAG = "WSClientAdapter";
 	protected static String REST_FORMAT = ".json"; //JSon RSS xml or empty (for html)
 	
@@ -50,29 +50,35 @@ public abstract class WebServiceClientAdapterBase<T>{
 		this(context, null);
 	}
 
-	public WebServiceClientAdapterBase(Context context, Integer port){
+	public WebServiceClientAdapterBase(Context context, Integer port) {
 		this(context, null, port);
 	}
 
-	public WebServiceClientAdapterBase(Context context, String host, Integer port){
+	public WebServiceClientAdapterBase(Context context,
+			String host, Integer port) {
 		this(context, host, port, null);
 	}
 
-	public WebServiceClientAdapterBase(Context context, String host, Integer port, String scheme){
+	public WebServiceClientAdapterBase(Context context,
+			String host, Integer port, String scheme) {
 		this(context, host, port, scheme, null);
 	}
 	
-	public WebServiceClientAdapterBase(Context context, String host, Integer port, String scheme, String prefix){
+	public WebServiceClientAdapterBase(Context context,
+			String host, Integer port, String scheme, String prefix) {
 		this.headers.add(new BasicHeader("Content-Type","application/json"));
 		this.headers.add(new BasicHeader("Accept","application/json"));
 
 		this.context = context;
 
 		Uri configUri;
+		
 		if (${project_name?cap_first}Application.DEBUG) {
-			configUri = Uri.parse(this.context.getString(R.string.rest_url_dev));
+			configUri = Uri.parse(
+				this.context.getString(R.string.rest_url_dev));
 		} else {
-			configUri = Uri.parse(this.context.getString(R.string.rest_url_prod));
+			configUri = Uri.parse(
+				this.context.getString(R.string.rest_url_prod));
 		}
 
 		if (scheme == null) {
@@ -104,12 +110,10 @@ public abstract class WebServiceClientAdapterBase<T>{
 		}
 
 		if (prefix == null) {
-			this.prefix = configUri.toString();
+			this.prefix = configUri.getPath();
 		} else {
 			this.prefix = prefix;
 		}
-
-
 	}
 
 	protected synchronized String invokeRequest(Verb verb, String request, JSONObject params) {

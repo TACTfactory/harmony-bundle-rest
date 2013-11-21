@@ -152,7 +152,8 @@ import java.util.ArrayList;
  * You should edit ${curr.name}WebServiceClientAdapter class instead of this one or you will lose all your modifications.</i></b>
  *
  */
-public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}{
+public abstract class ${curr.name}WebServiceClientAdapterBase
+		extends ${extends} {
 	protected static final String TAG = "${curr.name}WSClientAdapter";
 
 	protected static String ${alias(curr.name)} = "${curr.name}";
@@ -194,22 +195,32 @@ public abstract class ${curr.name}WebServiceClientAdapterBase extends ${extends}
 	protected ${curr.inheritance.superclass.name}WebServiceClientAdapter motherAdapter;
 	</#if>
 
-	public ${curr.name}WebServiceClientAdapterBase(Context context){
+	public ${curr.name}WebServiceClientAdapterBase(Context context) {
 		this(context, null);
 	}
 
-	public ${curr.name}WebServiceClientAdapterBase(Context context, Integer port){
+	public ${curr.name}WebServiceClientAdapterBase(Context context,
+		Integer port) {
 		this(context, null, port);
 	}
 
-	public ${curr.name}WebServiceClientAdapterBase(Context context, String host, Integer port){
+	public ${curr.name}WebServiceClientAdapterBase(Context context,
+			String host, Integer port) {
 		this(context, host, port, null);
 	}
 	
-	public ${curr.name}WebServiceClientAdapterBase(Context context, String host, Integer port, String scheme){
-		super(context, host, port, scheme);
+	public ${curr.name}WebServiceClientAdapterBase(Context context,
+			String host, Integer port, String scheme) {
+		this(context, host, port, scheme, null);
+	}
+	
+	public ${curr.name}WebServiceClientAdapterBase(Context context,
+			String host, Integer port, String scheme, String prefix) {
+		super(context, host, port, scheme, prefix);
 		<#if (joinedInheritance || (singleTabInheritance && curr.inheritance.superclass??))>
-		this.motherAdapter = new ${curr.inheritance.superclass.name}WebServiceClientAdapter(context, host, port, scheme);
+		this.motherAdapter =
+			new ${curr.inheritance.superclass.name}WebServiceClientAdapter(
+				context, host, port, scheme, prefix);
 		</#if>
 	}
 	
