@@ -46,8 +46,8 @@ public class TestWSGenerator extends BaseGenerator {
 		this.localNameSpace = this.getAppMetas().getProjectNameSpace();
 		
 		this.makeSourceTest(
-				"base/TestWSBase.java",
-				"base/TestWSBase.java",
+				"test/base/TestWSBase.java",
+				"test/base/TestWSBase.java",
 				true);
 		
 		for (final EntityMetadata entityMeta 
