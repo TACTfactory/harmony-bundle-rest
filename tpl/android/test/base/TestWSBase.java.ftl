@@ -1,21 +1,19 @@
 package ${test_namespace}.base;
 
-import com.google.mockwebserver.MockResponse;
+
 import com.google.mockwebserver.MockWebServer;
 import android.content.Context;
-
-import junit.framework.Assert;
 
 /**
  * Web Service Test Base.
  */
 public abstract class TestWSBase extends TestDBBase {
+	/** Android {@link Context}. */
 	protected Context ctx;
+	/** {@link MockWebServer}. */
 	protected MockWebServer server;
 
-	/* (non-Javadoc)
-	 * @see junit.framework.TestCase#setUp()
-	 */
+	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		this.ctx = this.getContext();
@@ -24,9 +22,7 @@ public abstract class TestWSBase extends TestDBBase {
 		this.server.play();
 	}
 
-	/* (non-Javadoc)
-	 * @see junit.framework.TestCase#tearDown()
-	 */
+	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		this.server.shutdown();
