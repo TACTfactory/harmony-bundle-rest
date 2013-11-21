@@ -20,26 +20,19 @@ import junit.framework.Assert;
  * 
  * @see android.app.Fragment
  */
-public abstract class ${curr.name}TestWSBase extends AndroidTestCase {
-	protected Context ctx;
+public abstract class ${curr.name}TestWSBase extends TestWSBase {
 	protected ${curr.name} model;
 	protected ${curr.name}WebServiceClientAdapter web;
-	protected MockWebServer server;
 
-	/* (non-Javadoc)
-	 * @see junit.framework.TestCase#setUp()
-	 */
+	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		this.ctx = this.getContext();
-
-		this.server = new MockWebServer();
-		this.server.play();
 
 		String host = this.server.getHostName();
 		int port = this.server.getPort();
 
-		this.web = new ${curr.name}WebServiceClientAdapter(this.ctx, host, port);
+		this.web = new ${curr.name}WebServiceClientAdapter(
+			this.ctx, host, port);
 		
 		this.model = ${curr.name}Utils.generateRandom(this.ctx);
 		<#if (curr.options.sync??)>
@@ -47,20 +40,10 @@ public abstract class ${curr.name}TestWSBase extends AndroidTestCase {
 		</#if>
 	}
 
-	/* (non-Javadoc)
-	 * @see junit.framework.TestCase#tearDown()
-	 */
+	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
 	}
-	
-	/* (non-Javadoc)
-	 * @see ${curr.name}Ws#login(Account)
-	 */
-	/*public void authentificate() {		
-		int result = this.ws.login(this.me);
-		Assert.assertEquals(0, result);
-	}*/
 	
 	/** Test case Create Entity */
 	public void testCreate() {
@@ -74,7 +57,7 @@ public abstract class ${curr.name}TestWSBase extends AndroidTestCase {
 	public void testRead() {
 		this.server.enqueue(new MockResponse().setBody(
 			this.web.itemToJson(this.model).toString()));
-		int result = this.web.get(this.model); // TODO Generate by @Id annotation
+		int result = this.web.get(this.model);
 		Assert.assertTrue(result >= 0);
 	}
 	
@@ -106,5 +89,4 @@ public abstract class ${curr.name}TestWSBase extends AndroidTestCase {
 		result = this.web.get(this.model);
 		Assert.assertTrue(result < 0);
 	}
-
 }

@@ -8,7 +8,8 @@ import android.content.Context;
  * Abstract class for all your WebServiceClient adapters.
  * You can add your own/customize your methods here.
  */
-public abstract class WebServiceClientAdapter<T> extends WebServiceClientAdapterBase<T> {
+public abstract class WebServiceClientAdapter<T>
+		extends WebServiceClientAdapterBase<T> {
 
 	/**
 	 * Default constructor. This uses the api_rest_url string in configs.xml
@@ -16,7 +17,7 @@ public abstract class WebServiceClientAdapter<T> extends WebServiceClientAdapter
 	 *
 	 * @param context The context
 	 */
-	public WebServiceClientAdapter(Context context){
+	public WebServiceClientAdapter(Context context) {
 		this(context, null);
 	}
 
@@ -26,7 +27,7 @@ public abstract class WebServiceClientAdapter<T> extends WebServiceClientAdapter
 	 * @param context The context
 	 * @param port The overriden port
 	 */
-	public WebServiceClientAdapter(Context context, Integer port){
+	public WebServiceClientAdapter(Context context, Integer port) {
 		this(context, null, port);
 	}
 
@@ -37,7 +38,7 @@ public abstract class WebServiceClientAdapter<T> extends WebServiceClientAdapter
 	 * @param host The overriden host
 	 * @param port The overriden port
 	 */
-	public WebServiceClientAdapter(Context context, String host, Integer port){
+	public WebServiceClientAdapter(Context context, String host, Integer port) {
 		this(context, host, port, null);
 	}
 
@@ -49,7 +50,8 @@ public abstract class WebServiceClientAdapter<T> extends WebServiceClientAdapter
 	 * @param port The overriden port
 	 * @param scheme The overriden scheme
 	 */
-	public WebServiceClientAdapter(Context context, String host, Integer port, String scheme){
+	public WebServiceClientAdapter(Context context,
+			String host, Integer port, String scheme){
 		this(context, host, port, scheme, null);
 	}
 
@@ -62,7 +64,8 @@ public abstract class WebServiceClientAdapter<T> extends WebServiceClientAdapter
 	 * @param scheme The overriden scheme
 	 * @param prefix The overriden prefix
 	 */	
-	public WebServiceClientAdapter(Context context, String host, Integer port, String scheme, String prefix){
+	public WebServiceClientAdapter(Context context,
+			String host, Integer port, String scheme, String prefix){
 		super(context, host, port, scheme, prefix);
 	}
 }
