@@ -533,12 +533,13 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
 	 */
 	public boolean extractCursor(JSONObject json, MatrixCursor cursor){
 		boolean result = false;
-		int id = json.optInt("id", 0);
-
-		<#if (joinedInheritance || (singleTabInheritance && curr.inheritance.superclass??))>
-		this.motherAdapter.extractCursor(json, cursor);
+		<#if !(joinedInheritance || (singleTabInheritance && curr.inheritance.superclass??))>
+		String id = json.optString(${alias(curr.ids[0].name)}, null);
+		if (id != null) {
+		<#else>
+		if (this.motherAdapter.extractCursor(json, cursor)) {
 		</#if>
-		if (id != 0) {
+
 			String[] row = new String[${curr.name}SQLiteAdapter.COLS.length];
 			<#assign i = 0 />
 			<#list curr.fields?values as field>
