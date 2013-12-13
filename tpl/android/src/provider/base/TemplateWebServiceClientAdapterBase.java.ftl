@@ -234,7 +234,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
 		String response = this.invokeRequest(
 					Verb.GET,
 					String.format(
-						"${curr.options.rest.uri?lower_case}%s",
+						this.getUri() + "%s",
 						REST_FORMAT),
 					null);
 		if (this.isValidResponse(response) && this.isValidRequest()) {
