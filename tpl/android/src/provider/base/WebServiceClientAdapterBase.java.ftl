@@ -18,6 +18,8 @@ import ${project_namespace}.${project_name?cap_first}Application;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
+import android.database.MatrixCursor;
 
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -338,6 +340,41 @@ public abstract class WebServiceClientAdapterBase<T> {
 	 * @return -1 if an error has occurred. 0 if not.
 	 */ 
 	public abstract int get(T item);
+
+	/**
+	 * Retrieve one T. Uses the route : %uri%/%id%
+	 * @param id : the id of the T
+	 * @return -1 if an error has occurred. 0 if not.
+	 */
+	public Cursor query(String id){
+		MatrixCursor result = new MatrixCursor(UserSQLiteAdapter.COLS);
+		String response = this.invokeRequest(
+					Verb.GET,
+					String.format(
+						this.getUri() + "/%s%s",
+						id, 
+						REST_FORMAT),
+					null);
+		if (this.isValidResponse(response) && this.isValidRequest()) {
+			try {
+				JSONObject json = new JSONObject(response);
+				this.extractCursor(json, result);
+			} catch (JSONException e) {
+				Log.e(TAG, e.getMessage());
+				result = null;
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Extract a Cursor from a JSONObject describing a T
+	 * @param json The JSONObject describing the T
+	 * @param cursor The returned Cursor
+	 * @return true if a User was found. false if not
+	 */
+	public abstract boolean extractCursor(JSONObject json, MatrixCursor cursor);
 	
 	
 	/**

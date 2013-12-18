@@ -279,33 +279,6 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
 		return result;
 	}
 
-	/**
-	 * Retrieve one ${curr.name}. Uses the route : ${curr.options.rest.uri}/%id%
-	 * @param ${curr.name?uncap_first} : The ${curr.name} to retrieve (set the ID)
-	 * @return -1 if an error has occurred. 0 if not.
-	 */
-	public Cursor query(String id){
-		MatrixCursor result = new MatrixCursor(${curr.name}SQLiteAdapter.COLS);
-		String response = this.invokeRequest(
-					Verb.GET,
-					String.format(
-						this.getUri() + "/%s%s",
-						id, 
-						REST_FORMAT),
-					null);
-		if (this.isValidResponse(response) && this.isValidRequest()) {
-			try {
-				JSONObject json = new JSONObject(response);
-				this.extractCursor(json, result);
-			} catch (JSONException e) {
-				Log.e(TAG, e.getMessage());
-				result = null;
-			}
-		}
-
-		return result;
-	}
-
 	public String getUri(){
 		return "${curr.options.rest.uri}";
 	}
@@ -525,12 +498,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
 		return result;
 	}
 
-	/**
-	 * Extract a Cursor from a JSONObject describing a User
-	 * @param json The JSONObject describing the User
-	 * @param cursor The returned Cursor
-	 * @return true if a User was found. false if not
-	 */
+	@Override
 	public boolean extractCursor(JSONObject json, MatrixCursor cursor){
 		boolean result = false;
 		<#if !(joinedInheritance || (singleTabInheritance && curr.inheritance.superclass??))>
