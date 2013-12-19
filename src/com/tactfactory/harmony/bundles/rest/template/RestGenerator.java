@@ -74,7 +74,6 @@ public class RestGenerator extends BaseGenerator {
 		this.addPermissionManifest("android.permission.ACCESS_NETWORK_STATE");
 		
 		this.updateLibrary("httpmime-4.1.1.jar");
-		this.updateLibrary("mockwebserver.jar");
 		
 		TranslationMetadata.addDefaultTranslation(
 				"common_network_error", "Connection error", Group.COMMON);
