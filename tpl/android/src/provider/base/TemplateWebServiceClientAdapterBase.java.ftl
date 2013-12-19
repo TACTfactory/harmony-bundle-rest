@@ -538,12 +538,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
 		return result;
 	}
 
-	/**
-	 * Extract a Cursor from a JSONObject describing a User
-	 * @param json The JSONObject describing the User
-	 * @param cursor The returned Cursor
-	 * @return true if a User was found. false if not
-	 */
+	@Override
 	public boolean extractCursor(JSONObject json, MatrixCursor cursor){
 		boolean result = false;
 		String id = json.optString(${curr.ids[0].owner}WebServiceClientAdapter.${alias(curr.ids[0].name)}, null);
