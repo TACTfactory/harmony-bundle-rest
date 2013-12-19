@@ -76,8 +76,8 @@ public abstract class ${curr.name}TestWSBase extends TestWSBase {
 
 	/** Test case get all Entity */
 	public void testGetAll() {
-		this.server.enqueue(new MockResponse().setBody(
-			this.web.itemToJson(this.model).toString()));
+		this.server.enqueue(new MockResponse().setBody("{${curr.name}s :"
+			+ this.web.itemsToJson(this.entities).toString() + "}"));
 		ArrayList<${curr.name}> ${curr.name?uncap_first}List = 
 						new ArrayList<${curr.name}>();
 		int result = this.web.getAll(${curr.name?uncap_first}List);

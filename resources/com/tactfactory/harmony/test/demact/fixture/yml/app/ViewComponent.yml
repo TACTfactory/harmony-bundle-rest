@@ -3,9 +3,9 @@ ViewComponent:
       id: 0
       string: "VC1 String"
       text: "VC1 Text"
-      dateTime: 2001-12-15 2:59:43.10
-      date: 2012-01-01
-      time: 00:00
+      dateTime: "2001-12-15 2:59:43.10"
+      date: "2012-01-01"
+      time: "12:00:00+02:00"
       login: "VC1 login"
       password: "VC1 password"
       email: "user1@vc1.com"
@@ -13,13 +13,18 @@ ViewComponent:
       city: "VC1 City"
       zipcode: 01000
       country: "VC1 Country"
+      byteField: 5
+      charField: "a"
+      shortField: 1
+      character: "A"
+      choice: 0
    VC2:
       id: 0
       string: "VC2 String"
       text: "VC2 Text"
-      dateTime: 2001-12-15 2:59:43.10
+      dateTime: "2001-12-15 2:59:43.10"
       date: 2012-01-01
-      time: 00:00
+      time: "12:00:00"
       login: "VC2 login"
       password: "VC2 password"
       email: "user2@vc2.com"
@@ -27,13 +32,18 @@ ViewComponent:
       city: "VC2 City"
       zipcode: 02000
       country: "VC2 Country"
+      byteField: 5
+      charField: "a"
+      shortField: 1
+      character: "A"
+      choice: 0
    VC3:
       id: 0
       string: "VC3 String"
       text: "VC3 Text"
-      dateTime: 2001-12-15 2:59:43.10
+      dateTime: "2001-12-15 2:59:43.10"
       date: 2012-01-01
-      time: 00:00
+      time: "12:00:00-02:00"
       login: "VC3 login"
       password: "VC3 password"
       email: "user3@vc3.com"
@@ -41,3 +51,8 @@ ViewComponent:
       city: "VC3 City"
       zipcode: 03000
       country: "VC3 Country"
+      byteField: 5
+      charField: "a"
+      shortField: 1
+      character: "A"
+      choice: 0
