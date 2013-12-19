@@ -90,6 +90,20 @@
 	</#list>
 	<#return false />
 </#function>
+<#assign restFields = [] />
+<#list ViewUtils.getAllFields(curr)?values as field>
+	<#if (!field.internal)>
+		<#if (!field.relation??)>
+			<#assign restFields = restFields + [field] />
+		<#else>
+			<#if (isRestEntity(field.relation.targetEntity))>
+				<#if (field.relation.type=="OneToOne" || field.relation.type=="ManyToOne")>
+					<#assign restFields = restFields + [field] />
+				</#if>
+			</#if>
+		</#if>
+	</#if>
+</#list>
 package ${curr.data_namespace}.base;
 
 import java.util.List;
@@ -272,6 +286,39 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
 		return result;
 	}
 
+	/**
+	 * Retrieve one ${curr.name}. Uses the route : ${curr.options.rest.uri}/%id%
+	 * @param ${curr.name?uncap_first} : The ${curr.name} to retrieve (set the ID)
+	 * @return -1 if an error has occurred. 0 if not.
+	 */
+	public Cursor query(String id){
+		String[] cursorColumns = new String[${restFields?size}];
+		<#assign i = 0 />
+		<#list restFields as field>
+		cursorColumns[${i}] = ${field.owner}SQLiteAdapter.${NamingUtils.alias(field.name)};
+			<#assign i = i + 1 />
+		</#list>
+		MatrixCursor result = new MatrixCursor(cursorColumns);
+		String response = this.invokeRequest(
+					Verb.GET,
+					String.format(
+						this.getUri() + "/%s%s",
+						id, 
+						REST_FORMAT),
+					null);
+		if (this.isValidResponse(response) && this.isValidRequest()) {
+			try {
+				JSONObject json = new JSONObject(response);
+				this.extractCursor(json, result);
+			} catch (JSONException e) {
+				Log.e(TAG, e.getMessage());
+				result = null;
+			}
+		}
+
+		return result;
+	}
+
 	public String getUri(){
 		return "${curr.options.rest.uri}";
 	}
@@ -433,7 +480,9 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
 						<#else>
 							<#if (field.type?lower_case == "datetime")>
 					DateTimeFormatter ${field.name?uncap_first}Formatter = <#if (curr.options.sync?? && field.name=="sync_uDate")>DateTimeFormat.forPattern(SYNC_UPDATE_DATE_FORMAT)<#else>DateTimeFormat.forPattern(REST_UPDATE_DATE_FORMAT)</#if>;
-					${curr.name?uncap_first}.set${field.name?cap_first}(${field.name?uncap_first}Formatter.parseDateTime(json.get${typeToJsonType(field)}(${field.owner}WebServiceClientAdapter.${alias(field.name)})));
+					${curr.name?uncap_first}.set${field.name?cap_first}(
+							${field.name?uncap_first}Formatter.withOffsetParsed().parseDateTime(
+									json.get${typeToJsonType(field)}(${field.owner}WebServiceClientAdapter.${alias(field.name)})));
 							<#elseif (field.type=="boolean")>
 					${curr.name?uncap_first}.set${field.name?cap_first}(json.get${typeToJsonType(field)}(${field.owner}WebServiceClientAdapter.${alias(field.name)}));	
 							<#elseif (field.harmony_type == "enum")>
@@ -492,34 +541,16 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
 	@Override
 	public boolean extractCursor(JSONObject json, MatrixCursor cursor){
 		boolean result = false;
-		<#if !(joinedInheritance || (singleTabInheritance && curr.inheritance.superclass??))>
-		String id = json.optString(${alias(curr.ids[0].name)}, null);
+		String id = json.optString(${curr.ids[0].owner}WebServiceClientAdapter.${alias(curr.ids[0].name)}, null);
 		if (id != null) {
-		<#else>
-		if (this.motherAdapter.extractCursor(json, cursor)) {
-		</#if>
-
 			try {
-				String[] row = new String[${curr.name}SQLiteAdapter.COLS.length];
+				String[] row = new String[${restFields?size}];
 			<#assign i = 0 />
-			<#list curr.fields?values as field>
-				<#if (!field.internal)>
-					<#if (!field.relation??)>
-				if (json.has(${field.owner}WebServiceClientAdapter.${alias(field.name)})) {
-					row[${i}] = json.getString(${field.owner}WebServiceClientAdapter.${alias(field.name)});
-				}
-						<#assign i = i + 1 />
-					<#else>
-						<#if (isRestEntity(field.relation.targetEntity))>
-							<#if (field.relation.type=="OneToOne" || field.relation.type=="ManyToOne")>
+			<#list restFields as field>
 				if (json.has(${field.owner}WebServiceClientAdapter.${alias(field.name)})) {
 					row[${i}] = json.getString(${field.owner}WebServiceClientAdapter.${alias(field.name)});	
 				}
-								<#assign i = i + 1 />
-							</#if>
-						</#if>
-					</#if>
-				</#if>
+				<#assign i = i + 1 />
 			</#list>
 			
 				cursor.addRow(row);
@@ -617,11 +648,13 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
 						<#elseif (field.type=="boolean")>
 			params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)}, ${curr.name?uncap_first}.is${field.name?cap_first}());
 						<#elseif (field.harmony_type=="enum")>
+			if (${curr.name?uncap_first}.get${field.name?cap_first}() != null) {
 							<#if enums[field.type].id??>
-			params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)}, ${curr.name?uncap_first}.get${field.name?cap_first}().getValue());
+				params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)}, ${curr.name?uncap_first}.get${field.name?cap_first}().getValue());
 							<#else>
-			params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)}, ${curr.name?uncap_first}.get${field.name?cap_first}().name());
+				params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)}, ${curr.name?uncap_first}.get${field.name?cap_first}().name());
 							</#if>
+			}
 						<#else>
 			params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)}, ${curr.name?uncap_first}.get${field.name?cap_first}());
 						</#if>

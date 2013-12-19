@@ -31,6 +31,7 @@ import com.tactfactory.harmony.template.BaseGenerator;
 import com.tactfactory.harmony.template.ConfigGenerator;
 import com.tactfactory.harmony.template.TagConstant;
 import com.tactfactory.harmony.template.TranslationGenerator;
+import com.tactfactory.harmony.template.androidxml.ManifestUpdater;
 import com.tactfactory.harmony.utils.ConsoleUtils;
 import com.tactfactory.harmony.utils.TactFileUtils;
 
@@ -70,11 +71,13 @@ public class RestGenerator extends BaseGenerator {
 	 */
 	protected final void generateWSAdapter() {
 		// Add internet permission to manifest :
-		this.addPermissionManifest("android.permission.INTERNET");
-		this.addPermissionManifest("android.permission.ACCESS_NETWORK_STATE");
+		ManifestUpdater manifest = new ManifestUpdater(this.getAdapter());
+		manifest.addPermission(ManifestUpdater.Permissions.INTERNET);
+		manifest.addPermission(
+				ManifestUpdater.Permissions.ACCESS_NETWORK_STATE);
+		manifest.save();
 		
 		this.updateLibrary("httpmime-4.1.1.jar");
-		this.updateLibrary("mockwebserver.jar");
 		
 		TranslationMetadata.addDefaultTranslation(
 				"common_network_error", "Connection error", Group.COMMON);
@@ -148,67 +151,5 @@ public class RestGenerator extends BaseGenerator {
 				+ templateName;
 		
 		super.makeSource(fullTemplatePath, fullFilePath, override);
-	}
-	
-	/**  Update Android Manifest.
-	 * 
-	 * @param permissionName The permission to add
-	 */
-	private void addPermissionManifest(final String permissionName) {
-		try { 
-			// Make engine
-			final SAXBuilder builder = new SAXBuilder();		
-			
-			// Load XML File
-			final File xmlFile = 
-					TactFileUtils.makeFile(
-							this.getAdapter().getManifestPathFile());
-			
-			final Document doc = builder.build(xmlFile); 	
-			
-			// Load Root element
-			final Element rootNode = doc.getRootElement(); 			
-			
-			// Load Name space (required for manipulate attributes)
-			final Namespace ns = rootNode.getNamespace("android");	
-			Element foundPermission = null;
-			// Find Permission Node
-			final List<Element> permissions = 
-					rootNode.getChildren("uses-permission");
-			
-			// Find many elements
-			for (final Element permission : permissions) {
-				if (permission.getAttributeValue("name", ns)
-						.equals(permissionName)) {	
-					// Load attribute value
-					foundPermission = permission;
-					break;
-				}
-			}
-			
-			// If not found Node, create it
-			if (foundPermission == null) {
-				// Create new element
-				foundPermission = new Element("uses-permission");
-				
-				// Add Attributes to element
-				foundPermission.setAttribute("name", permissionName, ns);	
-				rootNode.addContent(foundPermission);
-				
-				// Write to File
-				final XMLOutputter xmlOutput = new XMLOutputter();
-
-				// Make beautiful file with indent !!!
-				xmlOutput.setFormat(Format.getPrettyFormat());				
-				xmlOutput.output(doc, 
-						new OutputStreamWriter(
-								new FileOutputStream(xmlFile.getAbsoluteFile()),
-								TactFileUtils.DEFAULT_ENCODING));
-			}
-		} catch (final JDOMException e) {
-			ConsoleUtils.displayError(e);
-		} catch (final IOException e) {
-			ConsoleUtils.displayError(e);
-		}
 	}
 }

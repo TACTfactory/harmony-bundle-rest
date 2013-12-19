@@ -261,5 +261,22 @@ public class RestGlobalTest extends CommonTest {
 		if (new File(destDir + "Post.java").exists()) {
 			ConsoleUtils.displayDebug("Entity is copy to generated package !");
 		}
+		
+		srcDir = 
+				String.format("%s/resources/%s/%s/%s/",
+						Harmony.getCommandPath(RestCommand.class),
+						pathNameSpace, 
+						"fixture",
+						"yml");
+		
+		destDir = 
+				String.format("%s/%s/", 
+						Harmony.getProjectAndroidPath(),
+						"assets");
+
+		System.out.println(destDir);
+		
+		// FileUtils.copyDirectory(new File(srcDir), new File(destDir));
+		TactFileUtils.makeFolderRecursive(srcDir, destDir, true);
 	}
 }
