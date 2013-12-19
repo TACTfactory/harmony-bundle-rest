@@ -92,6 +92,8 @@
 </#function>
 package ${curr.data_namespace}.base;
 
+import java.util.List;
+<#if (MetadataUtils.hasToManyRelations(curr) || curr.options.sync??)>import java.util.ArrayList;</#if>
 
 <#assign importDate = false />
 <#list curr.fields?values as field>
@@ -104,14 +106,9 @@ import ${curr.namespace}.harmony.util.DateUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.joda.time.format.DateTimeFormat;
-
-import ${data_namespace}.*;
-import ${curr.namespace}.entity.${curr.name};
-import ${data_namespace}.RestClient.Verb;
-
-import org.json.*;
-
-import java.util.List;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.util.Log;
 import android.content.ContentValues;
@@ -119,14 +116,13 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 
+import ${data_namespace}.*;
+import ${curr.namespace}.entity.${curr.name};
+import ${data_namespace}.RestClient.Verb;
 <#assign import_array = [curr.name] />
 <#assign alreadyImportArrayList=false />
 <#list curr.relations as relation>
 	<#if (isRestEntity(relation.relation.targetEntity))>
-		<#if (!alreadyImportArrayList && (relation.relation.type=="OneToMany" || relation.relation.type=="ManyToMany"))>
-import java.util.ArrayList;
-			<#assign alreadyImportArrayList=true />
-		</#if>
 		<#if (!isInArray(import_array, relation.relation.targetEntity))>
 			<#assign import_array = import_array + [relation.relation.targetEntity] />
 import ${curr.namespace}.entity.${relation.relation.targetEntity};
@@ -136,9 +132,6 @@ import ${curr.namespace}.entity.${relation.relation.targetEntity};
 ${ImportUtils.importRelatedEnums(curr)}
 <#if (curr.options.sync??)>
 import ${curr.namespace}.entity.base.EntityBase;
-	<#if !alreadyImportArrayList>
-import java.util.ArrayList;
-	</#if>
 </#if>
 
 <#if (curr.options.sync??)>
@@ -424,76 +417,74 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
 		this.motherAdapter.extract(json, ${curr.name?uncap_first});
 		</#if>
 		if (result) {
+			try {
 			<#list curr.fields?values as field>
 				<#if (!field.internal)>
 					<#if (!field.relation??)>
+				if (json.has(${field.owner}WebServiceClientAdapter.${alias(field.name)})) {
 						<#if (curr.options.sync?? && field.name?lower_case=="id")>
-			${curr.name?uncap_first}.setId(json.optInt(JSON_MOBILE_ID, 0));			
+					${curr.name?uncap_first}.setId(json.getInt(JSON_MOBILE_ID));			
 						<#elseif (curr.options.sync?? && field.name=="serverId")>
-			int server_id = json.optInt(${curr.name}WebServiceClientAdapter.JSON_ID);
-			
-			if (server_id != 0) {
-				${curr.name?uncap_first}.setServerId(server_id);	
-			}			
+					int server_id = json.optInt(${curr.name}WebServiceClientAdapter.JSON_ID);
+				
+					if (server_id != 0) {
+						${curr.name?uncap_first}.setServerId(server_id);	
+					}			
 						<#else>
 							<#if (field.type?lower_case == "datetime")>
-			DateTime ${field.name?uncap_first} = ${curr.name?uncap_first}.get${field.name?cap_first}();
-			if (${field.name?uncap_first} == null) {
-				${field.name?uncap_first} = new DateTime();
-			}
-			DateTimeFormatter ${field.name?uncap_first}Formatter = <#if (curr.options.sync?? && field.name=="sync_uDate")>DateTimeFormat.forPattern(SYNC_UPDATE_DATE_FORMAT)<#else>DateTimeFormat.forPattern(REST_UPDATE_DATE_FORMAT)</#if>;
-			${curr.name?uncap_first}.set${field.name?cap_first}(${field.name?uncap_first}Formatter.parseDateTime(json.opt${typeToJsonType(field)}(${field.owner}WebServiceClientAdapter.${alias(field.name)}, ${field.name?uncap_first}.toString(${field.name?uncap_first}Formatter))));
+					DateTimeFormatter ${field.name?uncap_first}Formatter = <#if (curr.options.sync?? && field.name=="sync_uDate")>DateTimeFormat.forPattern(SYNC_UPDATE_DATE_FORMAT)<#else>DateTimeFormat.forPattern(REST_UPDATE_DATE_FORMAT)</#if>;
+					${curr.name?uncap_first}.set${field.name?cap_first}(${field.name?uncap_first}Formatter.parseDateTime(json.get${typeToJsonType(field)}(${field.owner}WebServiceClientAdapter.${alias(field.name)})));
 							<#elseif (field.type=="boolean")>
-			${curr.name?uncap_first}.set${field.name?cap_first}(json.opt${typeToJsonType(field)}(${field.owner}WebServiceClientAdapter.${alias(field.name)}, ${curr.name?uncap_first}.is${field.name?cap_first}()));	
+					${curr.name?uncap_first}.set${field.name?cap_first}(json.get${typeToJsonType(field)}(${field.owner}WebServiceClientAdapter.${alias(field.name)}));	
 							<#elseif (field.harmony_type == "enum")>
 								<#if enums[field.type].id??>
-			${curr.name?uncap_first}.set${field.name?cap_first}(${field.type}.fromValue(json.opt${typeToJsonType(field)}(
-								${field.owner}WebServiceClientAdapter.${alias(field.name)},
-								${curr.name?uncap_first}.get${field.name?cap_first}().getValue())));	
+					${curr.name?uncap_first}.set${field.name?cap_first}(${field.type}.fromValue(json.get${typeToJsonType(field)}(
+								${field.owner}WebServiceClientAdapter.${alias(field.name)})));	
 								<#else>
-			${curr.name?uncap_first}.set${field.name?cap_first}(${field.type}.valueOf(json.opt${typeToJsonType(field)}(
-								${field.owner}WebServiceClientAdapter.${alias(field.name)},
-								${curr.name?uncap_first}.get${field.name?cap_first}().getValue())));	
+					${curr.name?uncap_first}.set${field.name?cap_first}(${field.type}.valueOf(json.get${typeToJsonType(field)}(
+									${field.owner}WebServiceClientAdapter.${alias(field.name)})));	
 								</#if>
 							<#else>
-			${curr.name?uncap_first}.set${field.name?cap_first}(json.opt${typeToJsonType(field)}(${field.owner}WebServiceClientAdapter.${alias(field.name)}, ${curr.name?uncap_first}.get${field.name?cap_first}()));	
+					${curr.name?uncap_first}.set${field.name?cap_first}(json.get${typeToJsonType(field)}(${field.owner}WebServiceClientAdapter.${alias(field.name)}));	
 							</#if>
 						</#if>
+				}
 					<#else>
 						<#if (isRestEntity(field.relation.targetEntity))>
-			if (json.has(${field.owner}WebServiceClientAdapter.${alias(field.name)})){
+				if (json.has(${field.owner}WebServiceClientAdapter.${alias(field.name)})) {
 							<#if (field.relation.type=="OneToMany" || field.relation.type=="ManyToMany")>
-				ArrayList<${field.relation.targetEntity}> ${field.name?uncap_first} = new ArrayList<${field.relation.targetEntity}>();
-				${field.relation.targetEntity}WebServiceClientAdapter ${field.name}Adapter = new ${field.relation.targetEntity}WebServiceClientAdapter(this.context);
-				try {
-					//.opt${typeToJsonType(field)}(${field.owner}WebServiceClientAdapter.${alias(field.name)})
-					${field.name}Adapter.extractItems(json, ${field.owner}WebServiceClientAdapter.${alias(field.name)}, ${field.name?uncap_first});
-					${curr.name?uncap_first}.set${field.name?cap_first}(${field.name?uncap_first});
-				} catch (JSONException e){
-					Log.e(TAG, e.getMessage());
-				}
+					ArrayList<${field.relation.targetEntity}> ${field.name?uncap_first} = new ArrayList<${field.relation.targetEntity}>();
+					${field.relation.targetEntity}WebServiceClientAdapter ${field.name}Adapter = new ${field.relation.targetEntity}WebServiceClientAdapter(this.context);
+					try {
+						//.opt${typeToJsonType(field)}(${field.owner}WebServiceClientAdapter.${alias(field.name)})
+						${field.name}Adapter.extractItems(json, ${field.owner}WebServiceClientAdapter.${alias(field.name)}, ${field.name?uncap_first});
+						${curr.name?uncap_first}.set${field.name?cap_first}(${field.name?uncap_first});
+					} catch (JSONException e){
+						Log.e(TAG, e.getMessage());
+					}
 							<#else>
 								<#if (curr.options.sync??)>
-				${field.relation.targetEntity}SQLiteAdapter ${field.name}Adapter = new ${field.relation.targetEntity}SQLiteAdapter(this.context);
-				${field.name}Adapter.open();
-				${curr.name?uncap_first}.set${field.name?cap_first}(${field.name}Adapter.getByServerID(
-						json.optJSONObject(JSON_${field.name?upper_case}).optInt(JSON_SERVERID)));
-				${field.name}Adapter.close();
+					${field.relation.targetEntity}SQLiteAdapter ${field.name}Adapter = new ${field.relation.targetEntity}SQLiteAdapter(this.context);
+					${field.name}Adapter.open();
+					${curr.name?uncap_first}.set${field.name?cap_first}(${field.name}Adapter.getByServerID(
+							json.optJSONObject(JSON_${field.name?upper_case}).optInt(JSON_SERVERID)));
+					${field.name}Adapter.close();
 								<#else>
-				${field.relation.targetEntity}WebServiceClientAdapter ${field.name}Adapter = new ${field.relation.targetEntity}WebServiceClientAdapter(this.context);
-				${field.relation.targetEntity} ${field.name?uncap_first} = new ${field.relation.targetEntity}();
-				if (${field.name}Adapter.extract(json.opt${typeToJsonType(field)}(${field.owner}WebServiceClientAdapter.${alias(field.name)}), ${field.name?uncap_first})) {
-					${curr.name?uncap_first}.set${field.name?cap_first}(${field.name?uncap_first});
-				}
+					${field.relation.targetEntity}WebServiceClientAdapter ${field.name}Adapter = new ${field.relation.targetEntity}WebServiceClientAdapter(this.context);
+					${field.relation.targetEntity} ${field.name?uncap_first} = new ${field.relation.targetEntity}();
+					if (${field.name}Adapter.extract(json.opt${typeToJsonType(field)}(${field.owner}WebServiceClientAdapter.${alias(field.name)}), ${field.name?uncap_first})) {
+						${curr.name?uncap_first}.set${field.name?cap_first}(${field.name?uncap_first});
+					}
 								</#if>
 							</#if>
-			}
+				}
 						</#if>
 					</#if>
-
 				</#if>
 			</#list>
-			
+			} catch (JSONException e) {
+				Log.e(TAG, e.getMessage());
+			}
 		} 
 		return result;
 	}
@@ -508,17 +499,22 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
 		if (this.motherAdapter.extractCursor(json, cursor)) {
 		</#if>
 
-			String[] row = new String[${curr.name}SQLiteAdapter.COLS.length];
+			try {
+				String[] row = new String[${curr.name}SQLiteAdapter.COLS.length];
 			<#assign i = 0 />
 			<#list curr.fields?values as field>
 				<#if (!field.internal)>
 					<#if (!field.relation??)>
-			row[${i}] = json.optString(${field.owner}WebServiceClientAdapter.${alias(field.name)});	
+				if (json.has(${field.owner}WebServiceClientAdapter.${alias(field.name)})) {
+					row[${i}] = json.getString(${field.owner}WebServiceClientAdapter.${alias(field.name)});
+				}
 						<#assign i = i + 1 />
 					<#else>
 						<#if (isRestEntity(field.relation.targetEntity))>
 							<#if (field.relation.type=="OneToOne" || field.relation.type=="ManyToOne")>
-			row[${i}] = json.optString(${field.owner}WebServiceClientAdapter.${alias(field.name)});	
+				if (json.has(${field.owner}WebServiceClientAdapter.${alias(field.name)})) {
+					row[${i}] = json.getString(${field.owner}WebServiceClientAdapter.${alias(field.name)});	
+				}
 								<#assign i = i + 1 />
 							</#if>
 						</#if>
@@ -526,8 +522,11 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
 				</#if>
 			</#list>
 			
-			cursor.addRow(row);
-			result = true;
+				cursor.addRow(row);
+				result = true;
+			} catch (JSONException e) {
+				Log.e(TAG, e.getMessage());
+			}
 		} 
 		return result;
 	}
