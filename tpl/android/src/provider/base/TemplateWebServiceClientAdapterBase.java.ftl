@@ -468,16 +468,19 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
 			<#list curr.fields?values as field>
 				<#if (!field.internal)>
 					<#if (!field.relation??)>
-				if (json.has(${field.owner}WebServiceClientAdapter.${alias(field.name)})) {
+
 						<#if (curr.options.sync?? && field.name?lower_case=="id")>
+				if (json.has(${field.owner}WebServiceClientAdapter.JSON_MOBILE_ID)) {
 					${curr.name?uncap_first}.setId(json.getInt(JSON_MOBILE_ID));			
 						<#elseif (curr.options.sync?? && field.name=="serverId")>
+				if (json.has(${field.owner}WebServiceClientAdapter.JSON_ID)) {
 					int server_id = json.optInt(${curr.name}WebServiceClientAdapter.JSON_ID);
 				
 					if (server_id != 0) {
 						${curr.name?uncap_first}.setServerId(server_id);	
 					}			
 						<#else>
+				if (json.has(${field.owner}WebServiceClientAdapter.${alias(field.name)})) {
 							<#if (field.type?lower_case == "datetime")>
 					DateTimeFormatter ${field.name?uncap_first}Formatter = <#if (curr.options.sync?? && field.name=="sync_uDate")>DateTimeFormat.forPattern(SYNC_UPDATE_DATE_FORMAT)<#else>DateTimeFormat.forPattern(REST_UPDATE_DATE_FORMAT)</#if>;
 					${curr.name?uncap_first}.set${field.name?cap_first}(
