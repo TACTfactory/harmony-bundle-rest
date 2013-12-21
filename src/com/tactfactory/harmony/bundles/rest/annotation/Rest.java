@@ -85,11 +85,11 @@ public @interface Rest {
 			} else {
 				realName = name;
 			}
-			ConsoleUtils.displayDebug("Searching for Security : " + realName);
+			ConsoleUtils.displayDebug("Searching for Security : ", realName);
 			try {
 				final Field field = Security.class.getField(realName);	
 				if (field.isEnumConstant()) {
-					ConsoleUtils.displayDebug("Found Security : " + realName);
+					ConsoleUtils.displayDebug("Found Security : ", realName);
 					ret = (Security) field.get(Security.class);
 				} else {
 					ret = null;

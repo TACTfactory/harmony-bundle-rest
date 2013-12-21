@@ -8,6 +8,8 @@
  */
 package com.tactfactory.harmony.bundles.rest.command;
 
+import java.util.LinkedHashMap;
+
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.meta.Author;
 import net.xeoh.plugins.base.annotations.meta.Version;
@@ -89,9 +91,12 @@ public class RestCommand extends BaseCommand {
 
 	@Override
 	public final void summary() {
-		ConsoleUtils.display("\n> REST \n" 
-				+ "\t" + GENERATE_ADAPTERS + "\t => Generate Adapters");
+		LinkedHashMap<String, String> commands = new LinkedHashMap<String, String>();
+		commands.put(GENERATE_ADAPTERS,	"Generate Engine & Adapters");
 		
+		ConsoleUtils.displaySummary(
+				BUNDLE,
+				commands);
 	}
 
 	@Override
