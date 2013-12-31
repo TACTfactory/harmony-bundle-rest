@@ -346,27 +346,7 @@ public abstract class WebServiceClientAdapterBase<T> {
 	 * @param id : the id of the T
 	 * @return -1 if an error has occurred. 0 if not.
 	 */
-	public Cursor query(String id){
-		MatrixCursor result = new MatrixCursor(UserSQLiteAdapter.COLS);
-		String response = this.invokeRequest(
-					Verb.GET,
-					String.format(
-						this.getUri() + "/%s%s",
-						id, 
-						REST_FORMAT),
-					null);
-		if (this.isValidResponse(response) && this.isValidRequest()) {
-			try {
-				JSONObject json = new JSONObject(response);
-				this.extractCursor(json, result);
-			} catch (JSONException e) {
-				Log.e(TAG, e.getMessage());
-				result = null;
-			}
-		}
-
-		return result;
-	}
+	public abstract Cursor query(String id);
 
 	/**
 	 * Extract a Cursor from a JSONObject describing a T
