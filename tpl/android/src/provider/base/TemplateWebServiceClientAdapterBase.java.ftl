@@ -133,6 +133,7 @@ import android.database.MatrixCursor;
 import ${data_namespace}.*;
 import ${curr.namespace}.entity.${curr.name};
 import ${data_namespace}.RestClient.Verb;
+import ${project_namespace}.provider.${project_name?cap_first}Contract;
 <#assign import_array = [curr.name] />
 <#assign alreadyImportArrayList=false />
 <#list curr.relations as relation>
@@ -185,11 +186,11 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
 			<#list curr.fields?values as field>
 				<#if (!field.internal)>
 					<#if (!field.relation??)>
-			${curr.name}SQLiteAdapter.COL_${field.name?upper_case}<#if field_has_next>,</#if>
+			${project_name?cap_first}Contract.${curr.name}.COL_${field.name?upper_case}<#if field_has_next>,</#if>
 					<#else>
 						<#if (isRestEntity(field.relation.targetEntity))>
 							<#if (field.relation.type=="OneToOne" || field.relation.type=="ManyToOne")>
-			${curr.name}SQLiteAdapter.COL_${field.name?upper_case}<#if field_has_next>,</#if>
+			${project_name?cap_first}Contract.${curr.name}.COL_${field.name?upper_case}<#if field_has_next>,</#if>
 							</#if>
 						</#if>
 					</#if>
@@ -295,7 +296,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
 		String[] cursorColumns = new String[${restFields?size}];
 		<#assign i = 0 />
 		<#list restFields as field>
-		cursorColumns[${i}] = ${field.owner}SQLiteAdapter.${NamingUtils.alias(field.name)};
+		cursorColumns[${i}] = ${project_name?cap_first}Contract.${field.owner}.${NamingUtils.alias(field.name)};
 			<#assign i = i + 1 />
 		</#list>
 		MatrixCursor result = new MatrixCursor(cursorColumns);
@@ -431,11 +432,11 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
 
 		return result;
 	}
-
+	
 			</#if>
 		</#if>
 	</#list>
-
+	
 	/**
 	 * Tests if the json is a valid ${curr.name} Object.
 	 *
@@ -722,16 +723,16 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
 				<#if (!field.internal)>
 					<#if (!field.relation?? || ((field.relation.type == "ManyToOne" || field.relation.type == "OneToOne") && entities[field.relation.targetEntity].options.rest??))>
 						<#if (curr.options.sync?? && field.name?lower_case=="id")>
-			params.put(${curr.name}WebServiceClientAdapter.JSON_ID, values.get(${curr.name}SQLiteAdapter.COL_SERVERID));
+			params.put(${curr.name}WebServiceClientAdapter.JSON_ID, values.get(${project_name?cap_first}Contract.${curr.name}.COL_SERVERID));
 						<#elseif (curr.options.sync?? && field.name=="serverId")>
-			params.put(${curr.name}WebServiceClientAdapter.JSON_MOBILE_ID, values.get(${curr.name}SQLiteAdapter.COL_ID));	
+			params.put(${curr.name}WebServiceClientAdapter.JSON_MOBILE_ID, values.get(${project_name?cap_first}Contract.${curr.name}.COL_ID));
 						<#elseif (curr.options.sync?? && field.name=="sync_uDate")>		
-			params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)}, new DateTime(values.get(${curr.name}SQLiteAdapter.${NamingUtils.alias(field.name)})).toString(SYNC_UPDATE_DATE_FORMAT));
+			params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)}, new DateTime(values.get(${project_name?cap_first}Contract.${curr.name}.${NamingUtils.alias(field.name)})).toString(SYNC_UPDATE_DATE_FORMAT));
 						<#else>
 							<#if field.type?lower_case == "datetime">
-			params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)}, new DateTime(values.get(${curr.name}SQLiteAdapter.${NamingUtils.alias(field.name)})).toString(REST_UPDATE_DATE_FORMAT));
+			params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)}, new DateTime(values.get(${project_name?cap_first}Contract.${curr.name}.${NamingUtils.alias(field.name)})).toString(REST_UPDATE_DATE_FORMAT));
 							<#else>
-			params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)}, values.get(${curr.name}SQLiteAdapter.${NamingUtils.alias(field.name)}));
+			params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)}, values.get(${project_name?cap_first}Contract.${curr.name}.${NamingUtils.alias(field.name)}));
 							</#if>
 						</#if>
 					</#if>
