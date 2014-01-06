@@ -35,11 +35,16 @@ public abstract class ${curr.name}TestWSBase extends TestWSBase {
 		this.web = new ${curr.name}WebServiceClientAdapter(
 			this.ctx, host, port, RequestConstants.HTTP);
 		
-		this.entities = new ArrayList<${curr.name?cap_first}>(${curr.name?cap_first}DataLoader.getInstance(this.ctx).getMap().values());
+		this.entities = new ArrayList<${curr.name?cap_first}>(
+				${curr.name?cap_first}DataLoader.getInstance(this.ctx)
+						.getMap().values());
+						
 		if (this.entities.size()>0) {
-			this.model = this.entities.get(TestUtils.generateRandomInt(0,entities.size()-1));
+			this.model = this.entities.get(
+					TestUtils.generateRandomInt(0,entities.size()-1));
 		}
 		<#if (curr.options.sync??)>
+		
 		this.model.setServerId(TestUtils.generateRandomInt(1, 200));
 		</#if>
 	}
@@ -98,7 +103,11 @@ public abstract class ${curr.name}TestWSBase extends TestWSBase {
 		item.setId(this.model.getId());
 
 		result = this.web.get(item);
+		<#if (curr.options.sync??)>
+		${curr.name}Utils.equals(this.model, item, false);
+		<#else>
 		${curr.name}Utils.equals(this.model, item);
+		</#if>
 	}
 	
 	/** Test case Update Entity */
