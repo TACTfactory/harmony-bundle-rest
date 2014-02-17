@@ -147,9 +147,7 @@ public abstract class WebServiceClientAdapterBase<T> {
 					Log.d(TAG, e.getMessage());
 			}
 		} else {
-			Toast.makeText(this.context,
-				R.string.no_network_error,
-				Toast.LENGTH_SHORT).show();
+			this.displayOups(this.context.getString(R.string.no_network_error));
 		}
 		return response;
 	}
