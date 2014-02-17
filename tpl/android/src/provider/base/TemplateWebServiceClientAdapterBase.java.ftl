@@ -520,7 +520,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
 					${field.relation.targetEntity}SQLiteAdapter ${field.name}Adapter = new ${field.relation.targetEntity}SQLiteAdapter(this.context);
 					${field.name}Adapter.open();
 					${curr.name?uncap_first}.set${field.name?cap_first}(${field.name}Adapter.getByServerID(
-							json.optJSONObject(JSON_${field.name?upper_case}).optInt(JSON_SERVERID)));
+							json.optJSONObject(JSON_${field.name?upper_case}).optInt(JSON_ID)));
 					${field.name}Adapter.close();
 								<#else>
 					${field.relation.targetEntity}WebServiceClientAdapter ${field.name}Adapter = new ${field.relation.targetEntity}WebServiceClientAdapter(this.context);
