@@ -16,15 +16,14 @@ import ${data_namespace}.RestClient.Verb;
 import ${project_namespace}.R;
 import ${project_namespace}.${project_name?cap_first}Application;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.MatrixCursor;
-
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
@@ -147,9 +146,7 @@ public abstract class WebServiceClientAdapterBase<T> {
 					Log.d(TAG, e.getMessage());
 			}
 		} else {
-			Toast.makeText(this.context,
-				R.string.no_network_error,
-				Toast.LENGTH_SHORT).show();
+			this.displayOups(this.context.getString(R.string.no_network_error));
 		}
 		return response;
 	}
@@ -198,11 +195,11 @@ public abstract class WebServiceClientAdapterBase<T> {
 	}
 	
 	protected void displayOups(final String message) {
-		if (context != null 
+		if (this.context != null 
 			&& !TextUtils.isEmpty(message)
-			&& context instanceof FragmentActivity) {
+			&& this.context instanceof Activity) {
 			
-			((FragmentActivity) context).runOnUiThread(new Runnable() {
+			((Activity) this.context).runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
 					Toast.makeText(
