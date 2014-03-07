@@ -1,0 +1,24 @@
+task annotationJar(type: Jar) {
+    baseName 'bundle-rest-annotations'
+    from sourceSets.main.output
+    include 'com/tactfactory/harmony/bundles/rest/annotation/**'
+    
+    doLast{
+        copy {
+            from new File(project.buildDir, 'libs')
+            into new File(project.projectDir, 'lib')
+            include '*annotations*.jar'
+            rename '(.*)-[\0-9]*(.jar)', '$1$2'
+        }
+    }
+}
+
+jar {
+    baseName 'bundle-rest'
+    exclude 'com/tactfactory/harmony/bundles/rest/annotation/**'
+    dependsOn annotationJar
+}
+
+javadoc {
+    exclude 'com/tactfactory/harmony/bundles/rest/test/**'
+}
