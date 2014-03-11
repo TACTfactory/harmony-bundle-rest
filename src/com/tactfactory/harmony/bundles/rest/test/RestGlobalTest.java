@@ -41,7 +41,7 @@ public class RestGlobalTest extends CommonTest {
 	 * @throws java.lang.Exception 
 	 */
 	@BeforeClass
-	public static void setUpBefore() throws Exception {
+	public static void setUpBefore() {
 		CommonTest.setUpBefore();
 		initAll();
 	}
@@ -49,14 +49,14 @@ public class RestGlobalTest extends CommonTest {
 
 	@Before
 	@Override
-	public final void setUp() throws Exception {
+	public final void setUp() {
 		super.setUp();
 	}
 
 
 	@After
 	@Override
-	public final void tearDown() throws Exception {
+	public final void tearDown() {
 		super.tearDown();
 	}
 	
