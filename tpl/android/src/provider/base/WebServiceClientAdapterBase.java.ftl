@@ -131,8 +131,10 @@ public abstract class WebServiceClientAdapterBase<T> {
 
 			try {
 				synchronized (this.restClient) {
-					response = this.restClient.invoke(verb, this.prefix + request, params, this.headers);
+					response = this.restClient.invoke(
+					   verb, this.prefix + request, params, this.headers);
 					this.statusCode = this.restClient.getStatusCode();
+					
 					if (isValidResponse(response)){
 						this.errorCode = this.appendError(response,error);
 						this.error = error.toString();
@@ -142,12 +144,21 @@ public abstract class WebServiceClientAdapterBase<T> {
 			} catch (Exception e) {
 				this.displayOups();
 			
-				if (${project_name?cap_first}Application.DEBUG)
-					Log.d(TAG, e.getMessage());
+				if (${project_name?cap_first}Application.DEBUG) {
+				    String message = String.format(
+				        "Error in invokeRequest, statusCode = %s",
+				        this.restClient.getStatusCode());
+				    Log.e(TAG, message);
+				    
+				    if (e.getMessage() != null) {
+					    Log.e(TAG, e.getMessage());
+					}
+				}
 			}
 		} else {
 			this.displayOups(this.context.getString(R.string.no_network_error));
 		}
+		
 		return response;
 	}
 
