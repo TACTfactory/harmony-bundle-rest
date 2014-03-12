@@ -146,8 +146,9 @@ public abstract class WebServiceClientAdapterBase<T> {
 			
 				if (${project_name?cap_first}Application.DEBUG) {
 				    String message = String.format(
-				        "Error in invokeRequest, statusCode = %s",
-				        this.restClient.getStatusCode());
+				        "Error in invokeRequest, statusCode = %s; uri = %s",
+				        this.restClient.getStatusCode(),
+				        this.prefix + request);
 				    Log.e(TAG, message);
 				    
 				    if (e.getMessage() != null) {
