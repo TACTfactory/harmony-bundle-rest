@@ -1,22 +1,26 @@
 package com.tactfactory.harmony.bundles.rest.test;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import com.tactfactory.harmony.Harmony;
-import com.tactfactory.harmony.bundles.rest.annotation.Rest;
 import com.tactfactory.harmony.bundles.rest.command.RestCommand;
 import com.tactfactory.harmony.bundles.rest.meta.RestMetadata;
+import com.tactfactory.harmony.bundles.rest.test.factory.RestDemactFactory;
 import com.tactfactory.harmony.command.OrmCommand;
 import com.tactfactory.harmony.command.ProjectCommand;
 import com.tactfactory.harmony.fixture.command.FixtureCommand;
 import com.tactfactory.harmony.meta.ApplicationMetadata;
-import com.tactfactory.harmony.meta.ClassMetadata;
+import com.tactfactory.harmony.meta.EntityMetadata;
 import com.tactfactory.harmony.test.CommonTest;
 import com.tactfactory.harmony.utils.ConsoleUtils;
 import com.tactfactory.harmony.utils.TactFileUtils;
@@ -24,40 +28,56 @@ import com.tactfactory.harmony.utils.TactFileUtils;
 /**
  * Tests for Rest bundle generation.
  */
+@RunWith(Parameterized.class)
 public class RestGlobalTest extends CommonTest {
-	/** Data path. */
-	private static final String DATA_PATH = 
-			"android/src/com/tactfactory/harmony/test/demact/data/";
+	/** Path of entity folder. */
+	private static final String ENTITY_PATH = "android/src/%s/entity/%s.java";
 	
-	/** Post entity name. */
-	private static final String POST = "Post";
-	/** Comment entity name. */
-	private static final String COMMENT = "Comment";
-	/** User entity name. */
-	private static final String USER = "User";
-	/** Rest bundle name. */
-	private static final String REST = "rest";
-	/**
-	 * @throws java.lang.Exception 
-	 */
-	@BeforeClass
-	public static void setUpBefore() {
-		CommonTest.setUpBefore();
-		initAll();
+	/** Path of data folder. */
+	private static final String DATA_PATH = "android/src/%s/data/%s.java";
+
+	public RestGlobalTest(ApplicationMetadata currentMetadata) {
+		super(currentMetadata);
 	}
-	
 
 	@Before
 	@Override
-	public final void setUp() {
+	public final void setUp() throws RuntimeException {
 		super.setUp();
 	}
 
-
 	@After
 	@Override
-	public final void tearDown() {
+	public final void tearDown() throws RuntimeException {
 		super.tearDown();
+	}
+	
+	@Override
+	public void setUpBeforeNewParameter() {
+		super.setUpBeforeNewParameter();
+		
+		initAll();
+	}
+	
+	/**
+	 * JUnit Parameters method.
+	 * This should return the various application metadata associated 
+	 * to your various test projects. (ie. Demact, Tracscan, etc.)
+	 * 
+	 * @return The collection of application metadatas.
+	 */
+	@Parameters
+	public static Collection<Object[]> getParameters() {
+		Collection<Object[]> result = new ArrayList<Object[]>();
+		
+//		result.add(new ApplicationMetadata[] {
+//				TracScanFactory.generateTestMetadata()
+//		});
+		result.add(new ApplicationMetadata[] {
+				RestDemactFactory.generateTestMetadata()
+		});
+		
+		return result;
 	}
 	
 	/**
@@ -83,155 +103,118 @@ public class RestGlobalTest extends CommonTest {
 		final RestCommand command = 
 				(RestCommand) Harmony.getInstance().getCommand(
 						RestCommand.class);
-		command.generateMetas();	
-	}
-	
-	//@Test
-	/**
-	 * Launch all tests.
-	 */
-	public final void all() {		
-		this.hasGlobalAbstractWebServiceAdapters();
-		this.hasPostWebServiceAdapters();
-		this.hasUserWebServiceAdapters();
+		command.generateMetas();
 		
-		this.isCommentRest();
+		parsedMetadata = ApplicationMetadata.INSTANCE;
+	}
+	
+	/**
+	 * Test all imports of entities.
+	 */
+	@Test
+	public final void testImport() {
+		for (EntityMetadata entity 
+				: this.currentMetadata.getEntities().values()) {
+			EntityMetadata parsedEntity = 
+					parsedMetadata.getEntities().get(entity.getName());
+			
+			for (String impor : entity.getImports()) {
+				Assert.assertTrue(String.format(
+						"Import : %s should import %s in project %s",
+						entity.getName(),
+						impor,
+						this.currentMetadata.getName()),
+					parsedEntity.getImports().contains(impor));
+			}
+			
+			Assert.assertEquals(String.format(
+					"Import : %s has a wrong number of imports in project %s",
+					entity.getName(),
+					this.currentMetadata.getName()),
+				entity.getImports().size(),
+				parsedEntity.getImports().size());
+		}
+	}
+	
+	/**
+	 * Test all EntityMetadata, compare metadata from test factory
+	 * with metadata from parsed files.
+	 */
+	@Test
+	public final void testEntities() {
+		for (EntityMetadata entity : this.currentMetadata.getEntities().values()) {
+			EntityMetadata parsedEntity = parsedMetadata.getEntities().get(
+					entity.getName());
+					
+			Assert.assertNotNull(String.format(
+					"Entity %s not found in project : %s.",
+					entity.getName(),
+					this.currentMetadata.getName()),
+					parsedEntity); 
+			
+			if (!entity.isHidden() && !entity.isInternal()) {
+				CommonTest.hasFindFile(
+						String.format(
+								ENTITY_PATH,
+								this.currentMetadata.getProjectNameSpace(),
+								entity.getName()));
+			}
+			
+			RestMetadata currentRestMetadata = (RestMetadata) entity
+					.getOptions().get(RestMetadata.NAME);
+			
+			if (currentRestMetadata != null) {
+				RestMetadata parsedRestMetadata = (RestMetadata) parsedEntity
+						.getOptions().get(RestMetadata.NAME);
+				
+				Assert.assertNotNull(String.format(
+						"Entity %s must have rest annotation",
+								entity.getName()),
+						parsedRestMetadata);
+				
+				Assert.assertEquals(String.format(
+						"Entity %s hasn't right rest uri",
+								entity.getName()),
+						currentRestMetadata.getUri(),
+						parsedRestMetadata.getUri());
+				
+				Assert.assertEquals(String.format(
+						"Entity %s hasn't right rest security",
+								entity.getName()),
+						currentRestMetadata.getSecurity(),
+						parsedRestMetadata.getSecurity());
+			}
+		}
 		
-		this.hasPostSecurity();
-		this.hasPostUri();
-		this.isPostRest();
-		
-		this.hasUserSecurity();
-		this.hasUserUri();
-		this.isUserRest();
+		Assert.assertEquals(
+				String.format(
+						"Found a wrong number of entities in project : %s",
+						this.currentMetadata.getName()),
+				this.currentMetadata.getEntities().size(),
+				parsedMetadata.getEntities().size());
 	}
-	
+
 	/**
-	 * Tests if global web service adapter has been generated.
+	 * Tests if web service adapters have been generated.
 	 */
 	@Test
-	public final void hasGlobalAbstractWebServiceAdapters() {
-		CommonTest.hasFindFile(
-				DATA_PATH + "base/WebServiceClientAdapterBase.java");
-	}
+	public void testRepositories() {
+		for (EntityMetadata entity 
+				: this.currentMetadata.getEntities().values()) {
+			
+			if (entity.getOptions().containsKey(RestMetadata.NAME)) {
+				CommonTest.hasFindFile(String.format(
+						DATA_PATH,
+						this.currentMetadata.getProjectNameSpace(),
+						entity.getName() + "WebServiceClientAdapter"));
 	
-	////WEB SERVICE ADAPTERS POST ////
-	/**
-	 * Tests if post web service adapter has been generated.
-	 */
-	@Test
-	public final void hasPostWebServiceAdapters() {
-		CommonTest.hasFindFile(
-				DATA_PATH + "PostWebServiceClientAdapter.java");
-		CommonTest.hasFindFile(
-				DATA_PATH + "base/PostWebServiceClientAdapterBase.java");
-	}
-	
-	////WEB SERVICE ADAPTERS USER ////
-	/**
-	 * Tests if user web service adapter has been generated.
-	 */
-	@Test
-	public final void hasUserWebServiceAdapters() {
-		CommonTest.hasFindFile(
-				DATA_PATH + "UserWebServiceClientAdapter.java");
-		CommonTest.hasFindFile(
-				DATA_PATH + "base/UserWebServiceClientAdapterBase.java");
-	}
-	
-	/**
-	 * Tests if user is rest enabled.
-	 */
-	@Test
-	public final void isUserRest() {
-		this.isRest(ApplicationMetadata.INSTANCE.getEntities().get(USER));
-	}
-	
-	/**
-	 * Tests if comment is rest enabled.
-	 */
-	@Test
-	public final void isCommentRest() {
-		this.isRest(ApplicationMetadata.INSTANCE.getEntities().get(COMMENT));
-	}
-	
-	/**
-	 * Tests if post is rest enabled.
-	 */
-	@Test
-	public final void isPostRest() {
-		this.isRest(ApplicationMetadata.INSTANCE.getEntities().get(POST));
-	}
-	
-	/**
-	 * Tests if post URI is "Post".
-	 */
-	@Test
-	public final void hasPostUri() {
-		this.hasUri(ApplicationMetadata.INSTANCE.getEntities().get(POST), POST);
-	}
-	
-	/**
-	 * Tests if user URI is "user-uri".
-	 */
-	@Test
-	public final void hasUserUri() {
-		this.hasUri(ApplicationMetadata.INSTANCE.getEntities().get(USER), 
-				"user-uri");
-	}
-	
-	/**
-	 * Tests if post security is None.
-	 */
-	@Test
-	public final void hasPostSecurity() {
-		this.hasSecurity(ApplicationMetadata.INSTANCE.getEntities().get(POST),
-				Rest.Security.NONE);
-	}
-	
-	/**
-	 * Tests if user security is Session.
-	 */
-	@Test
-	public final void hasUserSecurity() {
-		this.hasSecurity(ApplicationMetadata.INSTANCE.getEntities().get(USER),
-				Rest.Security.SESSION);
-	}
-	
-	/**
-	 * Tests if given entity is rest enabled.
-	 * @param cm The given entity
-	 */
-	private void isRest(final ClassMetadata cm) {
-		Assert.assertTrue("Check if rest " + cm.getName(),
-				cm.getOptions().containsKey(REST));
-	}
-	
-	/**
-	 * Tests if given entity has the given uri.
-	 * @param cm The given entity
-	 * @param value The given uri
-	 */
-	private void hasUri(final ClassMetadata cm, final String value) {
-		Assert.assertTrue("Check if URI of " + cm.getName() + " is " + value, 
-				((RestMetadata) cm.getOptions().get(REST)).getUri()
-					.equals(value));
-	}
-	
-	/**
-	 * Tests if given entity has the given security.
-	 * @param cm The given entity
-	 * @param value The given security
-	 */
-	private void hasSecurity(final ClassMetadata cm,
-			final Rest.Security value) {
-		Assert.assertTrue(
-				"Check if SECURITY of " 
-						+ cm.getName() 
-						+ " is " 
-						+ value.getValue(), 
-				((RestMetadata) cm.getOptions().get(REST))
-					.getSecurity().equals(value));
+				CommonTest.hasFindFile(String.format(
+						DATA_PATH,
+						this.currentMetadata.getProjectNameSpace(),
+						"base/" + entity.getName()
+							+ "WebServiceClientAdapterBase"));
+			}
+		}
 	}
 	
 	/**
@@ -242,41 +225,32 @@ public class RestGlobalTest extends CommonTest {
 				ApplicationMetadata.INSTANCE.getProjectNameSpace()
 					.replaceAll("\\.", "/");
 
-		String srcDir = 
-				String.format("%s/resources/%s/%s/",
-						Harmony.getCommandPath(RestCommand.class),
-						pathNameSpace, 
-						"entity");
+		String srcDir = String.format("%s/resources/%s/%s/",
+				Harmony.getCommandPath(RestCommand.class),
+				pathNameSpace, 
+				"entity");
 		
-		String destDir = 
-				String.format("%s/src/%s/%s/", 
-						Harmony.getProjectAndroidPath(), 
-						pathNameSpace, 
-						"entity");
-
-		System.out.println(destDir);
+		String destDir = String.format("%s/src/%s/%s/", 
+				Harmony.getProjectAndroidPath(), 
+				pathNameSpace, 
+				"entity");
 		
-		// FileUtils.copyDirectory(new File(srcDir), new File(destDir));
 		TactFileUtils.makeFolderRecursive(srcDir, destDir, true);
+		
 		if (new File(destDir + "Post.java").exists()) {
 			ConsoleUtils.displayDebug("Entity is copy to generated package !");
 		}
 		
-		srcDir = 
-				String.format("%s/resources/%s/%s/%s/",
-						Harmony.getCommandPath(RestCommand.class),
-						pathNameSpace, 
-						"fixture",
-						"yml");
+		srcDir = String.format("%s/resources/%s/%s/%s/",
+				Harmony.getCommandPath(RestCommand.class),
+				pathNameSpace, 
+				"fixture",
+				"yml");
 		
-		destDir = 
-				String.format("%s/%s/", 
-						Harmony.getProjectAndroidPath(),
-						"assets");
-
-		System.out.println(destDir);
+		destDir = String.format("%s/%s/", 
+				Harmony.getProjectAndroidPath(),
+				"assets");
 		
-		// FileUtils.copyDirectory(new File(srcDir), new File(destDir));
 		TactFileUtils.makeFolderRecursive(srcDir, destDir, true);
 	}
 }

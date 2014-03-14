@@ -9,16 +9,22 @@
 package com.tactfactory.harmony.test.demact.entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import org.joda.time.DateTime;
 
 import com.tactfactory.harmony.annotation.Column;
+import com.tactfactory.harmony.annotation.ColumnResult;
+import com.tactfactory.harmony.annotation.DiscriminatorColumn;
 import com.tactfactory.harmony.annotation.Entity;
 import com.tactfactory.harmony.annotation.GeneratedValue;
 import com.tactfactory.harmony.annotation.Id;
+import com.tactfactory.harmony.annotation.InheritanceType;
 import com.tactfactory.harmony.annotation.ManyToOne;
+import com.tactfactory.harmony.annotation.ManyToMany;
 import com.tactfactory.harmony.annotation.Table;
 import com.tactfactory.harmony.annotation.Column.Type;
+import com.tactfactory.harmony.annotation.InheritanceType.InheritanceMode;
 import com.tactfactory.harmony.bundles.rest.annotation.Rest;
 import com.tactfactory.harmony.bundles.rest.annotation.Rest.Security;
 
@@ -26,8 +32,10 @@ import com.tactfactory.harmony.bundles.rest.annotation.Rest.Security;
 //All annotation with forced value/parameter
 @Table(name = "local_user")
 @Entity
+@InheritanceType(InheritanceMode.SINGLE_TAB)
+@DiscriminatorColumn(name="type", type="varchar")
 @Rest(security = Security.SESSION, uri = "user-uri")
-public class User extends Object implements Cloneable, Serializable {
+public class User implements Cloneable, Serializable {
 	/** Serial UID. */
 	private static final long serialVersionUID = 7032873279928549706L;
 
@@ -40,33 +48,39 @@ public class User extends Object implements Cloneable, Serializable {
 	/** Login. */
 	@Column(type = Type.LOGIN)
     private String login;
-	
+
 	/** Password. */
 	@Column(type = Type.PASSWORD)
     private String password;
-	
+
 	/** First name. */
 	@Column(nullable = true)
     private String firstname;
-	
+
 	/** Last name. */
 	@Column()
     private String lastname;
-	
+
 	/** Created at.. */
 	@Column(name = "created_at")
     private DateTime createdAt;
-	
+
 	/** Birthdate. */
 	@Column(type = Type.DATE, locale = true)
     private DateTime birthdate;
-	
+
 	/** Group this user belong to. */
 	@ManyToOne
 	private UserGroup userGroup;
 
 	@Column(type = Type.ENUM)
 	private Title title;
+
+	@ColumnResult(columnName="firstname || ' ' || lastname")
+	private String fullName;
+
+	@ManyToMany
+	private ArrayList<User> friends;
 
 	/**
 	 * Constructor.
@@ -75,7 +89,7 @@ public class User extends Object implements Cloneable, Serializable {
 		this.id = -1;
     	this.createdAt = new DateTime();
     }
-	
+
 	@Override
 	public final User clone() throws CloneNotSupportedException {
 		final User u = (User) super.clone();
@@ -86,10 +100,10 @@ public class User extends Object implements Cloneable, Serializable {
 		u.lastname = this.lastname;
 		u.createdAt = new DateTime(this.createdAt);
 		u.birthdate = new DateTime(this.birthdate);
-		
+
 		return u;
 	}
-	
+
 	/**
 	 * @return the id
 	 */
@@ -173,7 +187,7 @@ public class User extends Object implements Cloneable, Serializable {
 	public final void setCreatedAt(final DateTime createdAt) {
 		this.createdAt = createdAt;
 	}
-	
+
 	/**
 	 * @return the birthdate
 	 */

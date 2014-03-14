@@ -7,8 +7,10 @@
  * file that was distributed with this source code.
  */
 package com.tactfactory.harmony.test.demact.entity;
-import com.tactfactory.harmony.annotation.Entity;
-import java.io.Serializable;
+
+import com.tactfactory.harmony.annotation.Entity;
+
+import java.io.Serializable;
 
 /**
  * Empty entity for test purposes only.

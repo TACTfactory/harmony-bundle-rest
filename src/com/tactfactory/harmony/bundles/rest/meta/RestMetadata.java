@@ -19,7 +19,7 @@ import com.tactfactory.harmony.plateforme.BaseAdapter;
  */
 public class RestMetadata extends BaseMetadata {
 	/** Bundle name. */
-	private static final String NAME = "rest";
+	public static final String NAME = "rest";
 	/** Bundle enable state. */
 	private boolean isEnabled = false;
 	/** Security level. */
