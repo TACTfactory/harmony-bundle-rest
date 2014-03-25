@@ -724,9 +724,9 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
 				<#if (!field.internal)>
 					<#if (!field.relation?? || ((field.relation.type == "ManyToOne" || field.relation.type == "OneToOne") && entities[field.relation.targetEntity].options.rest??))>
 						<#if (curr.options.sync?? && field.name?lower_case=="id")>
-			params.put(${curr.name}WebServiceClientAdapter.JSON_ID, values.get(${curr.name?cap_first}Contract.${curr.name}.COL_${field.name?upper_case}.COL_SERVERID));
+			params.put(${curr.name}WebServiceClientAdapter.JSON_ID, values.get(${curr.name?cap_first}Contract.${curr.name}.COL_SERVERID));
 						<#elseif (curr.options.sync?? && field.name=="serverId")>
-			params.put(${curr.name}WebServiceClientAdapter.JSON_MOBILE_ID, values.get(${curr.name?cap_first}Contract.${curr.name}.COL_${field.name?upper_case}.COL_ID));
+			params.put(${curr.name}WebServiceClientAdapter.JSON_MOBILE_ID, values.get(${curr.name?cap_first}Contract.${curr.name}.COL_ID));
 						<#elseif (curr.options.sync?? && field.name=="sync_uDate")>		
 			params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)}, new DateTime(values.get(${curr.name?cap_first}Contract.${curr.name}.${NamingUtils.alias(field.name)})).toString(SYNC_UPDATE_DATE_FORMAT));
 						<#else>
