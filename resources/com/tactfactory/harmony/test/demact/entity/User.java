@@ -32,7 +32,7 @@ import com.tactfactory.harmony.bundles.rest.annotation.Rest.Security;
 //All annotation with forced value/parameter
 @Table(name = "local_user")
 @Entity
-@InheritanceType(InheritanceMode.SINGLE_TAB)
+@InheritanceType(InheritanceMode.SINGLE_TABLE)
 @DiscriminatorColumn(name="type", type="varchar")
 @Rest(security = Security.SESSION, uri = "user-uri")
 public class User implements Cloneable, Serializable {
