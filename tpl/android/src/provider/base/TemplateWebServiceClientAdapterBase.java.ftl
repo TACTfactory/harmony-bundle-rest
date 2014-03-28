@@ -134,7 +134,7 @@ import ${data_namespace}.*;
 import ${curr.namespace}.entity.${curr.name};
 import ${data_namespace}.RestClient.Verb;
 import ${project_namespace}.provider.contract.${curr.name?cap_first}Contract;
-<#if curr.inheritance?? && curr.inheritance.superclass??>import ${project_namespace}.provider.contract.${curr.inheritance.superclass.name?cap_first}Contract;</#if>
+<#if InheritanceUtils.isExtended(curr)>import ${project_namespace}.provider.contract.${curr.inheritance.superclass.name?cap_first}Contract;</#if>
 <#assign import_array = [curr.name] />
 <#assign alreadyImportArrayList=false />
 <#list curr.relations as relation>
