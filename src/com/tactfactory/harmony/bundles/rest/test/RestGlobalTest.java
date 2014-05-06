@@ -16,6 +16,7 @@ import com.tactfactory.harmony.Harmony;
 import com.tactfactory.harmony.bundles.rest.command.RestCommand;
 import com.tactfactory.harmony.bundles.rest.meta.RestMetadata;
 import com.tactfactory.harmony.bundles.rest.test.factory.RestDemactFactory;
+import com.tactfactory.harmony.bundles.rest.test.factory.RestManagementFactory;
 import com.tactfactory.harmony.command.OrmCommand;
 import com.tactfactory.harmony.command.ProjectCommand;
 import com.tactfactory.harmony.fixture.command.FixtureCommand;
@@ -55,6 +56,9 @@ public class RestGlobalTest extends CommonTest {
 	@Override
 	public void setUpBeforeNewParameter() {
 		super.setUpBeforeNewParameter();
+
+		// Clean folder
+		CommonTest.cleanAndroidFolder(false);
 		
 		initAll();
 	}
@@ -75,6 +79,9 @@ public class RestGlobalTest extends CommonTest {
 //		});
 		result.add(new ApplicationMetadata[] {
 				RestDemactFactory.generateTestMetadata()
+		});
+		result.add(new ApplicationMetadata[] {
+				RestManagementFactory.generateTestMetadata()
 		});
 		
 		return result;
@@ -152,7 +159,7 @@ public class RestGlobalTest extends CommonTest {
 					this.currentMetadata.getName()),
 					parsedEntity); 
 			
-			if (!entity.isHidden() && !entity.isInternal()) {
+			if (!entity.isInternal()) {
 				CommonTest.hasFindFile(
 						String.format(
 								ENTITY_PATH,

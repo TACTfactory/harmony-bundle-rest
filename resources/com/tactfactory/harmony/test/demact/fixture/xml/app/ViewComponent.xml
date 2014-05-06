@@ -14,6 +14,12 @@
 		<city>VC1 city</city>
 		<zipcode>01000</zipcode>
 		<country>VC1 country</country>
+		<character>g</character>
+		<choice>0</choice>
+		<byteField>5</byteField>
+		<charField>a</charField>
+		<shortField>1</shortField>
+		<booleanObject>true</booleanObject>
 	</ViewComponent>
 	<ViewComponent id="VC2">
 		<id>0</id>
@@ -29,6 +35,12 @@
 		<city>VC2 city</city>
 		<zipcode>02000</zipcode>
 		<country>VC2 country</country>
+		<character>g</character>
+		<choice>0</choice>
+		<byteField>5</byteField>
+		<charField>a</charField>
+		<shortField>1</shortField>
+		<booleanObject>true</booleanObject>
 	</ViewComponent>
 	<ViewComponent id="VC3">
 		<id>0</id>
@@ -44,5 +56,11 @@
 		<city>VC3 city</city>
 		<zipcode>03000</zipcode>
 		<country>VC3 country</country>
+		<character>g</character>
+		<choice>0</choice>
+		<byteField>5</byteField>
+		<charField>a</charField>
+		<shortField>1</shortField>
+		<booleanObject>true</booleanObject>
 	</ViewComponent>
 </list>

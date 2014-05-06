@@ -350,12 +350,12 @@ public abstract class WebServiceClientAdapterBase<T> {
 	 */ 
 	public abstract int get(T item);
 
-	/**
-	 * Retrieve one T. Uses the route : %uri%/%id%
-	 * @param id : the id of the T
-	 * @return -1 if an error has occurred. 0 if not.
-	 */
-	public abstract Cursor query(String id);
+//	/**
+//	 * Retrieve one T. Uses the route : %uri%/%id%
+//	 * @param id : the id of the T
+//	 * @return -1 if an error has occurred. 0 if not.
+//	 */
+//	public abstract Cursor query(String id);
 
 	/**
 	 * Extract a Cursor from a JSONObject describing a T

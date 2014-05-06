@@ -17,7 +17,9 @@ import com.tactfactory.harmony.annotation.Column;
 import com.tactfactory.harmony.annotation.ColumnResult;
 import com.tactfactory.harmony.annotation.DiscriminatorColumn;
 import com.tactfactory.harmony.annotation.Entity;
+import com.tactfactory.harmony.annotation.View;
 import com.tactfactory.harmony.annotation.GeneratedValue;
+import com.tactfactory.harmony.annotation.GeneratedValue.Strategy;
 import com.tactfactory.harmony.annotation.Id;
 import com.tactfactory.harmony.annotation.InheritanceType;
 import com.tactfactory.harmony.annotation.ManyToOne;
@@ -32,17 +34,18 @@ import com.tactfactory.harmony.bundles.rest.annotation.Rest.Security;
 //All annotation with forced value/parameter
 @Table(name = "local_user")
 @Entity
+@View(create = false, delete = false)
 @InheritanceType(InheritanceMode.SINGLE_TABLE)
 @DiscriminatorColumn(name="type", type="varchar")
 @Rest(security = Security.SESSION, uri = "user-uri")
-public class User implements Cloneable, Serializable {
+public class User extends Object implements Cloneable, Serializable {
 	/** Serial UID. */
 	private static final long serialVersionUID = 7032873279928549706L;
 
 	/** Entity's technical id. */
 	@Id
     @Column(type = Type.INTEGER, hidden = true)
-    @GeneratedValue(strategy = "IDENTITY")
+    @GeneratedValue(strategy = Strategy.MODE_IDENTITY)
     private int id;
 
 	/** Login. */
