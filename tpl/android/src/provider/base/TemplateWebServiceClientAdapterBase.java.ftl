@@ -8,32 +8,40 @@
 	</#if>
 </#function>
 <#function typeToJsonType field>
-	<#if (!field.relation??)>
-		<#if (field.type=="int" || field.type?lower_case=="integer")>
-			<#return "Int" />
-		<#elseif (field.type=="float")>
-			<#return "Float" />
-		<#elseif (field.type=="double")>
-			<#return "Double" />
-		<#elseif (field.type=="long")>
-			<#return "Long" />
-		<#elseif (field.type=="boolean")>
-			<#return "Boolean" />
-		<#elseif (field.harmony_type=="enum")>
-			<#assign enumType = enums[field.type] />
-			<#if enumType.id??>
-				<#assign idEnum = enumType.fields[enumType.id] />
-				<#if (idEnum.type?lower_case == "int" || idEnum.type?lower_case == "integer") >
-					<#return "Int" />
+	<#if (field.harmony_type?lower_case != "relation")>
+		<#switch FieldsUtils.getJavaType(field)?lower_case>
+			<#case "int">
+				<#return "Int" />
+				<#break />
+			<#case "float">
+				<#return "Float" />
+				<#break />
+			<#case "double">
+				<#return "Double" />
+				<#break />
+			<#case "long">
+				<#return "Long" />
+				<#break />
+			<#case "boolean">
+				<#return "Boolean" />
+				<#break />
+			<#case "enum">
+				<#assign enumType = enums[field.enum.targetEnum] />
+				<#if enumType.id??>
+					<#assign idEnumType = enumType.fields[enumType.id].harmony_type?lower_case />
+					<#if (idEnumType == "int") >
+						<#return "Int" />
+					<#else>
+						<#return "String" />
+					</#if>
 				<#else>
 					<#return "String" />
 				</#if>
-			<#else>
+				<#break />
+			<#default>
 				<#return "String" />
-			</#if>
-		<#else>
-			<#return "String" />
-		</#if>
+				<#break />
+		</#switch>
 	<#else>
 		<#if (field.relation.type=="ManyToMany" || field.relation.type=="OneToMany")>
 			<#return "JSONObject" />
@@ -44,15 +52,19 @@
 </#function>
 <#function extract field>
 	<#if (!field.internal)>
-		<#if (!field.relation??)>
-			<#if (field.type=="date"||field.type=="datetime"||field.type=="time")>
-		DateTimeFormatter ${field.name?uncap_first}Formatter = ${getFormatter(field.type)};
-		${curr.name?uncap_first}.set${field.name?cap_first}(${field.name?uncap_first}Formatter.parseDateTime(json.opt${typeToJsonType(field)}(${alias(field.name)}, ${curr.name?uncap_first}.get${field.name?cap_first}().toString())));	
-			<#elseif (field.type=="boolean")>
+		<#if (field.harmony_type?lower_case != "relation")>
+			<#switch FieldsUtils.getJavaType(field)?lower_case>
+				<#case "datetime">
+		DateTimeFormatter ${field.name?uncap_first}Formatter = ${getFormatter(field)};
+		${curr.name?uncap_first}.set${field.name?cap_first}(${field.name?uncap_first}Formatter.parseDateTime(json.opt${typeToJsonType(field)}(${alias(field.name)}, ${curr.name?uncap_first}.get${field.name?cap_first}().toString())));
+					<#break />
+				<#case "boolean">
 		${curr.name?uncap_first}.set${field.name?cap_first}(json.opt${typeToJsonType(field)}(${alias(field.name)}, ${curr.name?uncap_first}.is${field.name?cap_first}()));	
-			<#else>
+					<#break />
+				<#default>
 		${curr.name?uncap_first}.set${field.name?cap_first}(json.opt${typeToJsonType(field)}(${alias(field.name)}, ${curr.name?uncap_first}.get${field.name?cap_first}()));	
-			</#if>
+					<#break />
+			</#switch>
 		<#else>
 			<#if (isRestEntity(field.relation.targetEntity))>
 				<#if (field.relation.type=="OneToMany" || field.relation.type=="ManyToMany")>
@@ -72,13 +84,13 @@
 		</#if>
 	</#if>
 </#function>
-<#function getFormatter datetype>
+<#function getFormatter field>
 	<#assign ret="ISODateTimeFormat." />
-	<#if (datetype?lower_case=="datetime")>
+	<#if (field.harmony_type?lower_case=="datetime")>
 		<#assign ret=ret+"dateTime()" />
-	<#elseif (datetype?lower_case=="time")>
+	<#elseif (field.harmony_type?lower_case=="time")>
 		<#assign ret=ret+"dateTime()" />
-	<#elseif (datetype?lower_case=="date")>
+	<#elseif (field.harmony_type?lower_case=="date")>
 		<#assign ret=ret+"dateTime()" />
 	</#if>
 	<#return ret />
@@ -115,7 +127,7 @@ import java.util.List;
 
 <#assign importDate = false />
 <#list curr.fields?values as field>
-	<#if !importDate && (field.type?lower_case == "datetime")>
+	<#if !importDate && (FieldsUtils.getJavaType(field)?lower_case == "datetime")>
 import org.joda.time.format.DateTimeFormatter;
 import ${curr.namespace}.harmony.util.DateUtils;
 		<#assign importDate = true />
@@ -288,7 +300,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
 	 * @param ${curr.name?uncap_first} : The ${curr.name} to retrieve (set the ID)
 	 * @return -1 if an error has occurred. 0 if not.
 	 */
-	public Cursor query(<#list curr_ids as id>final ${id.type} ${id.name}<#if (id_has_next)>,
+	public Cursor query(<#list curr_ids as id>final ${FieldsUtils.getJavaType(id)} ${id.name}<#if (id_has_next)>,
 			</#if></#list>){
 		MatrixCursor result = new MatrixCursor(REST_COLS);
 		String response = this.invokeRequest(
@@ -474,19 +486,19 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
 					}			
 						<#else>
 				if (json.has(${field.owner}WebServiceClientAdapter.${alias(field.name)})) {
-							<#if (field.type?lower_case == "datetime")>
+							<#if (FieldsUtils.getJavaType(field)?lower_case == "datetime")>
 					DateTimeFormatter ${field.name?uncap_first}Formatter = <#if (curr.options.sync?? && field.name=="sync_uDate")>DateTimeFormat.forPattern(SYNC_UPDATE_DATE_FORMAT)<#else>DateTimeFormat.forPattern(REST_UPDATE_DATE_FORMAT)</#if>;
 					${curr.name?uncap_first}.set${field.name?cap_first}(
 							${field.name?uncap_first}Formatter.withOffsetParsed().parseDateTime(
 									json.get${typeToJsonType(field)}(${field.owner}WebServiceClientAdapter.${alias(field.name)})));
-							<#elseif (field.type=="boolean")>
+							<#elseif (FieldsUtils.getJavaType(field)=="boolean")>
 					${curr.name?uncap_first}.set${field.name?cap_first}(json.get${typeToJsonType(field)}(${field.owner}WebServiceClientAdapter.${alias(field.name)}));	
 							<#elseif (field.harmony_type == "enum")>
-								<#if enums[field.type].id??>
-					${curr.name?uncap_first}.set${field.name?cap_first}(${field.type}.fromValue(json.get${typeToJsonType(field)}(
+								<#if enums[field.enum.targetEnum].id??>
+					${curr.name?uncap_first}.set${field.name?cap_first}(${field.enum.targetEnum}.fromValue(json.get${typeToJsonType(field)}(
 								${field.owner}WebServiceClientAdapter.${alias(field.name)})));	
 								<#else>
-					${curr.name?uncap_first}.set${field.name?cap_first}(${field.type}.valueOf(json.get${typeToJsonType(field)}(
+					${curr.name?uncap_first}.set${field.name?cap_first}(${field.enum.targetEnum}.valueOf(json.get${typeToJsonType(field)}(
 									${field.owner}WebServiceClientAdapter.${alias(field.name)})));	
 								</#if>
 							<#else>
@@ -653,15 +665,15 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
 			params.put(${curr.name}WebServiceClientAdapter.JSON_MOBILE_ID, ${curr.name?uncap_first}.getId());
 						<#elseif (curr.options.sync?? && field.name=="sync_uDate")>
 			params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)}, ${curr.name?uncap_first}.get${field.name?cap_first}().toString(SYNC_UPDATE_DATE_FORMAT));
-						<#elseif (field.type=="date" || field.type=="time" || field.type=="datetime")>
+						<#elseif (FieldsUtils.getJavaType(field)?lower_case == "datetime")>
 			if (${curr.name?uncap_first}.get${field.name?cap_first}()!=null){
 				params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)}, ${curr.name?uncap_first}.get${field.name?cap_first}().toString(REST_UPDATE_DATE_FORMAT));
 			}
-						<#elseif (field.type=="boolean")>
+						<#elseif (FieldsUtils.getJavaType(field)?lower_case == "boolean")>
 			params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)}, ${curr.name?uncap_first}.is${field.name?cap_first}());
 						<#elseif (field.harmony_type=="enum")>
 			if (${curr.name?uncap_first}.get${field.name?cap_first}() != null) {
-							<#if enums[field.type].id??>
+							<#if enums[field.enum.targetEnum].id??>
 				params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)}, ${curr.name?uncap_first}.get${field.name?cap_first}().getValue());
 							<#else>
 				params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)}, ${curr.name?uncap_first}.get${field.name?cap_first}().name());
@@ -737,7 +749,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
 					<#elseif (curr.options.sync?? && field.name=="sync_uDate")>		
 			params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)}, new DateTime(values.get(${curr.name?cap_first}Contract.${curr.name}.${NamingUtils.alias(field.name)})).toString(SYNC_UPDATE_DATE_FORMAT));
 					<#else>
-						<#if field.type?lower_case == "datetime">
+						<#if FieldsUtils.getJavaType(field)?lower_case == "datetime">
 			params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)}, new DateTime(values.get(${curr.name?cap_first}Contract.${curr.name}.${NamingUtils.alias(field.name)})).toString(REST_UPDATE_DATE_FORMAT));
 						<#else>
 							<#if field.relation??>

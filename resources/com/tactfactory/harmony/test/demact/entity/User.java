@@ -44,7 +44,7 @@ public class User extends Object implements Cloneable, Serializable {
 
 	/** Entity's technical id. */
 	@Id
-    @Column(type = Type.INTEGER, hidden = true)
+    @Column(type = Type.INT, hidden = true)
     @GeneratedValue(strategy = Strategy.MODE_IDENTITY)
     private int id;
 
