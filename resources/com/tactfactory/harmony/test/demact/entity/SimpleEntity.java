@@ -11,6 +11,7 @@ package com.tactfactory.harmony.test.demact.entity;
 import com.tactfactory.harmony.annotation.Column;
 import com.tactfactory.harmony.annotation.Entity;
 import com.tactfactory.harmony.annotation.GeneratedValue;
+import com.tactfactory.harmony.annotation.GeneratedValue.Strategy;
 import com.tactfactory.harmony.annotation.Id;
 import com.tactfactory.harmony.annotation.Column.Type;
 
@@ -23,8 +24,8 @@ import java.io.Serializable;
 public class SimpleEntity implements Serializable {
 	/** Entity's technical id. */
 	@Id
-    @Column(type = Type.INTEGER, hidden = true)
-    @GeneratedValue(strategy = "IDENTITY")
+    @Column(type = Type.INT, hidden = true)
+    @GeneratedValue(strategy = Strategy.MODE_IDENTITY)
 	private int id;
 	/**
 	 * @return the id
