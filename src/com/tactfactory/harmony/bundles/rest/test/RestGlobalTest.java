@@ -37,7 +37,8 @@ public class RestGlobalTest extends CommonTest {
 	/** Path of data folder. */
 	private static final String DATA_PATH = "android/src/%s/data/%s.java";
 
-	public RestGlobalTest(ApplicationMetadata currentMetadata) {
+	public RestGlobalTest(ApplicationMetadata currentMetadata)
+	        throws Exception {
 		super(currentMetadata);
 	}
 
@@ -54,7 +55,7 @@ public class RestGlobalTest extends CommonTest {
 	}
 	
 	@Override
-	public void setUpBeforeNewParameter() {
+	public void setUpBeforeNewParameter() throws Exception {
 		super.setUpBeforeNewParameter();
 
 		// Clean folder

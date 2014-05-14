@@ -13,7 +13,7 @@ import java.util.LinkedHashMap;
 
 import com.tactfactory.harmony.meta.BaseMetadata;
 import com.tactfactory.harmony.meta.ClassMetadata;
-import com.tactfactory.harmony.plateforme.BaseAdapter;
+import com.tactfactory.harmony.plateforme.IAdapter;
 import com.tactfactory.harmony.template.TagConstant;
 
 /**
@@ -35,7 +35,7 @@ public class ApplicationRestMetadata extends BaseMetadata {
 	}
 	
 	@Override
-	public final HashMap<String, Object> toMap(final BaseAdapter adapter) {
+	public final HashMap<String, Object> toMap(final IAdapter adapter) {
 		final HashMap<String, Object> ret = new HashMap<String, Object>();
 		final HashMap<String, Object> entitiesMap = 
 				new HashMap<String, Object>();

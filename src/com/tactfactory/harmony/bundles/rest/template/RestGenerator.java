@@ -8,29 +8,31 @@
  */
 package com.tactfactory.harmony.bundles.rest.template;
 
+import java.util.List;
+
+import com.tactfactory.harmony.bundles.rest.platform.IRestAdapter;
 import com.tactfactory.harmony.meta.ConfigMetadata;
 import com.tactfactory.harmony.meta.EntityMetadata;
 import com.tactfactory.harmony.meta.TranslationMetadata;
 import com.tactfactory.harmony.meta.TranslationMetadata.Group;
-import com.tactfactory.harmony.plateforme.BaseAdapter;
 import com.tactfactory.harmony.template.BaseGenerator;
 import com.tactfactory.harmony.template.ConfigGenerator;
 import com.tactfactory.harmony.template.TagConstant;
 import com.tactfactory.harmony.template.TranslationGenerator;
-import com.tactfactory.harmony.template.androidxml.ManifestUpdater;
+import com.tactfactory.harmony.updater.IUpdater;
 import com.tactfactory.harmony.utils.ConsoleUtils;
 
 /**
  * Generator for bundle Rest.
  */
-public class RestGenerator extends BaseGenerator {
-
+public class RestGenerator extends BaseGenerator<IRestAdapter> {
+    
 	/**
 	 * Constructor.
 	 * @param adapter The used adapter.
 	 * @throws Exception 
 	 */
-	public RestGenerator(final BaseAdapter adapter) throws Exception {
+	public RestGenerator(final IRestAdapter adapter) throws Exception {
 		super(adapter);
 		this.setDatamodel(this.getAppMetas().toMap(this.getAdapter()));
 	}
@@ -39,10 +41,8 @@ public class RestGenerator extends BaseGenerator {
 	 * Generates everything.
 	 */
 	public final void generateAll() {
-		// Import Bundle for annotation
-		this.updateLibrary("bundle-rest-annotations.jar");
-				
 		this.generateWSAdapter();
+		
 		try {
 			new TestWSGenerator(this.getAdapter()).generateAll();
 			
@@ -55,86 +55,54 @@ public class RestGenerator extends BaseGenerator {
 	 * Generate WebService Adapter.
 	 */
 	protected final void generateWSAdapter() {
-		// Add internet permission to manifest :
-		ManifestUpdater manifest = new ManifestUpdater(this.getAdapter());
-		manifest.addPermission(ManifestUpdater.Permissions.INTERNET);
-		manifest.addPermission(
-				ManifestUpdater.Permissions.ACCESS_NETWORK_STATE);
-		manifest.save();
-		
-		this.updateLibrary("httpmime-4.1.1.jar");
-		
-		TranslationMetadata.addDefaultTranslation(
-				"common_network_error", "Connection error", Group.COMMON);
-		
-		TranslationMetadata.addDefaultTranslation(
-				"no_network_error", "No internet connection available", Group.COMMON);
-		
-		ConfigMetadata.addConfiguration(
-				"rest_url_prod", "http://127.0.0.1:80/api/");
-		ConfigMetadata.addConfiguration(
-				"rest_url_dev", "http://127.0.0.1:80/api_dev/");
-		
-		ConfigMetadata.addConfiguration("rest_check_ssl", "true");
-		ConfigMetadata.addConfiguration("rest_ssl", "ca.cert");
-
-		// Make Abstract Adapter Base general for all entities
-		this.makeSource(
-				"base/WebServiceClientAdapterBase.java", 
-				"base/WebServiceClientAdapterBase.java",
-				true);
-
-		// Make Abstract Adapter Base general for all entities
-		this.makeSource(
-				"WebServiceClientAdapter.java", 
-				"WebServiceClientAdapter.java",
-				false);
-		
-		// Make RestClient
-		this.makeSource(
-				"RestClient.java", 
-				"RestClient.java",
-				false);
-		
-		for (final EntityMetadata entityMeta
-				: this.getAppMetas().getEntities().values()) {
-			if (entityMeta.getOptions().get("rest") != null
-					&& !entityMeta.getFields().isEmpty()) {
+	    List<IUpdater> updaters = this.getAdapter().getRestUpdaters();
+	    this.processUpdater(updaters);
+	    
+	    Iterable<EntityMetadata> entities =
+	            this.getAppMetas().getEntities().values();
+	    
+		for (final EntityMetadata entity : entities) {
+			if (entity.getOptions().get("rest") != null
+					&& !entity.getFields().isEmpty()) {
 				this.getDatamodel().put(
-						TagConstant.CURRENT_ENTITY, entityMeta.getName());
-				this.makeSource(
-						"base/TemplateWebServiceClientAdapterBase.java", 
-						"base/" + entityMeta.getName() 
-							+ "WebServiceClientAdapterBase.java", 
-						true);
-				this.makeSource(
-						"TemplateWebServiceClientAdapter.java", 
-						entityMeta.getName() + "WebServiceClientAdapter.java", 
-						false);
+						TagConstant.CURRENT_ENTITY, entity.getName());
+				
+                updaters = this.getAdapter().getRestEntityUpdaters(entity);
+                this.processUpdater(updaters);
 			}
-		}	
+		}
+		
+		TranslationMetadata.addDefaultTranslation(
+                "common_network_error",
+                "Connection error",
+                Group.COMMON);
+        
+        TranslationMetadata.addDefaultTranslation(
+                "no_network_error",
+                "No internet connection available",
+                Group.COMMON);
+        
+        ConfigMetadata.addConfiguration(
+                "rest_url_prod",
+                "http://127.0.0.1:80/api/");
+        
+        ConfigMetadata.addConfiguration(
+                "rest_url_dev",
+                "http://127.0.0.1:80/api_dev/");
+        
+        ConfigMetadata.addConfiguration(
+                "rest_check_ssl",
+                "true");
+        
+        ConfigMetadata.addConfiguration(
+                "rest_ssl",
+                "ca.cert");
+        
 		try {
 			new TranslationGenerator(this.getAdapter()).generateStringsXml();
-			new ConfigGenerator(this.getAdapter()).generateConfigXml();
+			new ConfigGenerator(this.getAdapter()).generateConfigFile();
 		} catch (final Exception e) {
-			// TODO Auto-generated catch block
 			ConsoleUtils.displayError(e);
 		}
-	}
-		
-	@Override
-	protected final void makeSource(final String templateName, 
-			final String fileName, 
-			final boolean override) {
-		final String fullFilePath = 
-				this.getAdapter().getSourcePath() 
-				+ this.getAppMetas().getProjectNameSpace() 
-				+ "/" + this.getAdapter().getData() + "/"
-				+ fileName;
-		final String fullTemplatePath = 
-				this.getAdapter().getTemplateSourceProviderPath()
-				+ templateName;
-		
-		super.makeSource(fullTemplatePath, fullFilePath, override);
 	}
 }

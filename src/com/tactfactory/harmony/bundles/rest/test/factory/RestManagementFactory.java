@@ -1,7 +1,6 @@
 package com.tactfactory.harmony.bundles.rest.test.factory;
 
 import com.tactfactory.harmony.bundles.rest.annotation.Rest;
-import com.tactfactory.harmony.bundles.rest.annotation.Rest.Security;
 import com.tactfactory.harmony.bundles.rest.meta.RestMetadata;
 import com.tactfactory.harmony.meta.ApplicationMetadata;
 import com.tactfactory.harmony.meta.EntityMetadata;

@@ -17,10 +17,14 @@ import net.xeoh.plugins.base.annotations.meta.Version;
 import com.tactfactory.harmony.Console;
 import com.tactfactory.harmony.bundles.rest.parser.RestCompletor;
 import com.tactfactory.harmony.bundles.rest.parser.RestParser;
+import com.tactfactory.harmony.bundles.rest.platform.IRestAdapter;
+import com.tactfactory.harmony.bundles.rest.platform.android.RestAdapterAndroid;
+import com.tactfactory.harmony.bundles.rest.platform.ios.RestAdapterIos;
+import com.tactfactory.harmony.bundles.rest.platform.winphone.RestAdapterWinphone;
 import com.tactfactory.harmony.bundles.rest.template.RestGenerator;
-import com.tactfactory.harmony.command.BaseCommand;
+import com.tactfactory.harmony.command.BundleCommandBase;
 import com.tactfactory.harmony.meta.ApplicationMetadata;
-import com.tactfactory.harmony.plateforme.AndroidAdapter;
+import com.tactfactory.harmony.plateforme.TargetPlatform;
 import com.tactfactory.harmony.utils.ConsoleUtils;
 
 /**
@@ -29,7 +33,7 @@ import com.tactfactory.harmony.utils.ConsoleUtils;
 @PluginImplementation
 @Author(name = "TACTfactory")
 @Version(version = 00600)
-public class RestCommand extends BaseCommand {
+public class RestCommand extends BundleCommandBase<IRestAdapter> {
 	
 	//bundle name
 	/** Bundle name. */
@@ -57,7 +61,6 @@ public class RestCommand extends BaseCommand {
 			try {
 				this.generateAdapters();
 			} catch (final Exception e) {
-				// TODO Auto-generated catch block
 				ConsoleUtils.displayError(e);
 			}
 		}
@@ -71,9 +74,8 @@ public class RestCommand extends BaseCommand {
 		this.generateMetas();
 		if (ApplicationMetadata.INSTANCE.getEntities() != null) {
 			try {
-				new RestGenerator(new AndroidAdapter()).generateAll();
+				new RestGenerator(new RestAdapterAndroid()).generateAll();
 			} catch (final Exception e) {
-				// TODO Auto-generated catch block
 				ConsoleUtils.displayError(e);
 			}
 		}
@@ -86,12 +88,12 @@ public class RestCommand extends BaseCommand {
 		new RestCompletor().generateApplicationRestMetadata(
 				ApplicationMetadata.INSTANCE);
 	}
-	
-	
 
 	@Override
 	public final void summary() {
-		LinkedHashMap<String, String> commands = new LinkedHashMap<String, String>();
+		LinkedHashMap<String, String> commands =
+		        new LinkedHashMap<String, String>();
+		
 		commands.put(GENERATE_ADAPTERS,	"Generate Engine & Adapters");
 		
 		ConsoleUtils.displaySummary(
@@ -103,5 +105,18 @@ public class RestCommand extends BaseCommand {
 	public final boolean isAvailableCommand(final String command) {
 		return command.equals(GENERATE_ADAPTERS);
 	}
+
+    @Override
+    public void initBundleAdapter() {
+        this.adapterMapping.put(
+                TargetPlatform.ANDROID,
+                RestAdapterAndroid.class);
+        this.adapterMapping.put(
+                TargetPlatform.WINPHONE,
+                RestAdapterWinphone.class);
+        this.adapterMapping.put(
+                TargetPlatform.IPHONE,
+                RestAdapterIos.class);
+    }
 
 }

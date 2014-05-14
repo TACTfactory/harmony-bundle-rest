@@ -12,7 +12,7 @@ import java.util.HashMap;
 
 import com.tactfactory.harmony.bundles.rest.annotation.Rest.Security;
 import com.tactfactory.harmony.meta.BaseMetadata;
-import com.tactfactory.harmony.plateforme.BaseAdapter;
+import com.tactfactory.harmony.plateforme.IAdapter;
 
 /**
  * Metadata for Bundle Rest.
@@ -39,7 +39,7 @@ public class RestMetadata extends BaseMetadata {
 	
 	
 	@Override
-	public final HashMap<String, Object> toMap(final BaseAdapter adapter) {
+	public final HashMap<String, Object> toMap(final IAdapter adapter) {
 		final HashMap<String, Object> ret = new HashMap<String, Object>();
 		
 		ret.put("isEnabled", this.isEnabled);

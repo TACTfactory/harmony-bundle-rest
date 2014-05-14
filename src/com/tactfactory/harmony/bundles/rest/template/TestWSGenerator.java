@@ -8,111 +8,58 @@
  */
 package com.tactfactory.harmony.bundles.rest.template;
 
+import java.util.List;
+
+import com.tactfactory.harmony.bundles.rest.platform.IRestAdapter;
 import com.tactfactory.harmony.meta.EntityMetadata;
-import com.tactfactory.harmony.plateforme.BaseAdapter;
 import com.tactfactory.harmony.template.BaseGenerator;
 import com.tactfactory.harmony.template.TagConstant;
+import com.tactfactory.harmony.updater.IUpdater;
 import com.tactfactory.harmony.utils.ConsoleUtils;
-import com.tactfactory.harmony.utils.LibraryUtils;
-import com.tactfactory.harmony.utils.PackageUtils;
 
 /**
  * WebService tests generator.
  *
  */
-public class TestWSGenerator extends BaseGenerator {
-	/** Local name space. */
-	private String localNameSpace;
+public class TestWSGenerator extends BaseGenerator<IRestAdapter> {
 	
 	/**
 	 * Constructor. 
-	 * @param adapter The adapter to use.
+	 * @param adapter The {@link IRestAdapter} to use.
 	 * @throws Exception 
 	 */
-	public TestWSGenerator(final BaseAdapter adapter) throws Exception {
+	public TestWSGenerator(final IRestAdapter adapter) throws Exception {
 		super(adapter);
 		this.setDatamodel(this.getAppMetas().toMap(this.getAdapter()));
 	}
 	
 	/**
-	 * Generate all tests.
+	 * Generate all tests for Rest.
 	 */
 	public final void generateAll() {
 		ConsoleUtils.display(">> Generate Rest test...");
-		LibraryUtils.addLibraryToTestProject(
-				this.getAdapter(), 
-				"mockwebserver.jar");
 		
-		this.localNameSpace = this.getAppMetas().getProjectNameSpace();
+		List<IUpdater> updaters = this.getAdapter().getRestUpdatersTest();
+		this.processUpdater(updaters);
 		
-		this.makeSourceTest(
-				"base/TestWSBase.java",
-				"test/base/TestWSBase.java",
-				true);
+		Iterable<EntityMetadata> entities =
+		        this.getAppMetas().getEntities().values();
 		
-		for (final EntityMetadata entityMeta 
-				: this.getAppMetas().getEntities().values()) {
-			if (entityMeta.getOptions().containsKey("rest") 
-					&& !entityMeta.isInternal() 
-					&& !entityMeta.getFields().isEmpty()) {
-				this.localNameSpace = 
-						this.getAdapter().getNameSpace(entityMeta,
-								this.getAdapter().getTest());
+		for (final EntityMetadata entity : entities) {
+			if (entity.getOptions().containsKey("rest") 
+					&& !entity.isInternal() 
+					&& !entity.getFields().isEmpty()) {
+			    
+			    ConsoleUtils.display(">>> Generate Rest test for " 
+			          +  entity.getName());
+			    
 				this.getDatamodel().put(
-						TagConstant.CURRENT_ENTITY, entityMeta.getName());
-				this.generate();
+						TagConstant.CURRENT_ENTITY, entity.getName());
+				
+				updaters = this.getAdapter()
+				        .getRestEntityUpdatersTest(entity);
+		        this.processUpdater(updaters);
 			}
 		}
-	}
-	
-	/**  
-	 * Generate Rest Test. 
-	 */ 
-	private void generate() {
-		// Info
-		ConsoleUtils.display(">>> Generate Rest test for " 
-			+  this.getDatamodel().get(TagConstant.CURRENT_ENTITY));
-		
-		try {			
-			this.makeSourceTest(
-					"base/TemplateTestWSBase.java", 
-					"base/%sTestWSBase.java",
-					true);
-			
-			this.makeSourceTest(
-					"TemplateTestWS.java", 
-					"%sTestWS.java",
-					false);
-
-		} catch (final Exception e) {
-			ConsoleUtils.displayError(e);
-		}
-	}
-	
-	/** 
-	 * Make Java Source Code.
-	 * 
-	 * @param template Template path file. 
-	 * <br/>For list activity is "TemplateListActivity.java"
-	 * @param filename Destination file name.
-	 * @param override True if must overwrite file.
-	 */
-	private void makeSourceTest(final String template, 
-			final String filename, 
-			final boolean override) {
-		final String fullFilePath = String.format("%s%s/%s",
-						this.getAdapter().getTestPath(),
-						PackageUtils.extractPath(String.format("%s/%s",
-								this.getAdapter().getSource(), 
-								this.localNameSpace)).toLowerCase(),
-						String.format(filename,
-								this.getDatamodel().get(
-										TagConstant.CURRENT_ENTITY)));
-		
-		final String fullTemplatePath = String.format("%s%s",
-					this.getAdapter().getTemplateTestsPath(),
-					template);
-		
-		super.makeSource(fullTemplatePath, fullFilePath, override);
 	}
 }
