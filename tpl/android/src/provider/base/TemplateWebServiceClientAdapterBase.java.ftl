@@ -380,7 +380,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
 	 * @param ${relation.relation.targetEntity?lower_case} : The associated ${relation.relation.targetEntity?lower_case}
 	 * @return The number of ${curr.name}s returned
 	 */
-	public int getBy${relation.name?cap_first}(List<${curr.name}> ${curr.name?uncap_first}s, ${relation.relation.targetEntity} ${relation.relation.targetEntity?lower_case}){
+	public int getBy${relation.name?cap_first}(List<${curr.name}> ${curr.name?uncap_first}s, ${relation.relation.targetEntity} ${relation.relation.targetEntity?uncap_first}){
 		int result = -1;
 		String response = this.invokeRequest(
 					Verb.GET,
@@ -474,17 +474,19 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
 				<#if (!field.internal)>
 					<#if (!field.relation??)>
 
-						<#if (curr.options.sync?? && field.name?lower_case=="id")>
+						<#if (curr.options.sync?? && field.name?lower_case=="id")><#if !InheritanceUtils.isExtended(curr)>
 				if (json.has(${field.owner}WebServiceClientAdapter.JSON_MOBILE_ID)) {
-					${curr.name?uncap_first}.setId(json.getInt(JSON_MOBILE_ID));			
-						<#elseif (curr.options.sync?? && field.name=="serverId")>
+					${curr.name?uncap_first}.setId(json.getInt(JSON_MOBILE_ID));		
+				}	
+						</#if><#elseif (curr.options.sync?? && field.name=="serverId")><#if !InheritanceUtils.isExtended(curr)>
 				if (json.has(${field.owner}WebServiceClientAdapter.JSON_ID)) {
 					int server_id = json.optInt(${curr.name}WebServiceClientAdapter.JSON_ID);
 				
 					if (server_id != 0) {
 						${curr.name?uncap_first}.setServerId(server_id);	
 					}			
-						<#else>
+				}
+						</#if><#else>
 				if (json.has(${field.owner}WebServiceClientAdapter.${alias(field.name)})) {
 							<#if (FieldsUtils.getJavaType(field)?lower_case == "datetime")>
 					DateTimeFormatter ${field.name?uncap_first}Formatter = <#if (curr.options.sync?? && field.name=="sync_uDate")>DateTimeFormat.forPattern(SYNC_UPDATE_DATE_FORMAT)<#else>DateTimeFormat.forPattern(REST_UPDATE_DATE_FORMAT)</#if>;
@@ -504,8 +506,8 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
 							<#else>
 					${curr.name?uncap_first}.set${field.name?cap_first}(json.get${typeToJsonType(field)}(${field.owner}WebServiceClientAdapter.${alias(field.name)}));	
 							</#if>
-						</#if>
 				}
+						</#if>
 					<#else>
 						<#if (isRestEntity(field.relation.targetEntity))>
 				if (json.has(${field.owner}WebServiceClientAdapter.${alias(field.name)})) {
@@ -659,13 +661,13 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
 			<#list curr.fields?values as field>
 				<#if (!field.internal)>
 					<#if (!field.relation??)>
-						<#if (curr.options.sync?? && field.name?lower_case=="id")>
+						<#if (curr.options.sync?? && field.name?lower_case=="id")><#if !InheritanceUtils.isExtended(curr)>
 			params.put(${curr.name}WebServiceClientAdapter.JSON_ID, ${curr.name?uncap_first}.getServerId());
-						<#elseif (curr.options.sync?? && field.name=="serverId")>
+						</#if><#elseif (curr.options.sync?? && field.name=="serverId")><#if !InheritanceUtils.isExtended(curr)>
 			params.put(${curr.name}WebServiceClientAdapter.JSON_MOBILE_ID, ${curr.name?uncap_first}.getId());
-						<#elseif (curr.options.sync?? && field.name=="sync_uDate")>
+						</#if><#elseif (curr.options.sync?? && field.name=="sync_uDate")><#if !InheritanceUtils.isExtended(curr)>
 			params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)}, ${curr.name?uncap_first}.get${field.name?cap_first}().toString(SYNC_UPDATE_DATE_FORMAT));
-						<#elseif (FieldsUtils.getJavaType(field)?lower_case == "datetime")>
+						</#if><#elseif (FieldsUtils.getJavaType(field)?lower_case == "datetime")>
 			if (${curr.name?uncap_first}.get${field.name?cap_first}()!=null){
 				params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)}, ${curr.name?uncap_first}.get${field.name?cap_first}().toString(REST_UPDATE_DATE_FORMAT));
 			}
@@ -742,13 +744,13 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
 		</#if>
 		try {
 			<#list restFields as field>
-					<#if (curr.options.sync?? && field.name?lower_case=="id")>
+					<#if (curr.options.sync?? && field.name?lower_case=="id")><#if !InheritanceUtils.isExtended(curr)>
 			params.put(${curr.name}WebServiceClientAdapter.JSON_ID, values.get(${curr.name?cap_first}Contract.${curr.name}.COL_SERVERID));
-					<#elseif (curr.options.sync?? && field.name=="serverId")>
+					</#if><#elseif (curr.options.sync?? && field.name=="serverId")><#if !InheritanceUtils.isExtended(curr)>
 			params.put(${curr.name}WebServiceClientAdapter.JSON_MOBILE_ID, values.get(${curr.name?cap_first}Contract.${curr.name}.COL_ID));
-					<#elseif (curr.options.sync?? && field.name=="sync_uDate")>		
+					</#if><#elseif (curr.options.sync?? && field.name=="sync_uDate")><#if !InheritanceUtils.isExtended(curr)>
 			params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)}, new DateTime(values.get(${curr.name?cap_first}Contract.${curr.name}.${NamingUtils.alias(field.name)})).toString(SYNC_UPDATE_DATE_FORMAT));
-					<#else>
+					</#if><#else>
 						<#if FieldsUtils.getJavaType(field)?lower_case == "datetime">
 			params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)}, new DateTime(values.get(${curr.name?cap_first}Contract.${curr.name}.${NamingUtils.alias(field.name)})).toString(REST_UPDATE_DATE_FORMAT));
 						<#else>
