@@ -18,7 +18,7 @@ import com.tactfactory.harmony.updater.IUpdater;
  * Interface for RestAdapter.
  *
  */
-public interface IRestAdapter extends IAdapter {
+public interface RestAdapter extends IAdapter {
     /**
      * 
      * @return List of {@link IUpdater} for global Rest files

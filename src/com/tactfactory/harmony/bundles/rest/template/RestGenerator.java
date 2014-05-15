@@ -10,7 +10,7 @@ package com.tactfactory.harmony.bundles.rest.template;
 
 import java.util.List;
 
-import com.tactfactory.harmony.bundles.rest.platform.IRestAdapter;
+import com.tactfactory.harmony.bundles.rest.platform.RestAdapter;
 import com.tactfactory.harmony.meta.ConfigMetadata;
 import com.tactfactory.harmony.meta.EntityMetadata;
 import com.tactfactory.harmony.meta.TranslationMetadata;
@@ -25,14 +25,14 @@ import com.tactfactory.harmony.utils.ConsoleUtils;
 /**
  * Generator for bundle Rest.
  */
-public class RestGenerator extends BaseGenerator<IRestAdapter> {
+public class RestGenerator extends BaseGenerator<RestAdapter> {
     
 	/**
 	 * Constructor.
 	 * @param adapter The used adapter.
 	 * @throws Exception 
 	 */
-	public RestGenerator(final IRestAdapter adapter) throws Exception {
+	public RestGenerator(final RestAdapter adapter) throws Exception {
 		super(adapter);
 		this.setDatamodel(this.getAppMetas().toMap(this.getAdapter()));
 	}

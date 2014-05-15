@@ -17,12 +17,12 @@ import net.xeoh.plugins.base.annotations.meta.Version;
 import com.tactfactory.harmony.Console;
 import com.tactfactory.harmony.bundles.rest.parser.RestCompletor;
 import com.tactfactory.harmony.bundles.rest.parser.RestParser;
-import com.tactfactory.harmony.bundles.rest.platform.IRestAdapter;
+import com.tactfactory.harmony.bundles.rest.platform.RestAdapter;
 import com.tactfactory.harmony.bundles.rest.platform.android.RestAdapterAndroid;
 import com.tactfactory.harmony.bundles.rest.platform.ios.RestAdapterIos;
 import com.tactfactory.harmony.bundles.rest.platform.winphone.RestAdapterWinphone;
 import com.tactfactory.harmony.bundles.rest.template.RestGenerator;
-import com.tactfactory.harmony.command.BundleCommandBase;
+import com.tactfactory.harmony.command.base.CommandBundleBase;
 import com.tactfactory.harmony.meta.ApplicationMetadata;
 import com.tactfactory.harmony.plateforme.TargetPlatform;
 import com.tactfactory.harmony.utils.ConsoleUtils;
@@ -33,7 +33,7 @@ import com.tactfactory.harmony.utils.ConsoleUtils;
 @PluginImplementation
 @Author(name = "TACTfactory")
 @Version(version = 00600)
-public class RestCommand extends BundleCommandBase<IRestAdapter> {
+public class RestCommand extends CommandBundleBase<RestAdapter> {
 	
 	//bundle name
 	/** Bundle name. */
@@ -73,11 +73,13 @@ public class RestCommand extends BundleCommandBase<IRestAdapter> {
 
 		this.generateMetas();
 		if (ApplicationMetadata.INSTANCE.getEntities() != null) {
-			try {
-				new RestGenerator(new RestAdapterAndroid()).generateAll();
-			} catch (final Exception e) {
-				ConsoleUtils.displayError(e);
-			}
+			for(RestAdapter adapter : this.getBundleAdapters()) {
+                try {
+                    new RestGenerator(adapter).generateAll();
+                } catch (Exception e) {
+                    ConsoleUtils.displayError(e);
+                }
+            }
 		}
 	}
 	

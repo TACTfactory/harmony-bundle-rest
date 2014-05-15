@@ -11,15 +11,15 @@ package com.tactfactory.harmony.bundles.rest.platform.android;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.tactfactory.harmony.bundles.rest.platform.IRestAdapter;
+import com.tactfactory.harmony.bundles.rest.platform.RestAdapter;
 import com.tactfactory.harmony.meta.EntityMetadata;
 import com.tactfactory.harmony.plateforme.android.AndroidAdapter;
-import com.tactfactory.harmony.plateforme.android.ManifestPermission;
+import com.tactfactory.harmony.plateforme.android.updater.ManifestPermissionAndroid;
 import com.tactfactory.harmony.template.androidxml.ManifestUpdater;
 import com.tactfactory.harmony.updater.IUpdater;
 import com.tactfactory.harmony.updater.impl.SourceFile;
 
-public class RestAdapterAndroid extends AndroidAdapter implements IRestAdapter {
+public class RestAdapterAndroid extends AndroidAdapter implements RestAdapter {
 
     @Override
     public List<IUpdater> getRestUpdaters() {
@@ -31,10 +31,10 @@ public class RestAdapterAndroid extends AndroidAdapter implements IRestAdapter {
         
         result.addAll(this.getLibrariesCopyFile(libraries));
         
-        result.add(new ManifestPermission(
+        result.add(new ManifestPermissionAndroid(
                 this, ManifestUpdater.Permissions.INTERNET));
         
-        result.add(new ManifestPermission(
+        result.add(new ManifestPermissionAndroid(
                 this, ManifestUpdater.Permissions.ACCESS_NETWORK_STATE));
         
         String templatePath = this.getTemplateSourceProviderPath();

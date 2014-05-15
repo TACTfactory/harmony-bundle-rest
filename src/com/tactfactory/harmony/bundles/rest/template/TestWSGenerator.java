@@ -10,7 +10,7 @@ package com.tactfactory.harmony.bundles.rest.template;
 
 import java.util.List;
 
-import com.tactfactory.harmony.bundles.rest.platform.IRestAdapter;
+import com.tactfactory.harmony.bundles.rest.platform.RestAdapter;
 import com.tactfactory.harmony.meta.EntityMetadata;
 import com.tactfactory.harmony.template.BaseGenerator;
 import com.tactfactory.harmony.template.TagConstant;
@@ -21,14 +21,14 @@ import com.tactfactory.harmony.utils.ConsoleUtils;
  * WebService tests generator.
  *
  */
-public class TestWSGenerator extends BaseGenerator<IRestAdapter> {
+public class TestWSGenerator extends BaseGenerator<RestAdapter> {
 	
 	/**
 	 * Constructor. 
-	 * @param adapter The {@link IRestAdapter} to use.
+	 * @param adapter The {@link RestAdapter} to use.
 	 * @throws Exception 
 	 */
-	public TestWSGenerator(final IRestAdapter adapter) throws Exception {
+	public TestWSGenerator(final RestAdapter adapter) throws Exception {
 		super(adapter);
 		this.setDatamodel(this.getAppMetas().toMap(this.getAdapter()));
 	}
