@@ -25,20 +25,20 @@ public interface RestAdapter extends IAdapter {
      * @return List of {@link IUpdater} for global Rest files
      */
     List<IUpdater> getRestUpdaters();
-    
+
     /**
      * 
      * @param entity {@link EntityMetadata} for generate its specifics files
      * @return List of {@link IUpdater} for entity Rest files
      */
     List<IUpdater> getRestEntityUpdaters(EntityMetadata entity);
-    
+
     /**
      * 
      * @return List of {@link IUpdater} for global test Rest files
      */
     List<IUpdater> getRestUpdatersTest();
-    
+
     /**
      * 
      * @param entity {@link EntityMetadata} for generate its specifics files
