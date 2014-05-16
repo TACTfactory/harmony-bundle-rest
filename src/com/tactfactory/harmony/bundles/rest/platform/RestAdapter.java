@@ -16,6 +16,7 @@ import com.tactfactory.harmony.updater.IUpdater;
 
 /**
  * Interface for RestAdapter.
+ * @author Erwan Le Huitouze (erwan.lehuitouze@tactfactory.com)
  *
  */
 public interface RestAdapter extends IAdapter {

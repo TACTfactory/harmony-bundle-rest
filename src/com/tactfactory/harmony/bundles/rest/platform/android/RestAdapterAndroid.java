@@ -19,6 +19,11 @@ import com.tactfactory.harmony.template.androidxml.ManifestUpdater;
 import com.tactfactory.harmony.updater.IUpdater;
 import com.tactfactory.harmony.updater.impl.SourceFile;
 
+/**
+ * RestAdapter Adapter for Android.
+ * @author Erwan Le Huitouze (erwan.lehuitouze@tactfactory.com)
+ *
+ */
 public class RestAdapterAndroid extends AndroidAdapter implements RestAdapter {
 
     @Override

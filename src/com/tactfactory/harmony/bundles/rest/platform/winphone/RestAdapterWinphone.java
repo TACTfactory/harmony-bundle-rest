@@ -12,10 +12,16 @@ import java.util.List;
 
 import com.tactfactory.harmony.bundles.rest.platform.RestAdapter;
 import com.tactfactory.harmony.meta.EntityMetadata;
-import com.tactfactory.harmony.plateforme.android.AndroidAdapter;
+import com.tactfactory.harmony.plateforme.winphone.WinphoneAdapter;
 import com.tactfactory.harmony.updater.IUpdater;
 
-public class RestAdapterWinphone extends AndroidAdapter implements RestAdapter {
+/**
+ * RestAdapter Adapter for Windows Phone.
+ * @author Erwan Le Huitouze (erwan.lehuitouze@tactfactory.com)
+ *
+ */
+public class RestAdapterWinphone
+        extends WinphoneAdapter implements RestAdapter {
 
     @Override
     public List<IUpdater> getRestUpdaters() {

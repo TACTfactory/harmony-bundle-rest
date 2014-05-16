@@ -12,10 +12,15 @@ import java.util.List;
 
 import com.tactfactory.harmony.bundles.rest.platform.RestAdapter;
 import com.tactfactory.harmony.meta.EntityMetadata;
-import com.tactfactory.harmony.plateforme.android.AndroidAdapter;
+import com.tactfactory.harmony.plateforme.ios.IosAdapter;
 import com.tactfactory.harmony.updater.IUpdater;
 
-public class RestAdapterIos extends AndroidAdapter implements RestAdapter {
+/**
+ * RestAdapter Adapter for IOS.
+ * @author Erwan Le Huitouze (erwan.lehuitouze@tactfactory.com)
+ *
+ */
+public class RestAdapterIos extends IosAdapter implements RestAdapter {
 
     @Override
     public List<IUpdater> getRestUpdaters() {
