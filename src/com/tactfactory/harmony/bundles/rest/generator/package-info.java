@@ -2,4 +2,4 @@
  * This package contains the generators for the bundle.
  */
 
-package com.tactfactory.harmony.bundles.rest.template;
+package com.tactfactory.harmony.bundles.rest.generator;

@@ -8,7 +8,7 @@ import org.junit.runners.Suite.SuiteClasses;
  */
 @RunWith(Suite.class)
 @SuiteClasses({
-	RestGlobalTest.class })
+    RestGlobalTest.class })
 
 public class AllTests {
 

@@ -16,21 +16,21 @@ import com.tactfactory.harmony.meta.ClassMetadata;
  * Completor for rest bundle.
  */
 public class RestCompletor {
-	
-	/**
-	 * Store all rest entities in an ApplicationRestMetadata class.
-	 * @param am The ApplicationMetadata.
-	 */
-	public final void generateApplicationRestMetadata(
-			final ApplicationMetadata am) {
-		for (final ClassMetadata cm : am.getEntities().values()) {
-			if (cm.getOptions().containsKey("rest")) {
-				final RestMetadata rm = 
-						(RestMetadata) cm.getOptions().get("rest");
-				if (rm.getUri() == null || rm.getUri().equals("")) {
-					rm.setUri(cm.getName());
-				}
-			}
-		}
-	}
+
+    /**
+     * Store all rest entities in an ApplicationRestMetadata class.
+     * @param am The ApplicationMetadata.
+     */
+    public final void generateApplicationRestMetadata(
+            final ApplicationMetadata am) {
+        for (final ClassMetadata cm : am.getEntities().values()) {
+            if (cm.getOptions().containsKey("rest")) {
+                final RestMetadata rm = 
+                        (RestMetadata) cm.getOptions().get("rest");
+                if (rm.getUri() == null || rm.getUri().equals("")) {
+                    rm.setUri(cm.getName());
+                }
+            }
+        }
+    }
 }
