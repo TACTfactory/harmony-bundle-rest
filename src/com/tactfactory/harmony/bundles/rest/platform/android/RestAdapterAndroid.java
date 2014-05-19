@@ -29,24 +29,24 @@ public class RestAdapterAndroid extends AndroidAdapter implements RestAdapter {
     @Override
     public List<IUpdater> getRestUpdaters() {
         List<IUpdater> result = new ArrayList<IUpdater>();
-        
+
         List<String> libraries = new ArrayList<String>();
         libraries.add("bundle-rest-annotations.jar");
         libraries.add("httpmime-4.1.1.jar");
-        
+
         result.addAll(this.getLibrariesCopyFile(libraries));
-        
+
         result.add(new ManifestPermissionAndroid(
                 this, ManifestUpdater.Permissions.INTERNET));
-        
+
         result.add(new ManifestPermissionAndroid(
                 this, ManifestUpdater.Permissions.ACCESS_NETWORK_STATE));
-        
+
         String templatePath = this.getTemplateSourceProviderPath();
         String filePath = this.getSourcePath()
                 + this.getApplicationMetadata().getProjectNameSpace()
                 + "/" + this.getData() + "/";
-        
+
         result.add(new SourceFile(
                 templatePath + "base/WebServiceClientAdapterBase.java",
                 filePath + "base/WebServiceClientAdapterBase.java",
@@ -57,83 +57,83 @@ public class RestAdapterAndroid extends AndroidAdapter implements RestAdapter {
                 templatePath + "WebServiceClientAdapter.java", 
                 filePath + "WebServiceClientAdapter.java",
                 false));
-        
+
         // Make RestClient
         result.add(new SourceFile(
                 templatePath + "RestClient.java", 
                 filePath + "RestClient.java",
                 false));
-        
+
         return result;
     }
 
     @Override
     public List<IUpdater> getRestEntityUpdaters(EntityMetadata entity) {
         List<IUpdater> result = new ArrayList<IUpdater>();
-        
+
         String templatePath = this.getTemplateSourceProviderPath();
         String filePath = this.getSourcePath()
                 + this.getApplicationMetadata().getProjectNameSpace()
                 + "/" + this.getData() + "/";
-        
+
         result.add(new SourceFile(
                 templatePath + "base/TemplateWebServiceClientAdapterBase.java",
                 filePath + "base/" + entity.getName()
-                    + "WebServiceClientAdapterBase.java",
+                + "WebServiceClientAdapterBase.java",
                 true));
         result.add(new SourceFile(
                 templatePath + "TemplateWebServiceClientAdapter.java",
                 filePath + entity.getName() + "WebServiceClientAdapter.java",
                 false));
-        
+
         return result;
     }
 
     @Override
     public List<IUpdater> getRestUpdatersTest() {
         List<IUpdater> result = new ArrayList<IUpdater>();
-        
+
         List<String> libraries = new ArrayList<String>();
         libraries.add("mockwebserver.jar");
-        
+
         result.addAll(this.getLibrariesTestCopyFile(libraries));
-        
+
         String templatePath = this.getTemplateTestsPath();
         String filePath = this.getTestPath()
                 + this.getSource() + "/"
                 + this.getApplicationMetadata().getProjectNameSpace() + "/"
                 + "test/";
-        
+
         result.add(new SourceFile(
                 templatePath + "base/TestWSBase.java",
                 filePath + "base/TestWSBase.java",
                 true));
-        
+
         return result;
     }
 
     @Override
     public List<IUpdater> getRestEntityUpdatersTest(EntityMetadata entity) {
         List<IUpdater> result = new ArrayList<IUpdater>();
-        
+
         String templatePath = this.getTemplateTestsPath();
         String filePath = this.getTestPath()
                 + this.getSource() + "/"
                 + this.getApplicationMetadata().getProjectNameSpace() + "/"
                 + "test/";
-        
+
         result.add(new SourceFile(
                 templatePath + "base/TemplateTestWSBase.java",
                 String.format("%sbase/%sTestWSBase.java",
                         filePath, entity.getName()),
-                true));
-        
+                        true));
+
         result.add(new SourceFile(
                 templatePath + "TemplateTestWS.java",
                 String.format("%s%sTestWS.java",
                         filePath, entity.getName()),
-                false));
-        
+                        false));
+
         return result;
     }
 
