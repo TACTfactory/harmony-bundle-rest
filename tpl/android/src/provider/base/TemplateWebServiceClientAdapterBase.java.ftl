@@ -745,14 +745,14 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
 		try {
 			<#list restFields as field>
 					<#if (curr.options.sync?? && field.name?lower_case=="id")><#if !InheritanceUtils.isExtended(curr)>
-			params.put(${curr.name}WebServiceClientAdapter.JSON_ID, values.get(${curr.name?cap_first}Contract.${curr.name}.COL_SERVERID));
+			params.put(${curr.name}WebServiceClientAdapter.JSON_ID, values.get(${curr.name?cap_first}Contract.COL_SERVERID));
 					</#if><#elseif (curr.options.sync?? && field.name=="serverId")><#if !InheritanceUtils.isExtended(curr)>
-			params.put(${curr.name}WebServiceClientAdapter.JSON_MOBILE_ID, values.get(${curr.name?cap_first}Contract.${curr.name}.COL_ID));
+			params.put(${curr.name}WebServiceClientAdapter.JSON_MOBILE_ID, values.get(${curr.name?cap_first}Contract.COL_ID));
 					</#if><#elseif (curr.options.sync?? && field.name=="sync_uDate")><#if !InheritanceUtils.isExtended(curr)>
-			params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)}, new DateTime(values.get(${curr.name?cap_first}Contract.${curr.name}.${NamingUtils.alias(field.name)})).toString(SYNC_UPDATE_DATE_FORMAT));
+			params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)}, new DateTime(values.get(${ContractUtils.getContractCol(field)})).toString(SYNC_UPDATE_DATE_FORMAT));
 					</#if><#else>
 						<#if FieldsUtils.getJavaType(field)?lower_case == "datetime">
-			params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)}, new DateTime(values.get(${curr.name?cap_first}Contract.${curr.name}.${NamingUtils.alias(field.name)})).toString(REST_UPDATE_DATE_FORMAT));
+			params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)}, new DateTime(values.get(${ContractUtils.getContractCol(field)})).toString(REST_UPDATE_DATE_FORMAT));
 						<#else>
 							<#if field.relation??>
 			${field.relation.targetEntity?cap_first}WebServiceClientAdapter ${field.name}Adapter =
@@ -761,7 +761,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
 					${field.name}Adapter.contentValuesToJson(values));
 							<#else>
 			params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)},
-					values.get(${curr.name?cap_first}Contract.${curr.name}.${NamingUtils.alias(field.name)}));
+					values.get(${ContractUtils.getContractCol(field)}));
 							</#if>
 						</#if>
 					</#if>
