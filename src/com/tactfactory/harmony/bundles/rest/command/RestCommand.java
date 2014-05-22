@@ -16,7 +16,6 @@ import net.xeoh.plugins.base.annotations.meta.Version;
 
 import com.tactfactory.harmony.Console;
 import com.tactfactory.harmony.bundles.rest.generator.RestGenerator;
-import com.tactfactory.harmony.bundles.rest.parser.RestCompletor;
 import com.tactfactory.harmony.bundles.rest.parser.RestParser;
 import com.tactfactory.harmony.bundles.rest.platform.RestAdapter;
 import com.tactfactory.harmony.bundles.rest.platform.android.RestAdapterAndroid;
@@ -70,8 +69,8 @@ public class RestCommand extends CommandBundleBase<RestAdapter> {
      * Generate java code files from parsed Entities.
      */
     protected final void generateAdapters() {
-
         this.generateMetas();
+        
         if (ApplicationMetadata.INSTANCE.getEntities() != null) {
             for(RestAdapter adapter : this.getBundleAdapters()) {
                 try {
@@ -87,8 +86,6 @@ public class RestCommand extends CommandBundleBase<RestAdapter> {
     public final void generateMetas() {
         this.registerParser(new RestParser());
         super.generateMetas();
-        new RestCompletor().generateApplicationRestMetadata(
-                ApplicationMetadata.INSTANCE);
     }
 
     @Override
