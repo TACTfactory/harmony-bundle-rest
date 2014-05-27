@@ -23,7 +23,7 @@ import com.tactfactory.harmony.bundles.rest.platform.ios.RestAdapterIos;
 import com.tactfactory.harmony.bundles.rest.platform.winphone.RestAdapterWinphone;
 import com.tactfactory.harmony.command.base.CommandBundleBase;
 import com.tactfactory.harmony.meta.ApplicationMetadata;
-import com.tactfactory.harmony.plateforme.TargetPlatform;
+import com.tactfactory.harmony.platform.TargetPlatform;
 import com.tactfactory.harmony.utils.ConsoleUtils;
 
 /**

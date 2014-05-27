@@ -12,7 +12,7 @@ import java.util.List;
 
 import com.tactfactory.harmony.bundles.rest.platform.RestAdapter;
 import com.tactfactory.harmony.meta.EntityMetadata;
-import com.tactfactory.harmony.plateforme.ios.IosAdapter;
+import com.tactfactory.harmony.platform.ios.IosAdapter;
 import com.tactfactory.harmony.updater.IUpdater;
 
 /**

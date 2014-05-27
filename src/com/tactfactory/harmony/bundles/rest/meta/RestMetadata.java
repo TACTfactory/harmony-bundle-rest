@@ -12,7 +12,7 @@ import java.util.HashMap;
 
 import com.tactfactory.harmony.bundles.rest.annotation.Rest.Security;
 import com.tactfactory.harmony.meta.BaseMetadata;
-import com.tactfactory.harmony.plateforme.IAdapter;
+import com.tactfactory.harmony.platform.IAdapter;
 
 /**
  * Metadata for Bundle Rest.

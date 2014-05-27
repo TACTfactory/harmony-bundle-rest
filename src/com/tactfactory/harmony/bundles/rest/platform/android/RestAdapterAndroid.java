@@ -12,10 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.tactfactory.harmony.bundles.rest.platform.RestAdapter;
+import com.tactfactory.harmony.generator.androidxml.ManifestUpdater;
 import com.tactfactory.harmony.meta.EntityMetadata;
-import com.tactfactory.harmony.plateforme.android.AndroidAdapter;
-import com.tactfactory.harmony.plateforme.android.updater.ManifestPermissionAndroid;
-import com.tactfactory.harmony.template.androidxml.ManifestUpdater;
+import com.tactfactory.harmony.platform.android.AndroidAdapter;
+import com.tactfactory.harmony.platform.android.updater.ManifestPermissionAndroid;
 import com.tactfactory.harmony.updater.IUpdater;
 import com.tactfactory.harmony.updater.impl.SourceFile;
 

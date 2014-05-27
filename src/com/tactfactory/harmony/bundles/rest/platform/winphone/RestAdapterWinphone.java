@@ -12,7 +12,7 @@ import java.util.List;
 
 import com.tactfactory.harmony.bundles.rest.platform.RestAdapter;
 import com.tactfactory.harmony.meta.EntityMetadata;
-import com.tactfactory.harmony.plateforme.winphone.WinphoneAdapter;
+import com.tactfactory.harmony.platform.winphone.WinphoneAdapter;
 import com.tactfactory.harmony.updater.IUpdater;
 
 /**
