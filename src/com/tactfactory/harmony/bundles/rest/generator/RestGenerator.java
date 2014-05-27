@@ -11,14 +11,14 @@ package com.tactfactory.harmony.bundles.rest.generator;
 import java.util.List;
 
 import com.tactfactory.harmony.bundles.rest.platform.RestAdapter;
+import com.tactfactory.harmony.generator.BaseGenerator;
+import com.tactfactory.harmony.generator.ConfigGenerator;
+import com.tactfactory.harmony.generator.TagConstant;
+import com.tactfactory.harmony.generator.TranslationGenerator;
 import com.tactfactory.harmony.meta.ConfigMetadata;
 import com.tactfactory.harmony.meta.EntityMetadata;
 import com.tactfactory.harmony.meta.TranslationMetadata;
 import com.tactfactory.harmony.meta.TranslationMetadata.Group;
-import com.tactfactory.harmony.template.BaseGenerator;
-import com.tactfactory.harmony.template.ConfigGenerator;
-import com.tactfactory.harmony.template.TagConstant;
-import com.tactfactory.harmony.template.TranslationGenerator;
 import com.tactfactory.harmony.updater.IUpdater;
 import com.tactfactory.harmony.utils.ConsoleUtils;
 

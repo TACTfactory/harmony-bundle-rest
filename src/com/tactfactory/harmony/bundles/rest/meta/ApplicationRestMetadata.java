@@ -11,10 +11,10 @@ package com.tactfactory.harmony.bundles.rest.meta;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+import com.tactfactory.harmony.generator.TagConstant;
 import com.tactfactory.harmony.meta.BaseMetadata;
 import com.tactfactory.harmony.meta.ClassMetadata;
 import com.tactfactory.harmony.plateforme.IAdapter;
-import com.tactfactory.harmony.template.TagConstant;
 
 /**
  * Rest metadata at application level.

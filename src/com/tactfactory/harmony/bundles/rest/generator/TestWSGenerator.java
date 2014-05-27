@@ -11,9 +11,9 @@ package com.tactfactory.harmony.bundles.rest.generator;
 import java.util.List;
 
 import com.tactfactory.harmony.bundles.rest.platform.RestAdapter;
+import com.tactfactory.harmony.generator.BaseGenerator;
+import com.tactfactory.harmony.generator.TagConstant;
 import com.tactfactory.harmony.meta.EntityMetadata;
-import com.tactfactory.harmony.template.BaseGenerator;
-import com.tactfactory.harmony.template.TagConstant;
 import com.tactfactory.harmony.updater.IUpdater;
 import com.tactfactory.harmony.utils.ConsoleUtils;
 
