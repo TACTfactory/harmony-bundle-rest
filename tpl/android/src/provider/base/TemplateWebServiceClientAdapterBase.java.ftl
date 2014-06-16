@@ -491,9 +491,13 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
 				        && !json.isNull(${field.owner}WebServiceClientAdapter.${alias(field.name)})) {
 							<#if (FieldsUtils.getJavaType(field)?lower_case == "datetime")>
 					DateTimeFormatter ${field.name?uncap_first}Formatter = <#if (curr.options.sync?? && field.name=="sync_uDate")>DateTimeFormat.forPattern(${field.owner}WebServiceClientAdapter.SYNC_UPDATE_DATE_FORMAT)<#else>DateTimeFormat.forPattern(${field.owner}WebServiceClientAdapter.REST_UPDATE_DATE_FORMAT)</#if>;
-					${curr.name?uncap_first}.set${field.name?cap_first}(
-							${field.name?uncap_first}Formatter.withOffsetParsed().parseDateTime(
-									json.get${typeToJsonType(field)}(${field.owner}WebServiceClientAdapter.${alias(field.name)})));
+					try {
+			            ${curr.name?uncap_first}.set${field.name?cap_first}(
+						        ${field.name?uncap_first}Formatter.withOffsetParsed().parseDateTime(
+									    json.get${typeToJsonType(field)}(${field.owner}WebServiceClientAdapter.${alias(field.name)})));
+					} catch (IllegalArgumentException e) {
+                        Log.e(TAG, e.getMessage());
+                    }
 							<#elseif (FieldsUtils.getJavaType(field)=="boolean")>
 					${curr.name?uncap_first}.set${field.name?cap_first}(json.get${typeToJsonType(field)}(${field.owner}WebServiceClientAdapter.${alias(field.name)}));	
 							<#elseif (field.harmony_type == "enum")>
