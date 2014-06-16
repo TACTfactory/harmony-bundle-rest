@@ -51,7 +51,7 @@ import android.util.Log;
 import ${project_namespace}.${project_name?cap_first}Application;
 
 public class RestClient {
-	private final String TAG = "WebService";
+	private final static String TAG = "WebService";
 	
 	public final static String SCHEME_HTTP = "http";
 	public final static String SCHEME_HTTPS = "https";
@@ -225,13 +225,13 @@ public class RestClient {
 		}
 	}
 	
-	private void readHeader(HttpResponse responce) {
+	protected void readHeader(HttpResponse responce) {
 		if (responce.containsHeader("csrf-token")) {
 			this.CSRFtoken = responce.getFirstHeader("csrf-token").getValue();
 		}
 	}
 	
-	private HttpEntity buildJsonEntity(JSONObject json) {
+	protected HttpEntity buildJsonEntity(JSONObject json) {
 		StringEntity entity = null;
 		
 		if (json != null) {
@@ -246,7 +246,7 @@ public class RestClient {
 		return entity;
 	}
 	
-	private HttpEntity buildMultipartEntity(JSONObject jsonParams) {
+	protected HttpEntity buildMultipartEntity(JSONObject jsonParams) {
 		MultipartEntity entity = new MultipartEntity(
 			HttpMultipartMode.BROWSER_COMPATIBLE);
 		
@@ -283,7 +283,7 @@ public class RestClient {
 		return entity;
 	}
 	
-	private HttpRequest buildHttpRequest(Verb verb, String path,
+	protected HttpRequest buildHttpRequest(Verb verb, String path,
 			HttpEntity httpEntity, List<Header> headers) {
 		HttpRequest result;
 		
