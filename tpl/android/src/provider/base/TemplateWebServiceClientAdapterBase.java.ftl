@@ -538,7 +538,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
     						${curr.name?uncap_first}.set${field.name?cap_first}(${field.name?uncap_first});
     					}
     				} catch (Exception e){
-                        Log.e(TAG, e.getMessage());
+                        Log.e(TAG, "Json doesn't contains ${field.relation.targetEntity} data");
                     }
 								</#if>
 							</#if>
