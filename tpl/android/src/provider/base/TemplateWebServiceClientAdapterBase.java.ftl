@@ -475,8 +475,9 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
 					<#if (!field.relation??)>
 
 						<#if (curr.options.sync?? && field.name?lower_case=="id")><#if !InheritanceUtils.isExtended(curr)>
-				if (json.has(${field.owner}WebServiceClientAdapter.JSON_MOBILE_ID)) {
-					${curr.name?uncap_first}.setId(json.getInt(JSON_MOBILE_ID));		
+				if (json.has(${field.owner}WebServiceClientAdapter.JSON_MOBILE_ID)
+				        && !json.isNull(${field.owner}WebServiceClientAdapter.JSON_MOBILE_ID)) {
+					${curr.name?uncap_first}.setId(json.getInt(${field.owner}WebServiceClientAdapter.JSON_MOBILE_ID));		
 				}	
 						</#if><#elseif (curr.options.sync?? && field.name=="serverId")><#if !InheritanceUtils.isExtended(curr)>
 				if (json.has(${field.owner}WebServiceClientAdapter.JSON_ID)) {
@@ -532,7 +533,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
 					${field.relation.targetEntity}SQLiteAdapter ${field.name}Adapter = new ${field.relation.targetEntity}SQLiteAdapter(this.context);
 					${field.name}Adapter.open();
 					${curr.name?uncap_first}.set${field.name?cap_first}(${field.name}Adapter.getByServerID(
-							json.optJSONObject(JSON_${field.name?upper_case}).optInt(JSON_ID)));
+							json.optJSONObject(${field.owner}WebServiceClientAdapter.JSON_${field.name?upper_case}).optInt(JSON_ID)));
 					${field.name}Adapter.close();
 								<#else>
 					try {
