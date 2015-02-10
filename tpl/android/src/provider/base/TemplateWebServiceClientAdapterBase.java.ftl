@@ -582,7 +582,9 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
 
                     try {
                         //.opt${typeToJsonType(field)}(${field.owner}WebServiceClientAdapter.${alias(field.name)})
-                        ${field.name}Adapter.extractItems(json, ${field.owner}WebServiceClientAdapter.${alias(field.name)}, ${field.name?uncap_first});
+                        ${field.name}Adapter.extractItems(
+                                json, ${field.owner}WebServiceClientAdapter.${alias(field.name)},
+                                ${field.name?uncap_first});
                         ${curr.name?uncap_first}.set${field.name?cap_first}(${field.name?uncap_first});
                     } catch (JSONException e){
                         Log.e(TAG, e.getMessage());
@@ -604,8 +606,9 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
                                 new ${field.relation.targetEntity}();
                         
                         if (${field.name}Adapter.extract(
-                                json.opt${typeToJsonType(field)}(${field.owner}WebServiceClientAdapter.${alias(field.name)}),
-                                    ${field.name?uncap_first})) {
+                                json.opt${typeToJsonType(field)}(
+                                        ${field.owner}WebServiceClientAdapter.${alias(field.name)}),
+                                        ${field.name?uncap_first})) {
                             ${curr.name?uncap_first}.set${field.name?cap_first}(${field.name?uncap_first});
                         }
                     } catch (Exception e){
