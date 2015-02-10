@@ -1,3 +1,4 @@
+<@header?interpret />
 <#include utilityPath + "all_imports.ftl" />
 <#assign curr = entities[current_entity] />
 <#function alias name object=false>
