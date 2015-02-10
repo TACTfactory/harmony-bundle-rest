@@ -237,7 +237,7 @@ public class RestClient {
                     + (endTime2 - endTime) + " ms.");
             }
         
-        } catch (ConnectTimeoutException e){
+        } catch (ConnectTimeoutException e) {
             Log.e(TAG, "Connection timed out. The host may be unreachable.");
             e.printStackTrace();
             

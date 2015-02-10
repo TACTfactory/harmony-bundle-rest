@@ -52,7 +52,7 @@ public abstract class WebServiceClientAdapter<T>
      * @param scheme The overriden scheme
      */
     public WebServiceClientAdapter(Context context,
-            String host, Integer port, String scheme){
+            String host, Integer port, String scheme) {
         this(context, host, port, scheme, null);
     }
 
@@ -66,7 +66,7 @@ public abstract class WebServiceClientAdapter<T>
      * @param prefix The overriden prefix
      */    
     public WebServiceClientAdapter(Context context,
-            String host, Integer port, String scheme, String prefix){
+            String host, Integer port, String scheme, String prefix) {
         super(context, host, port, scheme, prefix);
     }
 

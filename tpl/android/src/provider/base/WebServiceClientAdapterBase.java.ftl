@@ -73,7 +73,7 @@ public abstract class WebServiceClientAdapterBase<T> {
      *
      * @param context The context
      */
-    public WebServiceClientAdapterBase(Context context){
+    public WebServiceClientAdapterBase(Context context) {
         this(context, null);
     }
 
@@ -198,7 +198,7 @@ public abstract class WebServiceClientAdapterBase<T> {
                        verb, this.prefix + request, params, this.headers);
                     this.statusCode = this.restClient.getStatusCode();
                     
-                    if (isValidResponse(response)){
+                    if (isValidResponse(response)) {
                         this.errorCode = this.appendError(response,error);
                         this.error = error.toString();
                     }
@@ -356,7 +356,7 @@ public abstract class WebServiceClientAdapterBase<T> {
      * @param users The array of <T> to convert
      * @return The array of converted <T>
      */
-    public JSONArray itemsToJson(List<T> items){
+    public JSONArray itemsToJson(List<T> items) {
         JSONArray itemArray = new JSONArray();
         
         for (int i = 0; i < items.size(); i++) {
@@ -372,7 +372,7 @@ public abstract class WebServiceClientAdapterBase<T> {
      * @param users The array of <T> to convert
      * @return The array of converted <T>
      */
-    public JSONArray itemsIdToJson(List<T> items){
+    public JSONArray itemsIdToJson(List<T> items) {
         JSONArray itemArray = new JSONArray();
         
         for (int i = 0; i < items.size(); i++) {
@@ -454,7 +454,7 @@ public abstract class WebServiceClientAdapterBase<T> {
      * @param item : The T to insert
      * @return -1 if an error has occurred. 0 if not.
      */
-    public int insert(T item){
+    public int insert(T item) {
         int result = -1;
         String response = this.invokeRequest(
                     Verb.POST,
@@ -475,7 +475,7 @@ public abstract class WebServiceClientAdapterBase<T> {
      * @param values : The values to insert
      * @return -1 if an error has occurred. 0 if not.
      */
-    public int insert(ContentValues values){
+    public int insert(ContentValues values) {
         int result = -1;
         String response = this.invokeRequest(
                     Verb.POST,
@@ -504,12 +504,15 @@ public abstract class WebServiceClientAdapterBase<T> {
         boolean result = false;
         ConnectivityManager cm = (ConnectivityManager) 
                 this.context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
         if (cm != null) {
             NetworkInfo netInfo = cm.getActiveNetworkInfo();
+
             if (netInfo != null && netInfo.isConnectedOrConnecting()) {
                 result = true;
             }
         }
+
         return result;
     }
     

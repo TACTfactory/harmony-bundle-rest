@@ -73,7 +73,7 @@
         try {
         ${field.relation.targetEntity}WebServiceClientAdapter.extract${field.relation.targetEntity}s(json.opt${typeToJsonType(field)}(${alias(field.name)}), ${field.name?uncap_first});
         ${curr.name?uncap_first}.set${field.name?cap_first}(${field.name?uncap_first});
-        } catch (JSONException e){
+        } catch (JSONException e) {
         Log.e(TAG, e.getMessage());
         }
                 <#else>
@@ -286,7 +286,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
      * @param ${curr.name?uncap_first}s : The list in which the ${curr.name}s will be returned
      * @return The number of ${curr.name}s returned
      */
-    public int getAll(List<${curr.name}> ${curr.name?uncap_first}s){
+    public int getAll(List<${curr.name}> ${curr.name?uncap_first}s) {
         int result = -1;
         String response = this.invokeRequest(
                     Verb.GET,
@@ -313,7 +313,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
      * @param ${curr.name?uncap_first} : The ${curr.name} to retrieve (set the ID)
      * @return -1 if an error has occurred. 0 if not.
      */
-    public int get(${curr.name} ${curr.name?uncap_first}){
+    public int get(${curr.name} ${curr.name?uncap_first}) {
         int result = -1;
         String response = this.invokeRequest(
                     Verb.GET,
@@ -344,7 +344,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
      * @return -1 if an error has occurred. 0 if not.
      */
     public Cursor query(<#list curr_ids as id>final ${FieldsUtils.getJavaType(id)} ${id.name}<#if (id_has_next)>,
-            </#if></#list>){
+            </#if></#list>) {
         MatrixCursor result = new MatrixCursor(REST_COLS);
         String response = this.invokeRequest(
                     Verb.GET,
@@ -370,7 +370,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
     /**
      * @return the URI.
      */
-    public String getUri(){
+    public String getUri() {
         return "${curr.options.rest.uri}";
     }
 
@@ -379,7 +379,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
      * @param ${curr.name?uncap_first} : The ${curr.name} to update
      * @return -1 if an error has occurred. 0 if not.
      */
-    public int update(${curr.name} ${curr.name?uncap_first}){
+    public int update(${curr.name} ${curr.name?uncap_first}) {
         int result = -1;
         String response = this.invokeRequest(
                     Verb.PUT,
@@ -401,7 +401,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
      * @param ${curr.name?uncap_first} : The ${curr.name} to delete (only the id is necessary)
      * @return -1 if an error has occurred. 0 if not.
      */
-    public int delete(${curr.name} ${curr.name?uncap_first}){
+    public int delete(${curr.name} ${curr.name?uncap_first}) {
         int result = -1;
         String response = this.invokeRequest(
                     Verb.DELETE,
@@ -429,7 +429,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
      * @param ${relation.relation.targetEntity?lower_case} : The associated ${relation.relation.targetEntity?lower_case}
      * @return The number of ${curr.name}s returned
      */
-    public int getBy${relation.name?cap_first}(List<${curr.name}> ${curr.name?uncap_first}s, ${relation.relation.targetEntity} ${relation.relation.targetEntity?uncap_first}){
+    public int getBy${relation.name?cap_first}(List<${curr.name}> ${curr.name?uncap_first}s, ${relation.relation.targetEntity} ${relation.relation.targetEntity?uncap_first}) {
         int result = -1;
         String response = this.invokeRequest(
                     Verb.GET,
@@ -459,7 +459,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
      * @param ${relation.relation.targetEntity?lower_case} : The associated ${relation.relation.targetEntity?lower_case}
      * @return -1 if an error has occurred. 0 if not.
      */
-    public int getBy${relation.relation.targetEntity}(${curr.name} ${curr.name?uncap_first}, ${relation.relation.targetEntity} ${relation.relation.targetEntity?uncap_first}){
+    public int getBy${relation.relation.targetEntity}(${curr.name} ${curr.name?uncap_first}, ${relation.relation.targetEntity} ${relation.relation.targetEntity?uncap_first}) {
         int result = -1;
         String response = this.invokeRequest(
                     Verb.GET,
@@ -509,7 +509,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
      * @param ${curr.name?uncap_first} The returned ${curr.name}
      * @return true if a ${curr.name} was found. false if not
      */
-    public boolean extract(JSONObject json, ${curr.name} ${curr.name?uncap_first}){
+    public boolean extract(JSONObject json, ${curr.name} ${curr.name?uncap_first}) {
         <#assign shouldCatch = ((curr.fields?size - curr.relations?size) != 0) />
         boolean result = this.isValidJSON(json);
         <#if (InheritanceUtils.isExtended(curr))>
@@ -586,7 +586,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
                                 json, ${field.owner}WebServiceClientAdapter.${alias(field.name)},
                                 ${field.name?uncap_first});
                         ${curr.name?uncap_first}.set${field.name?cap_first}(${field.name?uncap_first});
-                    } catch (JSONException e){
+                    } catch (JSONException e) {
                         Log.e(TAG, e.getMessage());
                     }
                             <#else>
@@ -611,7 +611,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
                                         ${field.name?uncap_first})) {
                             ${curr.name?uncap_first}.set${field.name?cap_first}(${field.name?uncap_first});
                         }
-                    } catch (Exception e){
+                    } catch (Exception e) {
                         Log.e(TAG, "Json doesn't contains ${field.relation.targetEntity} data");
                     }
                                 </#if>
@@ -630,7 +630,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
     }
 
     @Override
-    public boolean extractCursor(JSONObject json, MatrixCursor cursor){
+    public boolean extractCursor(JSONObject json, MatrixCursor cursor) {
         boolean result = false;
         String id = json.optString(${curr.ids[0].owner}WebServiceClientAdapter.${alias(curr.ids[0].name)}, null);
         if (id != null) {
@@ -666,6 +666,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
                 Log.e(TAG, e.getMessage());
             }
         } 
+
         return result;
     }
 
@@ -711,7 +712,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
                 JSONObject jsonItem = itemArray.getJSONObject(i);
                 ${curr.name} item = new ${curr.name}();
                 this.extract(jsonItem, item);
-                if (item!=null){
+                if (item!=null) {
                     synchronized (items) {
                         items.add(item);
                     }
@@ -732,7 +733,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
      * @param ${curr.name?uncap_first} The ${curr.name} to convert
      * @return The converted ${curr.name}
      */
-    public JSONObject itemToJson(${curr.name} ${curr.name?uncap_first}){
+    public JSONObject itemToJson(${curr.name} ${curr.name?uncap_first}) {
         <#if (InheritanceUtils.isExtended(curr))>
         JSONObject params =
                 this.motherAdapter.itemToJson(${curr.name?uncap_first});
@@ -808,7 +809,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
      * @param item The <T> to convert
      * @return The converted <T>
      */
-    public JSONObject itemIdToJson(${curr.name?cap_first} item){
+    public JSONObject itemIdToJson(${curr.name?cap_first} item) {
         JSONObject params = new JSONObject();
         try {
             <#if curr.options.sync??>
@@ -837,6 +838,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
         <#else>
         JSONObject params = new JSONObject();
         </#if>
+
         try {
             <#list restFields as field>
                     <#if (curr.options.sync?? && field.name?lower_case=="id")><#if !InheritanceUtils.isExtended(curr)>
@@ -869,7 +871,6 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
                         </#if>
                     </#if>
             </#list>
-
         } catch (JSONException e) {
             Log.e(TAG, e.getMessage());
         }
