@@ -41,7 +41,7 @@ public abstract class ${curr.name}TestWSBase extends TestWSBase {
         int port = this.server.getPort();
 
         this.web = new ${curr.name}WebServiceClientAdapter(
-            this.ctx, host, port, RequestConstants.HTTP);
+                this.ctx, host, port, RequestConstants.HTTP);
         
         this.entities = new ArrayList<${curr.name?cap_first}>();        
         <#list InheritanceUtils.getAllChildren(curr) as child>
@@ -78,7 +78,7 @@ public abstract class ${curr.name}TestWSBase extends TestWSBase {
     /** Test case Get Entity. */
     public void testGet() {
         this.server.enqueue(new MockResponse().setBody(
-            this.web.itemToJson(this.model).toString()));
+                this.web.itemToJson(this.model).toString()));
 
         int result = this.web.get(this.model);
 
@@ -88,7 +88,7 @@ public abstract class ${curr.name}TestWSBase extends TestWSBase {
     /** Test case Read Entity. */
     public void testQuery() {
         this.server.enqueue(new MockResponse().setBody(
-            this.web.itemToJson(this.model).toString()));
+                this.web.itemToJson(this.model).toString()));
 
         Cursor result = this.web.query(<#list curr_ids as id>this.model.get${id.name?cap_first}()<#if id_has_next>,
                 </#if></#list>);
@@ -102,7 +102,8 @@ public abstract class ${curr.name}TestWSBase extends TestWSBase {
             + this.web.itemsToJson(this.entities).toString() + "}"));
 
         ArrayList<${curr.name}> ${curr.name?uncap_first}List = 
-                        new ArrayList<${curr.name}>();
+                new ArrayList<${curr.name}>();
+
         int result = this.web.getAll(${curr.name?uncap_first}List);
 
         Assert.assertEquals(${curr.name?uncap_first}List.size(), this.entities.size());
@@ -117,7 +118,7 @@ public abstract class ${curr.name}TestWSBase extends TestWSBase {
         Assert.assertTrue(result >= 0);
         
         this.server.enqueue(new MockResponse().setBody(
-            this.web.itemToJson(this.model).toString()));
+                this.web.itemToJson(this.model).toString()));
 
         ${curr.name} item = new ${curr.name}();
         <#list curr_ids as id>
