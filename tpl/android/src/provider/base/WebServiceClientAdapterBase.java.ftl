@@ -227,6 +227,7 @@ public abstract class WebServiceClientAdapterBase<T> {
     }
 
     /**
+     * Get error.
      * @return the error
      */
     public String getError() {
@@ -265,10 +266,11 @@ public abstract class WebServiceClientAdapterBase<T> {
                 error.append(jsonErr.optString("msg", ""));
             }
             
-            if (TextUtils.isEmpty(error.toString()))
+            if (TextUtils.isEmpty(error.toString())) {
                 error = null;
+            }
         }
-        
+
         return result;
     }
 
@@ -397,7 +399,8 @@ public abstract class WebServiceClientAdapterBase<T> {
      * @param paramName The name of the array
      * @return The number of <T> found in the JSON
      */
-    public abstract int extractItems(JSONObject json, String paramName, List<T> items) throws JSONException;
+    public abstract int extractItems(JSONObject json, String paramName, List<T> items)
+            throws JSONException;
     
     /**
      * Extract a list of <T> from a JSONObject describing an array of <T> given the array name.
@@ -407,7 +410,8 @@ public abstract class WebServiceClientAdapterBase<T> {
      * @param limit Limit the number of items to parse
      * @return The number of <T> found in the JSON
      */
-    public abstract int extractItems(JSONObject json, String paramName, List<T> items, int limit) throws JSONException;
+    public abstract int extractItems(JSONObject json, String paramName, List<T> items, int limit)
+            throws JSONException;
     
     /**
      * Delete a <T>. 

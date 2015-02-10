@@ -69,4 +69,6 @@ public abstract class WebServiceClientAdapter<T>
             String host, Integer port, String scheme, String prefix){
         super(context, host, port, scheme, prefix);
     }
+
 }
+

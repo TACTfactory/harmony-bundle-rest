@@ -45,7 +45,7 @@ import ${project_namespace}.${project_name?cap_first}Application;
  * Rest Client Class.
  */
 public class RestClient {
-    /** WebService TAG. */
+    /** RestClient TAG. */
     private final static String TAG = "WebService";
     
     /** Scheme HTTP. */
