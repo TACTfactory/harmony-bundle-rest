@@ -188,8 +188,7 @@ public class RestClient {
         
         if (jsonParams != null && jsonParams.has("file")) {
             entity = this.buildMultipartEntity(jsonParams);
-        }
-        else {
+        } else {
             entity = this.buildJsonEntity(jsonParams);
         }
         

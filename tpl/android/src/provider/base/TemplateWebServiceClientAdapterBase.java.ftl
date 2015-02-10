@@ -874,7 +874,6 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
         return params;
     }
 
-
 <#if (curr.options.sync??)>
     @Override
     public String getSyncUri() {
