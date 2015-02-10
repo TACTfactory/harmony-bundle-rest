@@ -524,7 +524,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
                 if (json.has(${field.owner}WebServiceClientAdapter.JSON_MOBILE_ID)
                         && !json.isNull(${field.owner}WebServiceClientAdapter.JSON_MOBILE_ID)) {
                     ${curr.name?uncap_first}.setId(json.getInt(
-                               ${field.owner}WebServiceClientAdapter.JSON_MOBILE_ID))
+                               ${field.owner}WebServiceClientAdapter.JSON_MOBILE_ID));
                 }
                         </#if><#elseif (curr.options.sync?? && field.name=="serverId")><#if !InheritanceUtils.isExtended(curr)>
                 if (json.has(${field.owner}WebServiceClientAdapter.JSON_ID)) {
@@ -558,10 +558,10 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
                             <#elseif (field.harmony_type == "enum")>
                                 <#if enums[field.enum.targetEnum].id??>
                     ${curr.name?uncap_first}.set${field.name?cap_first}(${field.enum.targetEnum}.fromValue(json.get${typeToJsonType(field)}(
-                                ${field.owner}WebServiceClientAdapter.${alias(field.name)})))
+                                ${field.owner}WebServiceClientAdapter.${alias(field.name)})));
                                 <#else>
                     ${curr.name?uncap_first}.set${field.name?cap_first}(${field.enum.targetEnum}.valueOf(json.get${typeToJsonType(field)}(
-                                    ${field.owner}WebServiceClientAdapter.${alias(field.name)})))
+                                    ${field.owner}WebServiceClientAdapter.${alias(field.name)})));
                                 </#if>
                             <#else>
                     ${curr.name?uncap_first}.set${field.name?cap_first}(
@@ -581,7 +581,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
                             new ${field.relation.targetEntity}WebServiceClientAdapter(this.context);
 
                     try {
-                        //.opt${typeToJsonType(field)}(${field.owner}WebServiceClientAdapter.${alias(field.name)})
+                        //.opt${typeToJsonType(field)}(${field.owner}WebServiceClientAdapter.${alias(field.name)});
                         ${field.name}Adapter.extractItems(
                                 json, ${field.owner}WebServiceClientAdapter.${alias(field.name)},
                                 ${field.name?uncap_first});
