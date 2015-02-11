@@ -189,7 +189,12 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
         <#if (!field.internal)>
             <#if (!field.relation??) || (isRestEntity(field.relation.targetEntity))>
     /** ${alias(field.name)} attributes. */
+    ${field.options.rest}
+                <#if field.options.rest??>
+    protected static String ${alias(field.name)} = "${field.options.rest.name}";
+                <#else>
     protected static String ${alias(field.name)} = "${field.name?uncap_first}";
+                </#if>
             </#if>
         </#if>
     </#list>
