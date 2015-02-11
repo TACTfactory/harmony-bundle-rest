@@ -140,10 +140,12 @@ public class RestParser extends BaseParser {
                 final NormalAnnotationExpr norm =
                         (NormalAnnotationExpr) fieldAnnot;
                 final List<MemberValuePair> pairs = norm.getPairs();
+                
                 if (pairs != null) {
+                    
                     for (final MemberValuePair pair : pairs) {
+                        
                         if (pair.getName().equals(ANNOT_REST_FIELD_NAME)) {
-                            //TODO : Generate warning if type not recognized
                             String name = "";
 
                             if (pair.getValue() instanceof StringLiteralExpr) {
@@ -153,7 +155,7 @@ public class RestParser extends BaseParser {
                                 name = pair.getValue().toString();
                             }
 
-                            rm.setName(name);
+                            rm.setRestName(name);
                         }
                     }
                 }
