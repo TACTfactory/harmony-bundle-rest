@@ -19,6 +19,12 @@ import com.tactfactory.harmony.platform.IAdapter;
  * Metadata for Bundle Rest Field.
  */
 public class RestFieldMetadata extends BaseMetadata {
+    
+    /** Bundle name. */
+    private static final String NAME = "rest";
+    /** Constant to map rest name. */
+    private static final String REST_NAME = "name";
+
     /** restName The new rest name to set. */
     private String restName;
 
@@ -28,7 +34,7 @@ public class RestFieldMetadata extends BaseMetadata {
      */
     public RestFieldMetadata(final ClassMetadata owner) {
         super();
-        this.setName("rest");
+        this.setName(NAME);
     }
 
     /**
@@ -39,7 +45,7 @@ public class RestFieldMetadata extends BaseMetadata {
     @Override
     public final Map<String, Object> toMap(final IAdapter adapter) {
         final Map<String, Object> model = new HashMap<String, Object>();
-        model.put("name",         this.getRestName());
+        model.put(REST_NAME,         this.getRestName());
 
         return model;
     }
