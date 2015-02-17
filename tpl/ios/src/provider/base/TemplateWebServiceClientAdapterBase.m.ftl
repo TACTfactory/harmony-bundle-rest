@@ -230,14 +230,24 @@
             if (![self jsonIsNull:json withProperty:[${field.owner}WebServiceClientAdapter ${alias(field.name)}]]) {
                                 <#if (field.relation.type=="OneToMany" || field.relation.type=="ManyToMany")>
                 NSMutableArray*  ${field.name?uncap_first} = [NSMutableArray array];
-                ${field.relation.targetEntity}* ${field.name}Adapter =
+                ${field.relation.targetEntity}* ${field.name?uncap_first}Adapter =
                         [${field.relation.targetEntity}ServiceClientAdapter new];
-                if ([rolesAdapter extractItems:[json objectForKey:[AccountWebServiceClientAdapter JSON_ROLES]]
-                                     withItems:roles]) {
-                    item.roles = roles;
+                if ([${field.name?uncap_first}Adapter extractItems:[json objectForKey:[${field.owner}WebServiceClientAdapter JSON_ROLES]]
+                                     withItems:les]) {
+                    item.${field.name?uncap_first} = ${field.name?uncap_first};
                 }
+                                </#if>
             }
-        }
+                            </#if>
+                        </#if>
+                    </#if>
+                </#if>
+            </#if>
+        </#list>
+        <#if shouldCatch>} @catch (NSException *e) {
+            NSLog(@"Exception %@", e);
+        }</#if>
     }
-    
+}
+
 @end
