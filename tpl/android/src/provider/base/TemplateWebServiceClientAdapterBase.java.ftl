@@ -755,11 +755,14 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
             params.put(${curr.name}WebServiceClientAdapter.JSON_MOBILE_ID,
                     ${curr.name?uncap_first}.getId());
                         </#if><#elseif (curr.options.sync?? && field.name=="sync_uDate")><#if !InheritanceUtils.isExtended(curr)>
-            params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)},
-                    ${curr.name?uncap_first}.get${field.name?cap_first}().toString(SYNC_UPDATE_DATE_FORMAT));
+            
+            if (${curr.name?uncap_first}.get${field.name?cap_first}() != null) {
+                params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)},
+                        ${curr.name?uncap_first}.get${field.name?cap_first}().toString(SYNC_UPDATE_DATE_FORMAT));
+            }
                         </#if><#elseif (FieldsUtils.getJavaType(field)?lower_case == "datetime")>
 
-            if (${curr.name?uncap_first}.get${field.name?cap_first}()!=null) {
+            if (${curr.name?uncap_first}.get${field.name?cap_first}() != null) {
                 params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)},
                         ${curr.name?uncap_first}.get${field.name?cap_first}().toString(REST_UPDATE_DATE_FORMAT));
             }
