@@ -110,29 +110,28 @@ public class RestAdapterIos extends IosAdapter implements RestAdapter {
     public List<IUpdater> getRestUpdatersTest() {
         List<IUpdater> result = new ArrayList<IUpdater>();
 
-        String templatePath = this.getTemplateSourceProviderPath();
+        String templatePath = this.getTemplateTestsPath();
         String filePath = this.getTestPath()
                 + "/WebService/";
  
         result.add(new SourceFile(
-                templatePath + "base/ApplicationRpcTest.h",
-                filePath + "base/RpcTest.h",
+                templatePath + "base/ApplicationRpcTestBase.h",
+                filePath + "Base/RpcTestBase.h",
                 true));
 
         result.add(new SourceFile(
-                templatePath + "base/ApplicationRpcTest.m",
-                filePath + "base/RpcTest.m",
+                templatePath + "base/ApplicationRpcTestBase.m",
+                filePath + "Base/RpcTestBase.m",
                 true));
-
-        // Make RestClient
+        
         result.add(new SourceFile(
-                templatePath + "RPCClient.h", 
-                filePath + "RPCClient.h",
+                templatePath + "ApplicationRpcTest.h",
+                filePath + "RpcTestBase.h",
                 false));
 
         result.add(new SourceFile(
-                templatePath + "RPCClient.m", 
-                filePath + "RPCClient.m",
+                templatePath + "ApplicationRpcTest.m",
+                filePath + "RpcTestBase.m",
                 false));
 
         return result;
@@ -143,7 +142,7 @@ public class RestAdapterIos extends IosAdapter implements RestAdapter {
         List<IUpdater> result = new ArrayList<IUpdater>();
 
         
-        String templatePath = this.getTemplateSourceProviderPath();
+        String templatePath = this.getTemplateTestsPath();
         String filePath = this.getTestPath()
                 + "/WebService/";
 
