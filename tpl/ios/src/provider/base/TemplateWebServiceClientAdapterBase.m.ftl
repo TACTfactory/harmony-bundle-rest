@@ -250,4 +250,23 @@
     }
 }
 
+- (int) get:(${curr.name}*) ${curr.name?uncap_first} {
+    //TODO Get ${curr.name}
+}
+
+- (int) getAll:(NSArray*) ${curr.name?uncap_first}s {
+    //TODO Get All ${curr.name}
+}
+
+- (int) update:(${curr.name}*) ${curr.name?uncap_first} {
+    //TODO Update ${curr.name}
+}
+
+- (int) insert:(${curr.name}*) ${curr.name?uncap_first} {
+    //TODO Insert ${curr.name}
+}
+
+}
+
+
 @end

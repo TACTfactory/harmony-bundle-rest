@@ -177,4 +177,32 @@
 - (BOOL) extract:(NSDictionary*) json
        withItem:(${curr.name}*) item;
 
+/**
+ * Retrieve one ${curr.name}. Uses the route : ${curr.options.rest.uri}/%id%.
+ * @param ${curr.name?uncap_first} : The ${curr.name} to retrieve (set the ID)
+ * @return -1 if an error has occurred. 0 if not.
+ */
+- (int) get:(${curr.name}*) ${curr.name?uncap_first};
+
+/**
+ * Retrieve all the ${curr.name}s in the given list. Uses the route : ${curr.options.rest.uri}.
+ * @param ${curr.name?uncap_first}s : The list in which the ${curr.name}s will be returned
+ * @return The number of ${curr.name}s returned
+ */
+- (int) getAll:(NSArray*) ${curr.name?uncap_first}s;
+
+/**
+ * Update a ${curr.name}. Uses the route : ${curr.options.rest.uri}/%id%.
+ * @param ${curr.name?uncap_first} : The ${curr.name} to update
+ * @return -1 if an error has occurred. 0 if not.
+ */
+- (int) update:(${curr.name}*) ${curr.name?uncap_first};
+
+/**
+ * Insert a ${curr.name}. Uses the route : ${curr.options.rest.uri}/%id%.
+ * @param ${curr.name?uncap_first} : The ${curr.name} to insert
+ * @return -1 if an error has occurred. 0 if not.
+ */
+- (int) insert:(${curr.name}*) ${curr.name?uncap_first};
+
 @end

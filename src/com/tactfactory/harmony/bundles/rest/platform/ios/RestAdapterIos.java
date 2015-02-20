@@ -69,20 +69,113 @@ public class RestAdapterIos extends IosAdapter implements RestAdapter {
 
     @Override
     public List<IUpdater> getRestEntityUpdaters(EntityMetadata entity) {
-        // TODO Auto-generated method stub
-        return null;
+        List<IUpdater> result = new ArrayList<IUpdater>();
+        
+        String templatePath = this.getTemplateSourceProviderPath();
+        String filePath = this.getSourcePath()
+                + "/Data/WebService/";
+
+        result.add(new SourceFile(
+                templatePath + "base/TemplateWebServiceClientAdapter.h",
+                String.format("%sBase/%sWebServiceClientAdapterBase.h",
+                        filePath,
+                        entity.getName()),
+                true));
+
+        result.add(new SourceFile(
+                templatePath + "base/TemplateWebServiceClientAdapter.m",
+                String.format("%sBase/%sWebServiceClientAdapterBase.m",
+                        filePath,
+                        entity.getName()),
+                true));
+        
+        result.add(new SourceFile(
+                templatePath + "TemplateWebServiceClientAdapter.h",
+                String.format("%s/%sWebServiceClientAdapter.h",
+                        filePath,
+                        entity.getName()),
+                false));
+
+        result.add(new SourceFile(
+                templatePath + "TemplateWebServiceClientAdapter.m",
+                String.format("%s/%sWebServiceClientAdapter.m",
+                        filePath,
+                        entity.getName()),
+                false));
+        
+        return result;
     }
 
     @Override
     public List<IUpdater> getRestUpdatersTest() {
-        // TODO Auto-generated method stub
-        return null;
+        List<IUpdater> result = new ArrayList<IUpdater>();
+
+        String templatePath = this.getTemplateSourceProviderPath();
+        String filePath = this.getTestPath()
+                + "/WebService/";
+ 
+        result.add(new SourceFile(
+                templatePath + "base/ApplicationRpcTest.h",
+                filePath + "base/RpcTest.h",
+                true));
+
+        result.add(new SourceFile(
+                templatePath + "base/ApplicationRpcTest.m",
+                filePath + "base/RpcTest.m",
+                true));
+
+        // Make RestClient
+        result.add(new SourceFile(
+                templatePath + "RPCClient.h", 
+                filePath + "RPCClient.h",
+                false));
+
+        result.add(new SourceFile(
+                templatePath + "RPCClient.m", 
+                filePath + "RPCClient.m",
+                false));
+
+        return result;
     }
 
     @Override
     public List<IUpdater> getRestEntityUpdatersTest(EntityMetadata entity) {
-        // TODO Auto-generated method stub
-        return null;
+        List<IUpdater> result = new ArrayList<IUpdater>();
+
+        
+        String templatePath = this.getTemplateSourceProviderPath();
+        String filePath = this.getTestPath()
+                + "/WebService/";
+
+        result.add(new SourceFile(
+                templatePath + "base/TemplateRpcTestBase.h",
+                String.format("%sBase/%sTemplateRpcTestBase.h",
+                        filePath,
+                        entity.getName()),
+                true));
+
+        result.add(new SourceFile(
+                templatePath + "base/TemplateRpcTestBase.m",
+                String.format("%sBase/%sTemplateRpcTestBase.m",
+                        filePath,
+                        entity.getName()),
+                true));
+        
+        result.add(new SourceFile(
+                templatePath + "TemplateRpcTest.h",
+                String.format("%s/%sTemplateRpcTest.h",
+                        filePath,
+                        entity.getName()),
+                false));
+
+        result.add(new SourceFile(
+                templatePath + "TemplateRpcTest.m",
+                String.format("%s/%sRpcTest.m",
+                        filePath,
+                        entity.getName()),
+                false));
+        
+        return result;
     }
 
 }
