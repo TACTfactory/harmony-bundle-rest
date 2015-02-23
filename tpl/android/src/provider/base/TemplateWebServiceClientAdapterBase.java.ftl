@@ -189,7 +189,11 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
         <#if (!field.internal)>
             <#if (!field.relation??) || (isRestEntity(field.relation.targetEntity))>
     /** ${alias(field.name)} attributes. */
+                <#if field.options.rest?? && field.options.rest.name != "" >
+    protected static String ${alias(field.name)} = "${field.options.rest.name}";
+                <#else>
     protected static String ${alias(field.name)} = "${field.name?uncap_first}";
+                </#if>
             </#if>
         </#if>
     </#list>
@@ -751,11 +755,14 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
             params.put(${curr.name}WebServiceClientAdapter.JSON_MOBILE_ID,
                     ${curr.name?uncap_first}.getId());
                         </#if><#elseif (curr.options.sync?? && field.name=="sync_uDate")><#if !InheritanceUtils.isExtended(curr)>
-            params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)},
-                    ${curr.name?uncap_first}.get${field.name?cap_first}().toString(SYNC_UPDATE_DATE_FORMAT));
+            
+            if (${curr.name?uncap_first}.get${field.name?cap_first}() != null) {
+                params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)},
+                        ${curr.name?uncap_first}.get${field.name?cap_first}().toString(SYNC_UPDATE_DATE_FORMAT));
+            }
                         </#if><#elseif (FieldsUtils.getJavaType(field)?lower_case == "datetime")>
 
-            if (${curr.name?uncap_first}.get${field.name?cap_first}()!=null) {
+            if (${curr.name?uncap_first}.get${field.name?cap_first}() != null) {
                 params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)},
                         ${curr.name?uncap_first}.get${field.name?cap_first}().toString(REST_UPDATE_DATE_FORMAT));
             }

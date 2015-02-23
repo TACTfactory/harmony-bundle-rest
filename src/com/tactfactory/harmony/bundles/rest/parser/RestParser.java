@@ -20,6 +20,8 @@ import japa.parser.ast.expr.StringLiteralExpr;
 import java.util.List;
 
 import com.tactfactory.harmony.bundles.rest.annotation.Rest;
+import com.tactfactory.harmony.bundles.rest.annotation.RestField;
+import com.tactfactory.harmony.bundles.rest.meta.RestFieldMetadata;
 import com.tactfactory.harmony.bundles.rest.meta.RestMetadata;
 import com.tactfactory.harmony.meta.ApplicationMetadata;
 import com.tactfactory.harmony.meta.ClassMetadata;
@@ -36,12 +38,18 @@ public class RestParser extends BaseParser {
     /** Rest annotation name. */
     private static final String ANNOT_REST = 
             PackageUtils.extractNameEntity(Rest.class);
+    /** Rest annotation name. */
+    private static final String ANNOT_REST_FIELD = 
+            PackageUtils.extractNameEntity(RestField.class);
     /** Security argument name. */
     private static final String ANNOT_REST_SECURITY = "security";
     /** URI argument name. */
     private static final String ANNOT_REST_URI = "uri";
     /** DateFormat argument name. */
     private static final String ANNOT_REST_DATE_FORMAT = "dateFormat";
+    /** DateFormat argument name. */
+    private static final String ANNOT_REST_FIELD_NAME = "name";
+
     @Override
     public void visitClass(final ClassOrInterfaceDeclaration field, 
             final ClassMetadata meta) {
@@ -125,8 +133,36 @@ public class RestParser extends BaseParser {
     @Override
     public void visitFieldAnnotation(final FieldMetadata field,
             final AnnotationExpr fieldAnnot, final ClassMetadata meta) {
-        // TODO Auto-generated method stub
+        if (fieldAnnot.getName().toString().equals(ANNOT_REST_FIELD)) {
+            final RestFieldMetadata rm = new RestFieldMetadata(meta);
+            
+            if (fieldAnnot instanceof NormalAnnotationExpr) {
+                final NormalAnnotationExpr norm =
+                        (NormalAnnotationExpr) fieldAnnot;
+                final List<MemberValuePair> pairs = norm.getPairs();
+                
+                if (pairs != null) {
+                    
+                    for (final MemberValuePair pair : pairs) {
+                        
+                        if (pair.getName().equals(ANNOT_REST_FIELD_NAME)) {
+                            String name = "";
 
+                            if (pair.getValue() instanceof StringLiteralExpr) {
+                                name = ((StringLiteralExpr)
+                                        pair.getValue()).getValue();
+                            } else {
+                                name = pair.getValue().toString();
+                            }
+
+                            rm.setRestName(name);
+                        }
+                    }
+                }
+            }
+            
+            field.getOptions().put(REST, rm);
+        }
     }
 
     @Override
