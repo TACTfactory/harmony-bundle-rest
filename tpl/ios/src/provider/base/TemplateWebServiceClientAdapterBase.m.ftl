@@ -10,7 +10,7 @@
 </#function>
 <#function typeToJsonType field>
     <#if (field.harmony_type?lower_case != "relation")>
-        <#switch FieldsUtils.getJavaType(field)?lower_case>
+        <#switch FieldsUtils.getObjectiveType(field)?lower_case>
             <#case "int">
                 <#return "Int" />
                 <#break />
@@ -54,7 +54,7 @@
 <#function extract field>
     <#if (!field.internal)>
         <#if (field.harmony_type?lower_case != "relation")>
-            <#switch FieldsUtils.getJavaType(field)?lower_case>
+            <#switch FieldsUtils.getObjectiveType(field)?lower_case>
                 <#case "datetime">
         DateTimeFormatter ${field.name?uncap_first}Formatter = ${getFormatter(field)};
         ${curr.name?uncap_first}.set${field.name?cap_first}(${field.name?uncap_first}Formatter.parseDateTime(json.opt${typeToJsonType(field)}(${alias(field.name)}, ${curr.name?uncap_first}.get${field.name?cap_first}().toString())));
@@ -187,6 +187,7 @@
     
     BOOL result = [self isValidJSON:json];
     if (result) {
+        <#assign shouldCatch = ((curr.fields?size - curr.relations?size) != 0) />   
         <#if shouldCatch>@try {</#if>
             <#list curr.fields?values as field>
                 <#if (!field.internal)>
@@ -199,9 +200,11 @@
             if (![self jsonIsNull:json withProperty:[${field.owner}WebServiceClientAdapter JSON_ID]]) {
                 item.${field.name?uncap_first} = [[json objectForKey:[${curr.name}WebServiceClientAdapter JSON_ID]] intValue];
             }
+            
                         </#if><#else>
+                        
             if (![self jsonIsNull:json withProperty:[${field.owner}WebServiceClientAdapter ${alias(field.name)}]]) {
-                            <#if (FieldsUtils.getJavaType(field)?lower_case == "datetime")>
+                            <#if (FieldsUtils.getObjectiveType(field)?lower_case == "datetime")>
                 NSDateFormatter* ${field.name?uncap_first}Formatter = [NSDateFormatter new];
                 [dateFormatter <#if (curr.options.sync?? && field.name=="sync_uDate")>setDateFormat:[
                 ${field.owner}WebServiceClientAdapter SYNC_UPDATE_DATE_FORMAT]];<#else>setDateFormat:[
@@ -215,7 +218,7 @@
                     NSLog(@"Exception: %@", e);
                 }
             }
-                            <#elseif (FieldsUtils.getJavaType(field)=="boolean")>
+                            <#elseif (FieldsUtils.getObjectiveType(field)=="boolean")>
             if (![self jsonIsNull:json withProperty:[${field.owner}WebServiceClientAdapter ${alias(field.name)}]]) {
                 item.${field.name?uncap_first} = [[json objectForKey:[${field.owner}WebServiceClientAdapter ${alias(field.name)}]] boolValue];
             }
@@ -225,21 +228,39 @@
                 item.${field.name?uncap_first} = [[json objectForKey:[${curr.name}WebServiceClientAdapter ${alias(field.name)}]] ${typeToJsonType(field)}Value];
             }
                                 </#if>
+                            <#elseif (field.harmony_type == "int")>
+                item.${field.name?uncap_first} = [[json objectForKey:[${field.owner}WebServiceClientAdapter ${alias(field.name)}]] intValue];
                             <#else>
-                                <#if (isRestEntity(field.relation.targetEntity))>
+                item.${field.name?uncap_first} = [json objectForKey:[${field.owner}WebServiceClientAdapter ${alias(field.name)}]];
+                            </#if>
+            }
+                         </#if>
+                     <#else>
+                        <#if (isRestEntity(field.relation.targetEntity))>
+                                
             if (![self jsonIsNull:json withProperty:[${field.owner}WebServiceClientAdapter ${alias(field.name)}]]) {
-                                <#if (field.relation.type=="OneToMany" || field.relation.type=="ManyToMany")>
-                NSMutableArray*  ${field.name?uncap_first} = [NSMutableArray array];
+                                <#if ((field.relation.type=="OneToMany") || (field.relation.type=="ManyToMany"))>
+                NSMutableArray* ${field.name?uncap_first} = [NSMutableArray array];
                 ${field.relation.targetEntity}* ${field.name?uncap_first}Adapter =
                         [${field.relation.targetEntity}ServiceClientAdapter new];
                 if ([${field.name?uncap_first}Adapter extractItems:[json objectForKey:[${field.owner}WebServiceClientAdapter JSON_ROLES]]
-                                     withItems:les]) {
+                                     withItems:${field.name?uncap_first}]) {
                     item.${field.name?uncap_first} = ${field.name?uncap_first};
                 }
-                                </#if>
-            }
+                        <#else>
+                            <#if (curr.options.sync??)>
+                    //TODO Sync ${field.relation.type}
+                            <#else>
+
+                    @try {
+                      //TODO ${field.relation.type}
+                    } @catch (NSException *e) {
+                        NSLog(@"Exception %@", "Json doesn't contains ${field.relation.targetEntity} data");
+                    }
                             </#if>
                         </#if>
+
+            }
                     </#if>
                 </#if>
             </#if>

@@ -83,7 +83,7 @@ public class RestAdapterIos extends IosAdapter implements RestAdapter {
                 true));
 
         result.add(new SourceFile(
-                templatePath + "base/TemplateWebServiceClientAdapter.m",
+                templatePath + "base/TemplateWebServiceClientAdapterBase.m",
                 String.format("%sBase/%sWebServiceClientAdapterBase.m",
                         filePath,
                         entity.getName()),

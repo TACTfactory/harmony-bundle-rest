@@ -51,51 +51,6 @@
         </#if>
     </#if>
 </#function>
-<#function extract field>
-    <#if (!field.internal)>
-        <#if (field.harmony_type?lower_case != "relation")>
-            <#switch FieldsUtils.getJavaType(field)?lower_case>
-                <#case "datetime">
-        DateTimeFormatter ${field.name?uncap_first}Formatter = ${getFormatter(field)};
-        ${curr.name?uncap_first}.set${field.name?cap_first}(${field.name?uncap_first}Formatter.parseDateTime(json.opt${typeToJsonType(field)}(${alias(field.name)}, ${curr.name?uncap_first}.get${field.name?cap_first}().toString())));
-                    <#break />
-                <#case "boolean">
-        ${curr.name?uncap_first}.set${field.name?cap_first}(json.opt${typeToJsonType(field)}(${alias(field.name)}, ${curr.name?uncap_first}.is${field.name?cap_first}()));    
-                    <#break />
-                <#default>
-        ${curr.name?uncap_first}.set${field.name?cap_first}(json.opt${typeToJsonType(field)}(${alias(field.name)}, ${curr.name?uncap_first}.get${field.name?cap_first}()));    
-                    <#break />
-            </#switch>
-        <#else>
-            <#if (isRestEntity(field.relation.targetEntity))>
-                <#if (field.relation.type=="OneToMany" || field.relation.type=="ManyToMany")>
-        ArrayList<${field.relation.targetEntity}> ${field.name?uncap_first} = new ArrayList<${field.relation.targetEntity}>();
-        try {
-        ${field.relation.targetEntity}WebServiceClientAdapter.extract${field.relation.targetEntity}s(json.opt${typeToJsonType(field)}(${alias(field.name)}), ${field.name?uncap_first});
-        ${curr.name?uncap_first}.set${field.name?cap_first}(${field.name?uncap_first});
-        } catch (JSONException e) {
-        Log.e(TAG, e.getMessage());
-        }
-                <#else>
-        ${field.relation.targetEntity} ${field.name?uncap_first} = new ${field.relation.targetEntity}();
-        ${field.relation.targetEntity}WebServiceClientAdapter.extract(json.opt${typeToJsonType(field)}(${alias(field.name)}), ${field.name?uncap_first});
-        ${curr.name?uncap_first}.set${field.name?cap_first}(${field.name?uncap_first});
-                </#if>
-            </#if>
-        </#if>
-    </#if>
-</#function>
-<#function getFormatter field>
-    <#assign ret="ISODateTimeFormat." />
-    <#if (field.harmony_type?lower_case=="datetime")>
-        <#assign ret=ret+"dateTime()" />
-    <#elseif (field.harmony_type?lower_case=="time")>
-        <#assign ret=ret+"dateTime()" />
-    <#elseif (field.harmony_type?lower_case=="date")>
-        <#assign ret=ret+"dateTime()" />
-    </#if>
-    <#return ret />
-</#function>
 <#function isRestEntity entityName>
     <#return entities[entityName].options.rest?? />
 </#function>
@@ -141,7 +96,7 @@
  * You should edit ${curr.name}WebServiceClientAdapter class instead of this one or you will lose all your modifications.</i></b>
  *
  */
-@interface ${curr.name}WebServiceClientAdapterBase : ${extends} {
+@interface ${curr.name}WebServiceClientAdapterBase : WebServiceClientAdapter {
 
     /** JSON Object ${curr.name} pattern. */
     (NSString *) ${alias(curr.name, true)};
