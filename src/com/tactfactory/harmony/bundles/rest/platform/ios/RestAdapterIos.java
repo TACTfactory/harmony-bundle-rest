@@ -76,7 +76,7 @@ public class RestAdapterIos extends IosAdapter implements RestAdapter {
                 + "/Data/WebService/";
 
         result.add(new SourceFile(
-                templatePath + "base/TemplateWebServiceClientAdapter.h",
+                templatePath + "base/TemplateWebServiceClientAdapterBase.h",
                 String.format("%sBase/%sWebServiceClientAdapterBase.h",
                         filePath,
                         entity.getName()),

@@ -1,3 +1,4 @@
+<@header?interpret />
 <#assign curr = entities[current_entity] />
 
 #import "RpcTest.h"
