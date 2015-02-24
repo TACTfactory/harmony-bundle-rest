@@ -8,75 +8,7 @@
         <#return "JSON_"+name?upper_case />
     </#if>
 </#function>
-<#function typeToJsonType field>
-    <#if (field.harmony_type?lower_case != "relation")>
-        <#switch FieldsUtils.getJavaType(field)?lower_case>
-            <#case "int">
-                <#return "Int" />
-                <#break />
-            <#case "float">
-                <#return "Float" />
-                <#break />
-            <#case "double">
-                <#return "Double" />
-                <#break />
-            <#case "long">
-                <#return "Long" />
-                <#break />
-            <#case "boolean">
-                <#return "Boolean" />
-                <#break />
-            <#case "enum">
-                <#assign enumType = enums[field.enum.targetEnum] />
-                <#if enumType.id??>
-                    <#assign idEnumType = enumType.fields[enumType.id].harmony_type?lower_case />
-                    <#if (idEnumType == "int") >
-                        <#return "Int" />
-                    <#else>
-                        <#return "String" />
-                    </#if>
-                <#else>
-                    <#return "String" />
-                </#if>
-                <#break />
-            <#default>
-                <#return "String" />
-                <#break />
-        </#switch>
-    <#else>
-        <#if (field.relation.type=="ManyToMany" || field.relation.type=="OneToMany")>
-            <#return "JSONObject" />
-        <#else>
-            <#return "JSONObject" />
-        </#if>
-    </#if>
-</#function>
-<#function isRestEntity entityName>
-    <#return entities[entityName].options.rest?? />
-</#function>
-<#function isInArray array var>
-    <#list array as item>
-        <#if (item==var)>
-            <#return true />
-        </#if>
-    </#list>
-    <#return false />
-</#function>
-<#assign restFields = [] />
-<#list ViewUtils.getAllFields(curr)?values as field>
-    <#if (!field.internal)>
-        <#if (!field.relation??)>
-            <#assign restFields = restFields + [field] />
-        <#else>
-            <#if (isRestEntity(field.relation.targetEntity))>
-                <#if (field.relation.type=="OneToOne" || field.relation.type=="ManyToOne")>
-                    <#assign restFields = restFields + [field] />
-                </#if>
-            </#if>
-        </#if>
-    </#if>
-</#list>
-
+#import "WebServiceClientAdapter.h"
 #import "${curr.name}.h"
 <#assign import_array = [curr.name] />
 <#assign alreadyImportArrayList=false />
@@ -88,7 +20,6 @@
         </#if>
     </#if>
 </#list>
-//${ImportUtils.importRelatedEnums(curr)}
 
 /**
  * 
@@ -98,13 +29,16 @@
  */
 @interface ${curr.name}WebServiceClientAdapterBase : WebServiceClientAdapter {
 
+    /** Rest Date Format pattern. */
++    (NSString *) REST_UPDATE_DATE_FORMAT;
+    
     /** JSON Object ${curr.name} pattern. */
-    (NSString *) ${alias(curr.name, true)};
++    (NSString *) ${alias(curr.name, true)};
     <#list curr.fields?values as field>
         <#if (!field.internal)>
             <#if (!field.relation??) || (isRestEntity(field.relation.targetEntity))>
     /** ${alias(field.name)} attributes. */
-    (NSString *) ${alias(field.name)};
++    (NSString *) ${alias(field.name)};
             </#if>
         </#if>
     </#list>

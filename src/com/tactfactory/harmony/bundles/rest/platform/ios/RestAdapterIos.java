@@ -126,12 +126,12 @@ public class RestAdapterIos extends IosAdapter implements RestAdapter {
         
         result.add(new SourceFile(
                 templatePath + "ApplicationRpcTest.h",
-                filePath + "RpcTestBase.h",
+                filePath + "RpcTest.h",
                 false));
 
         result.add(new SourceFile(
                 templatePath + "ApplicationRpcTest.m",
-                filePath + "RpcTestBase.m",
+                filePath + "RpcTest.m",
                 false));
 
         return result;

@@ -12,35 +12,35 @@
     <#if (field.harmony_type?lower_case != "relation")>
         <#switch FieldsUtils.getObjectiveType(field)?lower_case>
             <#case "int">
-                <#return "Int" />
+                <#return "int" />
                 <#break />
             <#case "float">
-                <#return "Float" />
+                <#return "float" />
                 <#break />
             <#case "double">
-                <#return "Double" />
+                <#return "double" />
                 <#break />
             <#case "long">
-                <#return "Long" />
+                <#return "long" />
                 <#break />
             <#case "boolean">
-                <#return "Boolean" />
+                <#return "bool" />
                 <#break />
             <#case "enum">
                 <#assign enumType = enums[field.enum.targetEnum] />
                 <#if enumType.id??>
                     <#assign idEnumType = enumType.fields[enumType.id].harmony_type?lower_case />
                     <#if (idEnumType == "int") >
-                        <#return "Int" />
+                        <#return "int" />
                     <#else>
-                        <#return "String" />
+                        <#return "NSString" />
                     </#if>
                 <#else>
-                    <#return "String" />
+                    <#return "NSString" />
                 </#if>
                 <#break />
             <#default>
-                <#return "String" />
+                <#return "NSString" />
                 <#break />
         </#switch>
     <#else>
@@ -48,40 +48,6 @@
             <#return "JSONObject" />
         <#else>
             <#return "JSONObject" />
-        </#if>
-    </#if>
-</#function>
-<#function extract field>
-    <#if (!field.internal)>
-        <#if (field.harmony_type?lower_case != "relation")>
-            <#switch FieldsUtils.getObjectiveType(field)?lower_case>
-                <#case "datetime">
-        DateTimeFormatter ${field.name?uncap_first}Formatter = ${getFormatter(field)};
-        ${curr.name?uncap_first}.set${field.name?cap_first}(${field.name?uncap_first}Formatter.parseDateTime(json.opt${typeToJsonType(field)}(${alias(field.name)}, ${curr.name?uncap_first}.get${field.name?cap_first}().toString())));
-                    <#break />
-                <#case "boolean">
-        ${curr.name?uncap_first}.set${field.name?cap_first}(json.opt${typeToJsonType(field)}(${alias(field.name)}, ${curr.name?uncap_first}.is${field.name?cap_first}()));    
-                    <#break />
-                <#default>
-        ${curr.name?uncap_first}.set${field.name?cap_first}(json.opt${typeToJsonType(field)}(${alias(field.name)}, ${curr.name?uncap_first}.get${field.name?cap_first}()));    
-                    <#break />
-            </#switch>
-        <#else>
-            <#if (isRestEntity(field.relation.targetEntity))>
-                <#if (field.relation.type=="OneToMany" || field.relation.type=="ManyToMany")>
-        ArrayList<${field.relation.targetEntity}> ${field.name?uncap_first} = new ArrayList<${field.relation.targetEntity}>();
-        try {
-        ${field.relation.targetEntity}WebServiceClientAdapter.extract${field.relation.targetEntity}s(json.opt${typeToJsonType(field)}(${alias(field.name)}), ${field.name?uncap_first});
-        ${curr.name?uncap_first}.set${field.name?cap_first}(${field.name?uncap_first});
-        } catch (JSONException e) {
-        Log.e(TAG, e.getMessage());
-        }
-                <#else>
-        ${field.relation.targetEntity} ${field.name?uncap_first} = new ${field.relation.targetEntity}();
-        ${field.relation.targetEntity}WebServiceClientAdapter.extract(json.opt${typeToJsonType(field)}(${alias(field.name)}), ${field.name?uncap_first});
-        ${curr.name?uncap_first}.set${field.name?cap_first}(${field.name?uncap_first});
-                </#if>
-            </#if>
         </#if>
     </#if>
 </#function>
@@ -122,7 +88,9 @@
     </#if>
 </#list>
 
-#import "${curr.name}.h"
+#import "${curr.name}WebServiceClientAdapterBase.h"
+#import "${curr.name}WebServiceClientAdapter.h"
+
 <#assign import_array = [curr.name] />
 <#assign alreadyImportArrayList=false />
 <#list curr.relations as relation>
@@ -133,7 +101,6 @@
         </#if>
     </#if>
 </#list>
-//${ImportUtils.importRelatedEnums(curr)}
 
 /**
  * 
@@ -144,16 +111,29 @@
 @implementation ${curr.name}WebServiceClientAdapterBase
 
     /** JSON Object ${curr.name} pattern. */
-    (NSString *) ${alias(curr.name, true)}      { return @"curr.name?cap_first" };
++   (NSString *) ${alias(curr.name, true)}      { return @"curr.name?cap_first"; }
     <#list curr.fields?values as field>
         <#if (!field.internal)>
             <#if (!field.relation??) || (isRestEntity(field.relation.targetEntity))>
     /** ${alias(field.name)} attributes. */
-    (NSString *) ${alias(field.name)}           { return @"curr.name?uncap_first" };
+                <#if field.options.rest?? && field.options.rest.name != "" >
++   (NSString *) ${alias(field.name)}           { return @"${field.options.rest.name}"; }
+    
+                <#else>
++   (NSString *) ${alias(field.name)}           { return @"curr.name?uncap_first"; }
+                </#if>
             </#if>
         </#if>
     </#list>
     <#if (curr.options.sync??)>
+    /** Sync Date Format pattern. */
++   (NSString *) SYNC_UPDATE_DATE_FORMAT        { return "${curr.options.sync.updateDateFormatJava}"; }
+    </#if>
+
+    /** Rest Date Format pattern. */
++   (NSString *) REST_UPDATE_DATE_FORMAT        { return "${curr.options.rest.dateFormat}"; }
+
+    <#if (curr.inheritance??)>
 - (id) init {
     if (self = [super init]) {
         self->motherAdapter = [${curr.inheritance.superclass.name}WebServiceClientAdapter new];
@@ -161,12 +141,12 @@
     
     return self;
 }
-    <#else>
+    </#if>
+
 - (BOOL) isValidJSON:(NSObject *)json {
     return ![self jsonIsNull:(NSDictionary*) json
                 withProperty:[${curr.name}WebServiceClientAdapter JSON_ID]];
 }
-    </#if>
 
 - (int) extractItems:(NSArray*) jsonArray
           withItems:(NSMutableArray*) items {
@@ -217,19 +197,18 @@
                 } @catch(NSException* e) {
                     NSLog(@"Exception: %@", e);
                 }
-            }
                             <#elseif (FieldsUtils.getObjectiveType(field)=="boolean")>
-            if (![self jsonIsNull:json withProperty:[${field.owner}WebServiceClientAdapter ${alias(field.name)}]]) {
                 item.${field.name?uncap_first} = [[json objectForKey:[${field.owner}WebServiceClientAdapter ${alias(field.name)}]] boolValue];
-            }
                             <#elseif (field.harmony_type == "enum")>
                                 <#if enums[field.enum.targetEnum].id??>
-            if (![self jsonIsNull:json withProperty:[${field.owner}WebServiceClientAdapter ${alias(field.name)}]]) {
                 item.${field.name?uncap_first} = [[json objectForKey:[${curr.name}WebServiceClientAdapter ${alias(field.name)}]] ${typeToJsonType(field)}Value];
-            }
                                 </#if>
-                            <#elseif (field.harmony_type == "int")>
+                            <#elseif (FieldsUtils.getObjectiveType(field)=="int") || (FieldsUtils.getObjectiveType(field)=="integer")>
                 item.${field.name?uncap_first} = [[json objectForKey:[${field.owner}WebServiceClientAdapter ${alias(field.name)}]] intValue];
+                            <#elseif (FieldsUtils.getObjectiveType(field)=="long")>
+                item.${field.name?uncap_first} = [[json objectForKey:[${field.owner}WebServiceClientAdapter ${alias(field.name)}]] longLongValue];
+                            <#elseif (FieldsUtils.getObjectiveType(field)=="double")>
+                item.${field.name?uncap_first} = [[json objectForKey:[${field.owner}WebServiceClientAdapter ${alias(field.name)}]] doubleValue];
                             <#else>
                 item.${field.name?uncap_first} = [json objectForKey:[${field.owner}WebServiceClientAdapter ${alias(field.name)}]];
                             </#if>
@@ -286,8 +265,5 @@
 - (int) insert:(${curr.name}*) ${curr.name?uncap_first} {
     //TODO Insert ${curr.name}
 }
-
-}
-
 
 @end
