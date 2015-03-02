@@ -90,6 +90,9 @@
 
 #import "${curr.name}WebServiceClientAdapterBase.h"
 #import "${curr.name}WebServiceClientAdapter.h"
+<#if (InheritanceUtils.isExtended(curr))>
+#import "${curr.inheritance.superclass.name}WebServiceClientAdapter.h"
+</#if>
 
 <#assign import_array = [curr.name] />
 <#assign alreadyImportArrayList=false />
@@ -127,13 +130,13 @@
     </#list>
     <#if (curr.options.sync??)>
     /** Sync Date Format pattern. */
-+   (NSString *) SYNC_UPDATE_DATE_FORMAT        { return "${curr.options.sync.updateDateFormatJava}"; }
++   (NSString *) SYNC_UPDATE_DATE_FORMAT        { return @"${curr.options.sync.updateDateFormatJava}"; }
     </#if>
 
     /** Rest Date Format pattern. */
-+   (NSString *) REST_UPDATE_DATE_FORMAT        { return "${curr.options.rest.dateFormat}"; }
++   (NSString *) REST_UPDATE_DATE_FORMAT        { return @"${curr.options.rest.dateFormat}"; }
 
-    <#if (curr.inheritance??)>
+    <#if (InheritanceUtils.isExtended(curr))>
 - (id) init {
     if (self = [super init]) {
         self->motherAdapter = [${curr.inheritance.superclass.name}WebServiceClientAdapter new];
@@ -143,16 +146,17 @@
 }
     </#if>
 
+/*
 - (BOOL) isValidJSON:(NSObject *)json {
     return ![self jsonIsNull:(NSDictionary*) json
                 withProperty:[${curr.name}WebServiceClientAdapter JSON_ID]];
 }
-
+*/
 - (int) extractItems:(NSArray*) jsonArray
           withItems:(NSMutableArray*) items {
     
     for (NSDictionary* json in jsonArray) {
-        Comment* item = [Comment new];
+        ${curr.name}* item = [${curr.name} new];
         
         if ([self extract:json withItem:item]) {
             [items addObject:item];
@@ -163,7 +167,7 @@
 }
 
 - (BOOL) extract:(NSDictionary *)json
-       withItem:(Comment *)item {
+       withItem:(${curr.name} *)item {
     
     BOOL result = [self isValidJSON:json];
     if (result) {
@@ -185,10 +189,10 @@
                         
             if (![self jsonIsNull:json withProperty:[${field.owner}WebServiceClientAdapter ${alias(field.name)}]]) {
                             <#if (FieldsUtils.getObjectiveType(field)?lower_case == "datetime")>
-                NSDateFormatter* ${field.name?uncap_first}Formatter = [NSDateFormatter new];
+                NSDateFormatter* dateFormatter = [NSDateFormatter new];
                 [dateFormatter <#if (curr.options.sync?? && field.name=="sync_uDate")>setDateFormat:[
-                ${field.owner}WebServiceClientAdapter SYNC_UPDATE_DATE_FORMAT]];<#else>setDateFormat:[
-                ${field.owner}WebServiceClientAdapter REST_UPDATE_DATE_FORMAT)</#if>;
+                ${field.owner}WebServiceClientAdapter SYNC_UPDATE_DATE_FORMAT<#else>setDateFormat:[
+                ${field.owner}WebServiceClientAdapter REST_UPDATE_DATE_FORMAT</#if>]];
 
                 @try {
                     NSDate* date = [dateFormatter dateFromString:
@@ -220,9 +224,9 @@
             if (![self jsonIsNull:json withProperty:[${field.owner}WebServiceClientAdapter ${alias(field.name)}]]) {
                                 <#if ((field.relation.type=="OneToMany") || (field.relation.type=="ManyToMany"))>
                 NSMutableArray* ${field.name?uncap_first} = [NSMutableArray array];
-                ${field.relation.targetEntity}* ${field.name?uncap_first}Adapter =
-                        [${field.relation.targetEntity}ServiceClientAdapter new];
-                if ([${field.name?uncap_first}Adapter extractItems:[json objectForKey:[${field.owner}WebServiceClientAdapter JSON_ROLES]]
+                ${field.relation.targetEntity}WebServiceClientAdapter* ${field.name?uncap_first}Adapter =
+                        [${field.relation.targetEntity}WebServiceClientAdapter new];
+                if ([${field.name?uncap_first}Adapter extractItems:[json objectForKey:[${field.owner}WebServiceClientAdapter ${alias(field.name)}]]
                                      withItems:${field.name?uncap_first}]) {
                     item.${field.name?uncap_first} = ${field.name?uncap_first};
                 }
@@ -252,18 +256,22 @@
 
 - (int) get:(${curr.name}*) ${curr.name?uncap_first} {
     //TODO Get ${curr.name}
+	return 0;
 }
 
 - (int) getAll:(NSArray*) ${curr.name?uncap_first}s {
     //TODO Get All ${curr.name}
+	return 0;
 }
 
 - (int) update:(${curr.name}*) ${curr.name?uncap_first} {
     //TODO Update ${curr.name}
+	return 0;
 }
 
 - (int) insert:(${curr.name}*) ${curr.name?uncap_first} {
     //TODO Insert ${curr.name}
+	return 0;
 }
 
 @end

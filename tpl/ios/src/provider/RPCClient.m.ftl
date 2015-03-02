@@ -8,16 +8,9 @@ static NSString* SCHEME_HTTP;
 static NSString* SCHEME_HTTPS;
 static BOOL isAuth;
 
-AFJSONRPCClient* httpClient;
-
 @implementation RPCClient
 
 + (void) initialize {
-    if ([AppDelegate IS_DEBUG]) {
-        API_KEY = @"52005559c5d0e83e7575bb0fc2e4eba63ed18a7e";
-    } else {
-        API_KEY = @"89c321be3bb4c07d7d739c7588e9407e5c9b59a0";
-    }
     SCHEME_HTTP = @"http";
     SCHEME_HTTPS = @"https";
     isAuth = NO;
@@ -75,12 +68,40 @@ AFJSONRPCClient* httpClient;
        withPath:(NSString*) path
  withJsonParams:(NSMutableDictionary*) jsonParams
    withCallback:(void(^)(NSObject*)) callback{
-
+	
     NSString* URL = [NSString stringWithFormat:@"%@://%@:%@%@",
                      self->scheme,
                      self->serviceName,
                      [NSNumber numberWithInt:self->port],
                      path];
+                     
+    AFHTTPRequestOperationManager *manager = [[AFHTTPRequestOperationManager alloc] initWithBaseURL:[NSURL URLWithString:URL]];
+    
+    if(verb == GET) {
+        [manager GET:[NSString stringWithFormat:@"%@/%@", URL, path]
+          parameters:jsonParams success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+            NSLog(@"Error: %@", error);
+        }];
+    } else if(verb == PUT) {
+        [manager PUT:[NSString stringWithFormat:@"%@/%@", URL, path]
+          parameters:jsonParams success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+            NSLog(@"Error: %@", error);
+        }];
+    } else if(verb == POST) {
+        [manager POST:[NSString stringWithFormat:@"%@/%@", URL, path]
+          parameters:jsonParams success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+            NSLog(@"Error: %@", error);
+        }];
+    } else if(verb == DELETE) {
+        [manager POST:[NSString stringWithFormat:@"%@/%@", URL, path]
+          parameters:jsonParams success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+            NSLog(@"Error: %@", error);
+        }];
+    }
 }
 
 @end

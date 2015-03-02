@@ -1,6 +1,17 @@
 <@header?interpret />
 <#include utilityPath + "all_imports.ftl" />
 <#assign curr = entities[current_entity] />
+<#function isRestEntity entityName>
+    <#return entities[entityName].options.rest?? />
+</#function>
+<#function isInArray array var>
+    <#list array as item>
+        <#if (item==var)>
+            <#return true />
+        </#if>
+    </#list>
+    <#return false />
+</#function>
 <#function alias name object=false>
     <#if object>
         <#return "JSON_OBJECT_"+name?upper_case />
@@ -16,10 +27,13 @@
     <#if (isRestEntity(relation.relation.targetEntity))>
         <#if (!isInArray(import_array, relation.relation.targetEntity))>
             <#assign import_array = import_array + [relation.relation.targetEntity] />
-#import "${relation.relation.targetEntity}WebServiceClientAdapter.h"
+@class ${relation.relation.targetEntity}WebServiceClientAdapter;
         </#if>
     </#if>
 </#list>
+<#if (InheritanceUtils.isExtended(curr))>
+#import "${curr.inheritance.superclass.name}WebServiceClientAdapter.h"
+</#if>
 
 /**
  * 
@@ -27,7 +41,12 @@
  * You should edit ${curr.name}WebServiceClientAdapter class instead of this one or you will lose all your modifications.</i></b>
  *
  */
-@interface ${curr.name}WebServiceClientAdapterBase : WebServiceClientAdapter {
+@interface ${curr.name}WebServiceClientAdapterBase : WebServiceClientAdapter <#if (InheritanceUtils.isExtended(curr))>{
+
+@protected
+    ${curr.inheritance.superclass.name}WebServiceClientAdapter* motherAdapter;
+}
+</#if>
 
     /** Rest Date Format pattern. */
 +    (NSString *) REST_UPDATE_DATE_FORMAT;
@@ -42,12 +61,8 @@
             </#if>
         </#if>
     </#list>
-    <#if (curr.options.sync??)>
-@protected
-    ${curr.inheritance.superclass.name}WebServiceClientAdapter* motherAdapter;
-}
-    </#if>
-/**
+
+ /**
  * Extract a list of ${curr.name} from a JSONObject describing an array of ${curr.name} given the array name
  * @param json The JSONObject describing the array of <T>
  * @param items The returned list of <T>
