@@ -97,36 +97,8 @@
 <#assign import_array = [curr.name] />
 <#assign alreadyImportArrayList=false />
 <#list curr.relations as relation>
-    <#if (isRestEntity(relation.relation.targetEntity))>
-        <#if (!isInArray(import_array, relation.relation.targetEntity))>
-            <#assign import_array = import_array + [relation.relation.targetEntity] />
-#import "${relation.relation.targetEntity}WebServiceClientAdapter.h"
-        </#if>
-    </#if>
-</#list>
-
-/**
- * 
- * <b><i>This class will be overwrited whenever you regenerate the project with Harmony. 
- * You should edit ${curr.name}WebServiceClientAdapter class instead of this one or you will lose all your modifications.</i></b>
- *
- */
-@implementation ${curr.name}WebServiceClientAdapterBase
-
-    /** JSON Object ${curr.name} pattern. */
-+   (NSString *) ${alias(curr.name, true)}      { return @"curr.name?cap_first"; }
-    <#list curr.fields?values as field>
-        <#if (!field.internal)>
-            <#if (!field.relation??) || (isRestEntity(field.relation.targetEntity))>
-    /** ${alias(field.name)} attributes. */
-                <#if field.options.rest?? && field.options.rest.name != "" >
-+   (NSString *) ${alias(field.name)}           { return @"${field.options.rest.name}"; }
-    
-                <#else>
-+   (NSString *) ${alias(field.name)}           { return @"curr.name?uncap_first"; }
-                </#if>
-            </#if>
-        </#if>
+    <#if (isRestEntity(relation.relation.targetEntity)012
+0        </#if>
     </#list>
     <#if (curr.options.sync??)>
     /** Sync Date Format pattern. */
