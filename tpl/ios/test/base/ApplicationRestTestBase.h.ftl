@@ -5,9 +5,10 @@
 
 #import "TestDBBase.h"
 
-@interface RpcTest : TestDBBase 
+@interface RestTestBase : TestDBBase {
     @protected dispatch_semaphore_t semaphore;
-    
+}
+
 - (void) testIsOnline;
 
 

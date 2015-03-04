@@ -82,31 +82,52 @@
        withItem:(${curr.name}*) item;
 
 /**
+ * Convert a ${curr.name} to a JSONObject.
+ * @param bestRating The ${curr.name} to convert
+ * @return The converted ${curr.name}
+ */
+-(NSMutableDictionary *) itemToJson:(${curr.name?cap_first}*) ${curr.name?uncap_first};
+
+/**
+ * Convert a <T> to a NSMutableDictionary.
+ * @param item The <T> to convert
+ * @return The converted <T>
+ */
+- (NSMutableDictionary *) itemIdToJson:(${curr.name?cap_first}*) item;
+
+    /**
+     * Convert a list of <${curr.name}> to a NSMutableDictionary.
+     * @param users The array of <${curr.name}> to convert
+     * @return The array of converted <${curr.name}>
+     */
+- (NSArray *) itemsIdToJson:(NSArray*) items;
+
+/**
  * Retrieve one ${curr.name}. Uses the route : ${curr.options.rest.uri}/%id%.
  * @param ${curr.name?uncap_first} : The ${curr.name} to retrieve (set the ID)
  * @return -1 if an error has occurred. 0 if not.
  */
-- (int) get:(${curr.name}*) ${curr.name?uncap_first};
+- (int) get:(${curr.name}*) ${curr.name?uncap_first} withCallback:(void(^)(${curr.name}*)) callback;
 
 /**
  * Retrieve all the ${curr.name}s in the given list. Uses the route : ${curr.options.rest.uri}.
  * @param ${curr.name?uncap_first}s : The list in which the ${curr.name}s will be returned
  * @return The number of ${curr.name}s returned
  */
-- (int) getAll:(NSArray*) ${curr.name?uncap_first}s;
+- (int) getAll:(void(^)(NSArray*)) callback;
 
 /**
  * Update a ${curr.name}. Uses the route : ${curr.options.rest.uri}/%id%.
  * @param ${curr.name?uncap_first} : The ${curr.name} to update
  * @return -1 if an error has occurred. 0 if not.
  */
-- (int) update:(${curr.name}*) ${curr.name?uncap_first};
+- (int) update:(${curr.name}*) ${curr.name?uncap_first} withCallback:(void(^)(${curr.name} *)) callback;
 
 /**
  * Insert a ${curr.name}. Uses the route : ${curr.options.rest.uri}/%id%.
  * @param ${curr.name?uncap_first} : The ${curr.name} to insert
  * @return -1 if an error has occurred. 0 if not.
  */
-- (int) insert:(${curr.name}*) ${curr.name?uncap_first};
+- (int) insert:(${curr.name}*) ${curr.name?uncap_first} withCallback:(void(^)(${curr.name} *)) callback;
 
 @end

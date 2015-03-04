@@ -1,20 +1,20 @@
 <@header?interpret />
 <#include utilityPath + "all_imports.ftl" />
 
-#import "${curr.name}RpcTest.h"
+#import "${curr.name}RestTest.h"
 <#list InheritanceUtils.getAllChildren(curr) as child>
-#import "${child.name?cap_first}Utils.h"
+#import "${child.name?cap_first}TestUtils.h"
 </#list>
-#import "${curr.name}Utils.h"
+//#import "${curr.name}TestUtils.h"
 #import "AppDelegate.h"
 
 
-/** ${curr.name} RPC Test.
+/** ${curr.name} Rest Test.
  * 
  * @see android.app.Fragment
  */
  
-@implementation ${curr.name?cap_first}RpcTest
+@implementation ${curr.name?cap_first}RestTestBase
 
 - (void)setUp {
     [super setUp];

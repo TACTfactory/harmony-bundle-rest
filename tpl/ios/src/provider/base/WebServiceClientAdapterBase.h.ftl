@@ -1,7 +1,7 @@
 <@header?interpret />
 
 #import <Foundation/Foundation.h>
-#import "RPCClient.h"
+#import "RestClient.h"
 
 @interface WebServiceClientAdapterBase : NSObject {
     @protected

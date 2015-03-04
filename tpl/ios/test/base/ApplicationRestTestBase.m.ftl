@@ -1,9 +1,9 @@
 <@header?interpret />
 
-#import "RpcTestBase.h"
+#import "RestTestBase.h"
 #import "AppDelegate.h"
 
-@implementation RpcTest
+@implementation RestTestBase
 
 - (void)setUp {
     [super setUp];

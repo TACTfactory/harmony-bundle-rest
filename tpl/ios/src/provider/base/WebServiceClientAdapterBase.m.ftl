@@ -12,10 +12,26 @@
 }
 
 - (void) invokeRequest:(Verb) verb
-           withRequest:(NSString*) request
-            withParams:(NSMutableDictionary*) params
-          withCallback: (void(^)(NSObject*)) callback {
-    
+               withRequest:(NSString*) request
+                withParams:(NSMutableDictionary*) params
+              withCallback: (void(^)(NSObject*)) callback {
+    if (self.isOnline){
+        NSString* url = [NSString stringWithFormat:@"%@://%@:%@",
+                         self->scheme,
+                         self->host,
+                         self->port];
+        
+        AFHTTPRequestOperationManager *manager = [[AFHTTPRequestOperationManager alloc] initWithBaseURL:[NSURL URLWithString:url]];
+        
+        if(verb == GET){
+            [manager GET:[NSString stringWithFormat:@"%@/%@", url, request]
+              parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+                  callback(responseObject);
+              } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+                  NSLog(@"Error: %@", error);
+              }];
+        }
+    }
 }
 
 - (BOOL) isValidJSON:(NSObject *)json {

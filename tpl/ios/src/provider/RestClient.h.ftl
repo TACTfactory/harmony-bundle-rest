@@ -1,6 +1,6 @@
 <@header?interpret />
 
-#import "RPCClient.h"
+#import "RestClient.h"
 
 #import <Foundation/Foundation.h>
 #import "AFHTTPRequestOperationManager.h"
@@ -13,7 +13,7 @@ typedef enum
     DELETE
 } Verb;
 
-@interface RPCClient : NSObject {
+@interface RestClient : NSObject {
 
 @private
     NSString* serviceName;

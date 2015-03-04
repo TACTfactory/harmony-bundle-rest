@@ -3,8 +3,8 @@
 #import <XCTest/XCTest.h>
 #import <Foundation/Foundation.h>
 
-#import "RpcTestBase.h"
+#import "RestTestBase.h"
 
-@interface RpcTest : RpcTestBase
+@interface RestTest : RestTestBase
 
 @end

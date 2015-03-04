@@ -1,6 +1,6 @@
 <@header?interpret />
 
-#import "RPCClient.h"
+#import "RestClient.h"
 #import "AppDelegate.h"
 
 static NSString* API_KEY;
@@ -8,7 +8,7 @@ static NSString* SCHEME_HTTP;
 static NSString* SCHEME_HTTPS;
 static BOOL isAuth;
 
-@implementation RPCClient
+@implementation RestClient
 
 + (void) initialize {
     SCHEME_HTTP = @"http";
@@ -32,11 +32,11 @@ static BOOL isAuth;
     isAuth = auth;
 }
 
-+ (NSMutableDictionary*) buildRpcJson:(NSString*) method {
-    return [RPCClient buildRpcJson:method withParams:[NSMutableDictionary dictionary]] ;
++ (NSMutableDictionary*) buildRestJson:(NSString*) method {
+    return [RestClient buildRestJson:method withParams:[NSMutableDictionary dictionary]] ;
 }
 
-+ (NSMutableDictionary*) buildRpcJson:(NSString*) method
++ (NSMutableDictionary*) buildRestJson:(NSString*) method
                            withParams:(NSMutableDictionary*) params {
 
     NSMutableDictionary* result = [NSMutableDictionary dictionaryWithDictionary:params];

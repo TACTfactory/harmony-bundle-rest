@@ -98,13 +98,10 @@
 <#assign alreadyImportArrayList=false />
 <#list curr.relations as relation>
     <#if (isRestEntity(relation.relation.targetEntity))>
-	<#assign ref_entity = entities[relation.relation.targetEntity] />
-	<#if (ref_entity.fields?size!=0) >
-        	<#if (!isInArray(import_array, relation.relation.targetEntity))>
-            	<#assign import_array = import_array + [relation.relation.targetEntity] />
+        <#if (!isInArray(import_array, relation.relation.targetEntity))>
+            <#assign import_array = import_array + [relation.relation.targetEntity] />
 #import "${relation.relation.targetEntity}WebServiceClientAdapter.h"
-        	</#if>
-	</#if>
+        </#if>
     </#if>
 </#list>
 
@@ -116,28 +113,28 @@
  */
 @implementation ${curr.name}WebServiceClientAdapterBase
 
-    /** JSON Object ${curr.name} pattern. */
-+   (NSString *) ${alias(curr.name, true)}      { return @"curr.name?cap_first"; }
+/** JSON Object ${curr.name} pattern. */
++ (NSString *) ${alias(curr.name, true)}      { return @"${curr.name?cap_first}"; }
     <#list curr.fields?values as field>
         <#if (!field.internal)>
             <#if (!field.relation??) || (isRestEntity(field.relation.targetEntity))>
-    /** ${alias(field.name)} attributes. */
+/** ${alias(field.name)} attributes. */
                 <#if field.options.rest?? && field.options.rest.name != "" >
-+   (NSString *) ${alias(field.name)}           { return @"${field.options.rest.name}"; }
++ (NSString *) ${alias(field.name)}           { return @"${field.options.rest.name}"; }
     
                 <#else>
-+   (NSString *) ${alias(field.name)}           { return @"curr.name?uncap_first"; }
++ (NSString *) ${alias(field.name)}           { return @"${curr.name?uncap_first}"; }
                 </#if>
             </#if>
         </#if>
     </#list>
     <#if (curr.options.sync??)>
-    /** Sync Date Format pattern. */
-+   (NSString *) SYNC_UPDATE_DATE_FORMAT        { return @"${curr.options.sync.updateDateFormatJava}"; }
+/** Sync Date Format pattern. */
++ (NSString *) SYNC_UPDATE_DATE_FORMAT        { return @"${curr.options.sync.updateDateFormatJava}"; }
     </#if>
 
-    /** Rest Date Format pattern. */
-+   (NSString *) REST_UPDATE_DATE_FORMAT        { return @"${curr.options.rest.dateFormat}"; }
+/** Rest Date Format pattern. */
++ (NSString *) REST_UPDATE_DATE_FORMAT        { return @"${curr.options.rest.dateFormat}"; }
 
     <#if (InheritanceUtils.isExtended(curr))>
 - (id) init {
@@ -149,12 +146,17 @@
 }
     </#if>
 
+- (NSString *) getUri {
+    return @"${curr.options.rest.uri}";
+}
 
+<#if curr.fields?size != 0>
 - (BOOL) isValidJSON:(NSObject *)json {
     return ![self jsonIsNull:(NSDictionary*) json
                 withProperty:[${curr.name}WebServiceClientAdapter JSON_ID]];
 }
 
+</#if>
 - (int) extractItems:(NSArray*) jsonArray
           withItems:(NSMutableArray*) items {
     
@@ -167,6 +169,104 @@
     }
     
     return items.count;
+}
+
+-(NSMutableDictionary *) itemToJson:(${curr.name}*) ${curr.name?uncap_first} {
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+
+    @try {
+        <#list curr.fields?values as field>
+            <#if (!field.internal)>
+                <#if (!field.relation??)>
+                    <#if (curr.options.sync?? && field.name?lower_case=="id")><#if !InheritanceUtils.isExtended(curr)>
+        [params setValue:${FieldsUtils.generateFieldContentType("item", field)}${curr.name?uncap_first}.serverId]
+                forKey:${curr.name}WebServiceClientAdapter.JSON_ID];
+                    </#if><#elseif (curr.options.sync?? && field.name=="serverId")><#if !InheritanceUtils.isExtended(curr)>
+        [params setValue:${FieldsUtils.generateFieldContentType("item", field)}${curr.name?uncap_first}.id]
+                forKey:${curr.name}WebServiceClientAdapter.JSON_MOBILE_ID];
+                    </#if><#elseif (curr.options.sync?? && field.name=="sync_uDate")><#if !InheritanceUtils.isExtended(curr)>
+        if (${curr.name?uncap_first}.${field.name?uncap_first} != nil) {
+        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:${field.owner}WebServiceClientAdapter.SYNC_UPDATE_DATE_FORMAT];
+
+        [params setValue:[dateFormatter stringFromDate:${curr.name?uncap_first}.${field.name?uncap_first}]
+                forKey:${field.owner}WebServiceClientAdapter.${alias(field.name)}];
+        }
+                    </#if><#elseif (FieldsUtils.getObjectiveType(field)?lower_case == "datetime")>
+        if (${curr.name?uncap_first}.${field.name?uncap_first} != nil) {
+            NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+            [dateFormatter setDateFormat:${field.owner}WebServiceClientAdapter.REST_UPDATE_DATE_FORMAT];
+
+            [params setValue:[dateFormatter stringFromDate:${curr.name?uncap_first}.${field.name?uncap_first}]
+                    forKey:${field.owner}WebServiceClientAdapter.${alias(field.name)}];
+        }
+                    <#elseif (field.harmony_type=="string")>
+        if (${curr.name?uncap_first}.${field.name?uncap_first} != nil) {
+            [params setValue:${curr.name?uncap_first}.${field.name?uncap_first}
+                forKey:${field.owner}WebServiceClientAdapter.${alias(field.name)}];
+        }
+                    <#elseif (field.harmony_type=="enum")>
+        //TODO enum
+                    <#else>
+        [params setValue:${FieldsUtils.generateFieldContentType("item", field)}${curr.name?uncap_first}.${field.name?uncap_first}]
+                forKey:${field.owner}WebServiceClientAdapter.${alias(field.name)}];
+                    </#if>
+                <#else>
+                    <#if (isRestEntity(field.relation.targetEntity))>
+                        <#if (field.relation.type == "ManyToMany" || field.relation.type == "OneToMany")>
+                            <#assign converter = "itemsIdToJson" />
+                        <#else>
+                            <#assign converter = "itemIdToJson" />
+                        </#if>
+
+        if (${curr.name?uncap_first}.${field.name?uncap_first} != nil) {
+            ${field.relation.targetEntity}WebServiceClientAdapter *${field.name}Adapter =
+                   [[${field.relation.targetEntity}WebServiceClientAdapter alloc] init];
+        
+            [params setValue:[${field.name}Adapter ${converter}:${curr.name?uncap_first}.${field.name?uncap_first}]
+                   forKey:${field.owner}WebServiceClientAdapter.${alias(field.name)}];
+        }
+                    </#if>
+                </#if>
+            </#if>
+        </#list>
+    } @catch(NSException* e) {
+        NSLog(@"Exception: %@", e);
+    }
+    
+    return params;
+}
+
+- (NSMutableDictionary *) itemIdToJson:(${curr.name?cap_first}*) item {
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+
+    @try {
+    <#if curr.options.sync??>
+    [params setValue:item.getserverId
+            forKey:${curr.ids[0].owner}WebServiceClientAdapter.${alias(curr.ids[0].name)}];
+    <#else>
+        <#list curr_ids as id>
+    [params setValue:${FieldsUtils.generateFieldContentType("item", id)}item.${id.name?uncap_first}<#if (FieldsUtils.getObjectiveType(id)?lower_case != "string")>]</#if>
+            forKey:${id.owner}WebServiceClientAdapter.${alias(id.name)}];
+        </#list>
+    </#if>
+    } @catch(NSException* e) {
+        NSLog(@"Exception: %@", e);
+    }
+    
+    return params;
+}
+
+- (NSArray *) itemsIdToJson:(NSArray* ) items {
+    NSMutableArray *itemArray = [[NSMutableArray alloc]init];
+    NSMutableDictionary *jsonItems = [NSMutableDictionary dictionary];
+
+    for (int i = 0; i < items.count; i++) {
+        jsonItems = [self itemIdToJson:[items objectAtIndex: i]];
+        [itemArray addObject:jsonItems];
+	}
+
+    return itemArray;
 }
 
 - (BOOL) extract:(NSDictionary *)json
@@ -241,7 +341,7 @@
                     @try {
                       //TODO ${field.relation.type}
                     } @catch (NSException *e) {
-                        NSLog(@"Exception %@", "Json doesn't contains ${field.relation.targetEntity} data");
+                        NSLog(@"Exception %@", @"Json doesn't contains ${field.relation.targetEntity} data");
                     }
                             </#if>
                         </#if>
@@ -255,26 +355,107 @@
             NSLog(@"Exception %@", e);
         }</#if>
     }
+    return result;
 }
 
-- (int) get:(${curr.name}*) ${curr.name?uncap_first} {
-    //TODO Get ${curr.name}
-	return 0;
+- (int) get:(${curr.name}*) ${curr.name?uncap_first} withCallback:(void(^)(${curr.name} *)) callback {
+    int result = -1;
+    
+    void ( ^restCallback )( NSObject* ) = ^(NSObject* object) {
+        NSLog(@"Convert to item ${curr.name}.");
+        
+        if ([object isKindOfClass:[NSDictionary class]]) {
+            NSDictionary* json = (NSDictionary*) object;
+            
+            if ([self isValidJSON:json]) {
+                [self extract:json withItem:${curr.name?uncap_first}];
+            }
+        }
+        
+        callback(${curr.name?uncap_first});
+    };
+
+    [self invokeRequest:GET withRequest:[NSString stringWithFormat:[self getUri], "<#list curr_ids as id>/%s</#list>%s",
+                        <#list curr_ids as id>${curr.name?uncap_first}.${id.name},
+                        </#list>@".json"]
+                withParams:nil
+              withCallback:restCallback];
+
+    return result;
 }
 
-- (int) getAll:(NSArray*) ${curr.name?uncap_first}s {
-    //TODO Get All ${curr.name}
-	return 0;
+- (int) getAll:(void(^)(NSArray*)) callback {
+    int result = -1;
+    
+    void ( ^restCallback )( NSObject* ) = ^(NSObject* object) {
+        NSLog(@"Convert to item ${curr.name}.");
+        
+        if ([object isKindOfClass:[NSArray class]]) {
+            NSArray* json = (NSArray*) object;
+            
+            if ([self isValidJSON:json]) {
+                [self extractItems:json withItems:callback];
+            }
+        }
+        
+        callback(callback);
+    };
+
+    [self invokeRequest:GET withRequest:[NSString stringWithFormat:[self getUri],"%s", ".json"]
+                withParams:nil
+              withCallback:restCallback];
+
+    return result;
 }
 
-- (int) update:(${curr.name}*) ${curr.name?uncap_first} {
-    //TODO Update ${curr.name}
-	return 0;
+- (int) update:(${curr.name}*) ${curr.name?uncap_first} withCallback:(void(^)(${curr.name} *)) callback {
+    int result = -1;
+
+    void ( ^restCallback )( NSObject* ) = ^(NSObject* object) {
+        NSLog(@"Convert to item ${curr.name}.");
+        
+        if ([object isKindOfClass:[NSDictionary class]]) {
+            NSDictionary* json = (NSDictionary*) object;
+            
+            if ([self isValidJSON:json]) {
+                [self extract:json withItem:${curr.name?uncap_first}];
+            }
+        }
+        
+        callback(${curr.name?uncap_first});
+    };
+    
+    [self invokeRequest:PUT withRequest:[NSString stringWithFormat:[self getUri], "<#list curr_ids as id>/%s</#list>%s",
+                        <#list curr_ids as id>${curr.name?uncap_first}.${id.name},
+                        </#list>@".json"]
+                withParams:[self itemToJson:${curr.name?uncap_first}]
+              withCallback:restCallback];
+
+    return result;
 }
 
-- (int) insert:(${curr.name}*) ${curr.name?uncap_first} {
-    //TODO Insert ${curr.name}
-	return 0;
+- (int) insert:(${curr.name}*) ${curr.name?uncap_first} withCallback:(void(^)(${curr.name} *)) callback {
+    int result = -1;
+
+    void ( ^restCallback )( NSObject* ) = ^(NSObject* object) {
+        NSLog(@"Convert to item ${curr.name}.");
+        
+        if ([object isKindOfClass:[NSDictionary class]]) {
+            NSDictionary* json = (NSDictionary*) object;
+            
+            if ([self isValidJSON:json]) {
+                [self extract:json withItem:${curr.name?uncap_first}];
+            }
+        }
+        
+        callback(${curr.name?uncap_first});
+    };
+    
+    [self invokeRequest:GET withRequest:[NSString stringWithFormat:[self getUri],"%s", ".json"]
+                withParams:[self itemToJson:${curr.name?uncap_first}]
+              withCallback:restCallback];
+
+    return result;
 }
 
 @end

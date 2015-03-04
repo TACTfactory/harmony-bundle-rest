@@ -1,9 +1,9 @@
 <@header?interpret />
 
-#import "RpcTest.h"
+#import "RestTest.h"
 #import "AppDelegate.h"
 
-@implementation RpcTest
+@implementation RestTest
 
 
 @end

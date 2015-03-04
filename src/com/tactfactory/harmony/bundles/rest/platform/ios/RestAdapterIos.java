@@ -55,13 +55,13 @@ public class RestAdapterIos extends IosAdapter implements RestAdapter {
 
         // Make RestClient
         result.add(new SourceFile(
-                templatePath + "RPCClient.h", 
-                filePath + "RPCClient.h",
+                templatePath + "RestClient.h", 
+                filePath + "RestClient.h",
                 false));
 
         result.add(new SourceFile(
-                templatePath + "RPCClient.m", 
-                filePath + "RPCClient.m",
+                templatePath + "RestClient.m", 
+                filePath + "RestClient.m",
                 false));
 
         return result;
@@ -115,23 +115,23 @@ public class RestAdapterIos extends IosAdapter implements RestAdapter {
                 + "/WebService/";
  
         result.add(new SourceFile(
-                templatePath + "base/ApplicationRpcTestBase.h",
-                filePath + "Base/RpcTestBase.h",
+                templatePath + "base/ApplicationRestTestBase.h",
+                filePath + "Base/RestTestBase.h",
                 true));
 
         result.add(new SourceFile(
-                templatePath + "base/ApplicationRpcTestBase.m",
-                filePath + "Base/RpcTestBase.m",
+                templatePath + "base/ApplicationRestTestBase.m",
+                filePath + "Base/RestTestBase.m",
                 true));
         
         result.add(new SourceFile(
-                templatePath + "ApplicationRpcTest.h",
-                filePath + "RpcTest.h",
+                templatePath + "ApplicationRestTest.h",
+                filePath + "RestTest.h",
                 false));
 
         result.add(new SourceFile(
-                templatePath + "ApplicationRpcTest.m",
-                filePath + "RpcTest.m",
+                templatePath + "ApplicationRestTest.m",
+                filePath + "RestTest.m",
                 false));
 
         return result;
@@ -147,29 +147,29 @@ public class RestAdapterIos extends IosAdapter implements RestAdapter {
                 + "/WebService/";
 
         result.add(new SourceFile(
-                templatePath + "base/TemplateRpcTestBase.h",
-                String.format("%sBase/%sRpcTestBase.h",
+                templatePath + "base/TemplateRestTestBase.h",
+                String.format("%sBase/%sRestTestBase.h",
                         filePath,
                         entity.getName()),
                 true));
 
         result.add(new SourceFile(
-                templatePath + "base/TemplateRpcTestBase.m",
-                String.format("%sBase/%sRpcTestBase.m",
+                templatePath + "base/TemplateRestTestBase.m",
+                String.format("%sBase/%sRestTestBase.m",
                         filePath,
                         entity.getName()),
                 true));
         
         result.add(new SourceFile(
-                templatePath + "TemplateRpcTest.h",
-                String.format("%s/%sRpcTest.h",
+                templatePath + "TemplateRestTest.h",
+                String.format("%s/%sRestTest.h",
                         filePath,
                         entity.getName()),
                 false));
 
         result.add(new SourceFile(
-                templatePath + "TemplateRpcTest.m",
-                String.format("%s/%sRpcTest.m",
+                templatePath + "TemplateRestTest.m",
+                String.format("%s/%sRestTest.m",
                         filePath,
                         entity.getName()),
                 false));
