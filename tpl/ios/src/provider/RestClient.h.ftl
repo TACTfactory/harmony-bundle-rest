@@ -10,7 +10,8 @@ typedef enum
     GET,
     POST,
     PUT,
-    DELETE
+    DELETE,
+    PATCH
 } Verb;
 
 @interface RestClient : NSObject {

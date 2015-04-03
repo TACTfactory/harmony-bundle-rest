@@ -97,16 +97,16 @@
 <#assign import_array = [curr.name] />
 <#assign alreadyImportArrayList=false />
 <#list curr.relations as relation>
-    <#if (isRestEntity(relation.relation.targetEntity))>
-        <#if (!isInArray(import_array, relation.relation.targetEntity))>
-            <#assign import_array = import_array + [relation.relation.targetEntity] />
-#import "${relation.relation.targetEntity}WebServiceClientAdapter.h"
-        </#if>
-    </#if>
-</#list>
-
-/**
- * 
+	    <#if (isRestEntity(relation.relation.targetEntity))>
+	        <#if (!isInArray(import_array, relation.relation.targetEntity))>
+	            <#assign import_array = import_array + [relation.relation.targetEntity] />
+	#import "${relation.relation.targetEntity}WebServiceClientAdapter.h"
+	        </#if>
+	    </#if>
+	</#list>
+	
+	/**
+	 * 
  * <b><i>This class will be overwrited whenever you regenerate the project with Harmony. 
  * You should edit ${curr.name}WebServiceClientAdapter class instead of this one or you will lose all your modifications.</i></b>
  *
@@ -123,7 +123,7 @@
 + (NSString *) ${alias(field.name)}           { return @"${field.options.rest.name}"; }
     
                 <#else>
-+ (NSString *) ${alias(field.name)}           { return @"${curr.name?uncap_first}"; }
++ (NSString *) ${alias(field.name)}           { return @"${field.name?uncap_first}"; }
                 </#if>
             </#if>
         </#if>
@@ -150,10 +150,13 @@
     return @"${curr.options.rest.uri}";
 }
 
+- (int) getItemId:(${curr.name}*) item {
+    return item.${curr.ids[0].name};
+}
+
 <#if curr.fields?size != 0>
 - (BOOL) isValidJSON:(NSObject *)json {
-    return ![self jsonIsNull:(NSDictionary*) json
-                withProperty:[${curr.name}WebServiceClientAdapter JSON_ID]];
+    return [json isKindOfClass:[NSDictionary class]];
 }
 
 </#if>
@@ -200,7 +203,7 @@
             [params setValue:[dateFormatter stringFromDate:${curr.name?uncap_first}.${field.name?uncap_first}]
                     forKey:${field.owner}WebServiceClientAdapter.${alias(field.name)}];
         }
-                    <#elseif (field.harmony_type=="string")>
+                    <#elseif (field.harmony_type=="string" || field.harmony_type=="text")>
         if (${curr.name?uncap_first}.${field.name?uncap_first} != nil) {
             [params setValue:${curr.name?uncap_first}.${field.name?uncap_first}
                 forKey:${field.owner}WebServiceClientAdapter.${alias(field.name)}];
@@ -264,7 +267,7 @@
     for (int i = 0; i < items.count; i++) {
         jsonItems = [self itemIdToJson:[items objectAtIndex: i]];
         [itemArray addObject:jsonItems];
-	}
+    }
 
     return itemArray;
 }
@@ -375,9 +378,10 @@
         callback(${curr.name?uncap_first});
     };
 
-    [self invokeRequest:GET withRequest:[NSString stringWithFormat:[self getUri], "<#list curr_ids as id>/%s</#list>%s",
-                        <#list curr_ids as id>${curr.name?uncap_first}.${id.name},
-                        </#list>@".json"]
+    [self invokeRequest:GET withRequest:[NSString stringWithFormat:@"<#list curr_ids as id>/%@</#list>%@%@",
+			[self getUri],
+                        <#list curr_ids as id>${curr.name?uncap_first}.${id.name},</#list>
+			[${curr.name}WebServiceClientAdapter REST_FORMAT]]
                 withParams:nil
               withCallback:restCallback];
 
@@ -389,19 +393,20 @@
     
     void ( ^restCallback )( NSObject* ) = ^(NSObject* object) {
         NSLog(@"Convert to item ${curr.name}.");
+        NSMutableArray *items = [NSMutableArray new];
         
-        if ([object isKindOfClass:[NSArray class]]) {
-            NSArray* json = (NSArray*) object;
+        if ([self isValidJSON:object]) {
+            NSDictionary* json = (NSDictionary*) object;
             
             if ([self isValidJSON:json]) {
-                [self extractItems:json withItems:callback];
+                [self extractItems:[json objectForKey:@"${curr.name?cap_first}s"] withItems:items];
             }
         }
         
-        callback(callback);
+        callback(items);
     };
 
-    [self invokeRequest:GET withRequest:[NSString stringWithFormat:[self getUri],"%s", ".json"]
+    [self invokeRequest:GET withRequest:[NSString stringWithFormat:@"%@%@", [self getUri], [${curr.name}WebServiceClientAdapter REST_FORMAT]]
                 withParams:nil
               withCallback:restCallback];
 
@@ -425,9 +430,10 @@
         callback(${curr.name?uncap_first});
     };
     
-    [self invokeRequest:PUT withRequest:[NSString stringWithFormat:[self getUri], "<#list curr_ids as id>/%s</#list>%s",
-                        <#list curr_ids as id>${curr.name?uncap_first}.${id.name},
-                        </#list>@".json"]
+    [self invokeRequest:PUT withRequest:[NSString stringWithFormat:@"<#list curr_ids as id>/%@</#list>%@",
+			[self getUri],
+                        <#list curr_ids as id>${curr.name?uncap_first}.${id.name},</#list>
+			[${curr.name}WebServiceClientAdapter REST_FORMAT]]
                 withParams:[self itemToJson:${curr.name?uncap_first}]
               withCallback:restCallback];
 
@@ -451,7 +457,7 @@
         callback(${curr.name?uncap_first});
     };
     
-    [self invokeRequest:GET withRequest:[NSString stringWithFormat:[self getUri],"%s", ".json"]
+    [self invokeRequest:POST withRequest:[NSString stringWithFormat:@"%@%@", [self getUri], [${curr.name}WebServiceClientAdapter REST_FORMAT]]
                 withParams:[self itemToJson:${curr.name?uncap_first}]
               withCallback:restCallback];
 

@@ -27,18 +27,18 @@
 }
 
 - (void) testGet {
-
+	dispatch_semaphore_signal(semaphore);
 }
 
 - (void) testGetAll {
-
+	dispatch_semaphore_signal(semaphore);
 }
 
 - (void) testInsert {
-
+	dispatch_semaphore_signal(semaphore);
 }
 
 - (void) testUpdate {
-
+	dispatch_semaphore_signal(semaphore);
 }
 @end

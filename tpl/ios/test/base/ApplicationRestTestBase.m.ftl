@@ -21,7 +21,7 @@
 }
 
 - (void) testIsOnline {
-
+	dispatch_semaphore_signal(semaphore);
 }
 
 @end

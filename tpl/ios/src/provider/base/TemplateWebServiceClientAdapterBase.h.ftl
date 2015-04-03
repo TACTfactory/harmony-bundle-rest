@@ -95,12 +95,18 @@
  */
 - (NSMutableDictionary *) itemIdToJson:(${curr.name?cap_first}*) item;
 
-    /**
-     * Convert a list of <${curr.name}> to a NSMutableDictionary.
-     * @param users The array of <${curr.name}> to convert
-     * @return The array of converted <${curr.name}>
-     */
+/**
+ * Convert a list of <${curr.name}> to a NSMutableDictionary.
+ * @param users The array of <${curr.name}> to convert
+ * @return The array of converted <${curr.name}>
+ */
 - (NSArray *) itemsIdToJson:(NSArray*) items;
+
+/**
+ * Get the id of the current <${curr.name}>.
+ * @return Index of <${curr.name}>
+ */
+- (int) getItemId:(${curr.name}*) item;
 
 /**
  * Retrieve one ${curr.name}. Uses the route : ${curr.options.rest.uri}/%id%.
