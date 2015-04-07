@@ -17,6 +17,12 @@
                   withPort:(NSNumber*) urlPort
                 withScheme:(NSString*) urlScheme
                   withPath:(NSString*) urlPath {
+                  
+	self->host = urlHost;
+	self->port = urlPort;
+	self->scheme = urlScheme;
+	self->prefix = urlPath;
+	
     return self;
 }
 
@@ -25,10 +31,11 @@
                 withParams:(NSMutableDictionary*) params
               withCallback: (void(^)(NSObject*)) callback {
     if (self.isOnline){
-        NSString* url = [NSString stringWithFormat:@"%@://%@:%@",
+        NSString* url = [NSString stringWithFormat:@"%@://%@:%@/%@",
                          self->scheme,
                          self->host,
-                         self->port];
+                         self->port,
+                         self->prefix];
         
         AFHTTPRequestOperationManager *manager = [[AFHTTPRequestOperationManager alloc] initWithBaseURL:[NSURL URLWithString:url]];
         manager.requestSerializer = [AFJSONRequestSerializer serializer];

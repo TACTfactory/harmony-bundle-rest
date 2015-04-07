@@ -1,7 +1,5 @@
 <@header?interpret />
 
-#import "RestClient.h"
-
 #import <Foundation/Foundation.h>
 #import "AFHTTPRequestOperationManager.h"
 
