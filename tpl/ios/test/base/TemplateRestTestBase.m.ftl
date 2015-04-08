@@ -1,7 +1,7 @@
 <@header?interpret />
 <#include utilityPath + "all_imports.ftl" />
 
-#import "${curr.name}RestTest.h"
+#import "${curr.name}RestTestBase.h"
 <#list InheritanceUtils.getAllChildren(curr) as child>
 #import "${child.name?cap_first}TestUtils.h"
 </#list>
