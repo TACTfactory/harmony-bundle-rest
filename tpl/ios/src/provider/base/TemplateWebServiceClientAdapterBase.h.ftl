@@ -78,7 +78,7 @@
  * @param item The returned ${curr.name}
  * @return true if a ${curr.name} was found. false if not
  */
-- (BOOL) extract:(NSDictionary*) json
+- (BOOL) extract:(NSMutableDictionary*) json
        withItem:(${curr.name}*) item;
 
 /**
