@@ -26,7 +26,7 @@
 - (void) invokeRequest:(Verb) verb
            withRequest:(NSString*) request
             withParams:(NSMutableDictionary*) params
-          withCallback: (void(^)(NSObject*)) callback;
+          withCallback: (void(^)(HttpResponse*)) callback;
 
 - (NSString *) getUri;
 

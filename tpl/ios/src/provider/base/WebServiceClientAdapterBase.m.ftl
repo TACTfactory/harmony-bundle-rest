@@ -13,6 +13,12 @@
 				withPath:@""];
 }
 
+- (NSDictionary *) httpResponse:(NSInteger) statusCode{
+    NSDictionary *result = [NSDictionary new];
+    
+    return result;
+}
+
 - (id) initWithServiceName:(NSString*) urlHost
                   withPort:(NSNumber*) urlPort
                 withScheme:(NSString*) urlScheme
@@ -29,7 +35,7 @@
 - (void) invokeRequest:(Verb) verb
                withRequest:(NSString*) request
                 withParams:(NSMutableDictionary*) params
-              withCallback: (void(^)(NSObject*)) callback {
+              withCallback: (void(^)(HttpResponse*)) callback {
     if (self.isOnline) {
         RestClient *client = [[RestClient alloc] initWithServiceName:self->host withPort:[self->port intValue] withScheme:self->scheme];
         

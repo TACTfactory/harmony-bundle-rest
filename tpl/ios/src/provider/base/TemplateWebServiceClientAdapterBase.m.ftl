@@ -370,11 +370,11 @@
 - (int) get:(${curr.name}*) ${curr.name?uncap_first} withCallback:(void(^)(${curr.name} *)) callback {
     int result = -1;
     
-    void ( ^restCallback )( NSObject* ) = ^(NSObject* object) {
+    void ( ^restCallback )( HttpResponse* ) = ^(HttpResponse* object) {
         NSLog(@"Convert to item ${curr.name}.");
         
-        if ([object isKindOfClass:[NSDictionary class]]) {
-            NSMutableDictionary* json = [NSMutableDictionary dictionaryWithDictionary:(NSDictionary*) object];
+        if (object.result != nil) {
+            NSMutableDictionary* json = [NSMutableDictionary dictionaryWithDictionary:(NSDictionary*) object.result];
             
             if ([self isValidJSON:json]) {
                 [self extract:json withItem:${curr.name?uncap_first}];
@@ -397,12 +397,12 @@
 - (int) getAll:(void(^)(NSArray*)) callback {
     int result = -1;
     
-    void ( ^restCallback )( NSObject* ) = ^(NSObject* object) {
+    void ( ^restCallback )( HttpResponse* ) = ^(HttpResponse* object) {
         NSLog(@"Convert to item ${curr.name}.");
         NSMutableArray *items = [NSMutableArray new];
         
-        if ([self isValidJSON:object]) {
-            NSMutableDictionary* json = [NSMutableDictionary dictionaryWithDictionary:(NSDictionary*) object];
+        if (object.result != nil) {
+            NSMutableDictionary* json = [NSMutableDictionary dictionaryWithDictionary:(NSDictionary*) object.result];
             
             if ([self isValidJSON:json]) {
                 [self extractItems:[json objectForKey:@"${curr.name?cap_first}s"] withItems:items];
@@ -424,11 +424,11 @@
 - (int) update:(${curr.name}*) ${curr.name?uncap_first} withCallback:(void(^)(${curr.name} *)) callback {
     int result = -1;
 
-    void ( ^restCallback )( NSObject* ) = ^(NSObject* object) {
+    void ( ^restCallback )( HttpResponse* ) = ^(HttpResponse* object) {
         NSLog(@"Convert to item ${curr.name}.");
         
-        if ([object isKindOfClass:[NSDictionary class]]) {
-            NSMutableDictionary* json = [NSMutableDictionary dictionaryWithDictionary:(NSDictionary*) object];
+        if (object.result != nil) {
+            NSMutableDictionary* json = [NSMutableDictionary dictionaryWithDictionary:(NSDictionary*) object.result];
             
             if ([self isValidJSON:json]) {
                 [self extract:json withItem:${curr.name?uncap_first}];
@@ -451,11 +451,11 @@
 - (int) insert:(${curr.name}*) ${curr.name?uncap_first} withCallback:(void(^)(${curr.name} *)) callback {
     int result = -1;
 
-    void ( ^restCallback )( NSObject* ) = ^(NSObject* object) {
+    void ( ^restCallback )( HttpResponse* ) = ^(HttpResponse* object) {
         NSLog(@"Convert to item ${curr.name}.");
         
-        if ([object isKindOfClass:[NSDictionary class]]) {
-            NSMutableDictionary* json = [NSMutableDictionary dictionaryWithDictionary:(NSDictionary*) object];
+        if (object.result != nil) {
+            NSMutableDictionary* json = [NSMutableDictionary dictionaryWithDictionary:(NSDictionary*) object.result];
             
             if ([self isValidJSON:json]) {
                 [self extract:json withItem:${curr.name?uncap_first}];

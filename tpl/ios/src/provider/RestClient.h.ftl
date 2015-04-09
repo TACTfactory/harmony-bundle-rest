@@ -2,6 +2,7 @@
 
 #import <Foundation/Foundation.h>
 #import "AFHTTPRequestOperationManager.h"
+#import "HttpResponse.h"
 
 typedef enum
 {
@@ -33,6 +34,6 @@ typedef enum
 - (void) invoke:(Verb) verb
        withPath:(NSString*) path
  withJsonParams:(NSMutableDictionary*) jsonParams
-   withCallback:(void(^)(NSObject*)) callback;
+   withCallback:(void(^)(HttpResponse*)) callback;
 
 @end

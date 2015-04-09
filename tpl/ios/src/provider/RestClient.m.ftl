@@ -67,7 +67,7 @@ static BOOL isAuth;
 - (void) invoke:(Verb) verb
        withPath:(NSString*) path
  withJsonParams:(NSMutableDictionary*) jsonParams
-   withCallback:(void(^)(NSObject*)) callback{
+   withCallback:(void(^)(HttpResponse*)) callback{
 	
     NSString* URL = [NSString stringWithFormat:@"%@://%@:%@/%@",
                      self->scheme,
@@ -77,36 +77,54 @@ static BOOL isAuth;
                      
     AFHTTPRequestOperationManager *manager = [[AFHTTPRequestOperationManager alloc] initWithBaseURL:[NSURL URLWithString:URL]];
     manager.requestSerializer = [AFJSONRequestSerializer serializer];
+    HttpResponse *httpResponse = [HttpResponse new ];
 
     if(verb == GET) {
         [manager GET:URL
           parameters:jsonParams success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		callback(responseObject);
+              httpResponse.result = responseObject;
+              httpResponse.statusCode = [operation.response statusCode];
+              callback(httpResponse);
         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
             NSLog(@"Error: %@", error);
+            httpResponse.statusCode = [operation.response statusCode];
+            callback(httpResponse);
         }];
     } else if(verb == PUT) {
         [manager PUT:URL
           parameters:jsonParams success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		callback(responseObject);
+              httpResponse.result = responseObject;
+              httpResponse.statusCode = [operation.response statusCode];
+              callback(httpResponse);
         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
             NSLog(@"Error: %@", error);
+            httpResponse.statusCode = [operation.response statusCode];
+            callback(httpResponse);
         }];
     } else if(verb == POST) {
         [manager POST:URL
           parameters:jsonParams success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		callback(responseObject);
+              httpResponse.result = responseObject;
+              httpResponse.statusCode = [operation.response statusCode];
+              callback(httpResponse);
         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
             NSLog(@"Error: %@", error);
+            httpResponse.statusCode = [operation.response statusCode];
+            callback(httpResponse);
         }];
     } else if(verb == DELETE) {
         [manager POST:URL
           parameters:jsonParams success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		callback(responseObject);
+              httpResponse.result = responseObject;
+              httpResponse.statusCode = [operation.response statusCode];
+              callback(httpResponse);
         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
             NSLog(@"Error: %@", error);
+            httpResponse.statusCode = [operation.response statusCode];
+            callback(httpResponse);
         }];
     }
 }
+
 
 @end
