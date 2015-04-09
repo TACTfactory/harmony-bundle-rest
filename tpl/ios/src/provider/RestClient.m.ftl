@@ -69,35 +69,40 @@ static BOOL isAuth;
  withJsonParams:(NSMutableDictionary*) jsonParams
    withCallback:(void(^)(NSObject*)) callback{
 	
-    NSString* URL = [NSString stringWithFormat:@"%@://%@:%@%@",
+    NSString* URL = [NSString stringWithFormat:@"%@://%@:%@/%@",
                      self->scheme,
                      self->serviceName,
                      [NSNumber numberWithInt:self->port],
                      path];
                      
     AFHTTPRequestOperationManager *manager = [[AFHTTPRequestOperationManager alloc] initWithBaseURL:[NSURL URLWithString:URL]];
-    
+    manager.requestSerializer = [AFJSONRequestSerializer serializer];
+
     if(verb == GET) {
-        [manager GET:[NSString stringWithFormat:@"%@/%@", URL, path]
+        [manager GET:URL
           parameters:jsonParams success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		callback(responseObject);
         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
             NSLog(@"Error: %@", error);
         }];
     } else if(verb == PUT) {
-        [manager PUT:[NSString stringWithFormat:@"%@/%@", URL, path]
+        [manager PUT:URL
           parameters:jsonParams success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		callback(responseObject);
         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
             NSLog(@"Error: %@", error);
         }];
     } else if(verb == POST) {
-        [manager POST:[NSString stringWithFormat:@"%@/%@", URL, path]
+        [manager POST:URL
           parameters:jsonParams success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		callback(responseObject);
         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
             NSLog(@"Error: %@", error);
         }];
     } else if(verb == DELETE) {
-        [manager POST:[NSString stringWithFormat:@"%@/%@", URL, path]
+        [manager POST:URL
           parameters:jsonParams success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		callback(responseObject);
         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
             NSLog(@"Error: %@", error);
         }];

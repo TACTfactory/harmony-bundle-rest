@@ -168,7 +168,7 @@
     for (NSDictionary* json in jsonArray) {
         ${curr.name}* item = [${curr.name} new];
         
-        if ([self extract:json withItem:item]) {
+        if ([self extract:[NSMutableDictionary dictionaryWithDictionary:json] withItem:item]) {
             [items addObject:item];
         }
     }
@@ -274,7 +274,7 @@
     return itemArray;
 }
 
-- (BOOL) extract:(NSDictionary *)json
+- (BOOL) extract:(NSMutableDictionary *)json
        withItem:(${curr.name} *)item {
     
     BOOL result = [self isValidJSON:json];
@@ -374,7 +374,7 @@
         NSLog(@"Convert to item ${curr.name}.");
         
         if ([object isKindOfClass:[NSDictionary class]]) {
-            NSDictionary* json = (NSDictionary*) object;
+            NSMutableDictionary* json = [NSMutableDictionary dictionaryWithDictionary:(NSDictionary*) object];
             
             if ([self isValidJSON:json]) {
                 [self extract:json withItem:${curr.name?uncap_first}];
@@ -384,9 +384,9 @@
         callback(${curr.name?uncap_first});
     };
 
-    [self invokeRequest:GET withRequest:[NSString stringWithFormat:@"<#list curr_ids as id>/%@</#list>%@%@",
+    [self invokeRequest:GET withRequest:[NSString stringWithFormat:@"%@<#list curr_ids as id>/%@</#list>%@",
 			[self getUri],
-                        <#list curr_ids as id>${curr.name?uncap_first}.${id.name},</#list>
+                        <#list curr_ids as id>[NSNumber numberWithInt:${curr.name?uncap_first}.${id.name}],</#list>
 			[${curr.name}WebServiceClientAdapter REST_FORMAT]]
                 withParams:nil
               withCallback:restCallback];
@@ -402,7 +402,7 @@
         NSMutableArray *items = [NSMutableArray new];
         
         if ([self isValidJSON:object]) {
-            NSDictionary* json = (NSDictionary*) object;
+            NSMutableDictionary* json = [NSMutableDictionary dictionaryWithDictionary:(NSDictionary*) object];
             
             if ([self isValidJSON:json]) {
                 [self extractItems:[json objectForKey:@"${curr.name?cap_first}s"] withItems:items];
@@ -426,7 +426,7 @@
         NSLog(@"Convert to item ${curr.name}.");
         
         if ([object isKindOfClass:[NSDictionary class]]) {
-            NSDictionary* json = (NSDictionary*) object;
+            NSMutableDictionary* json = [NSMutableDictionary dictionaryWithDictionary:(NSDictionary*) object];
             
             if ([self isValidJSON:json]) {
                 [self extract:json withItem:${curr.name?uncap_first}];
@@ -436,9 +436,9 @@
         callback(${curr.name?uncap_first});
     };
     
-    [self invokeRequest:PUT withRequest:[NSString stringWithFormat:@"<#list curr_ids as id>/%@</#list>%@",
+    [self invokeRequest:PUT withRequest:[NSString stringWithFormat:@"%@<#list curr_ids as id>/%@</#list>%@",
 			[self getUri],
-                        <#list curr_ids as id>${curr.name?uncap_first}.${id.name},</#list>
+                        <#list curr_ids as id>[NSNumber numberWithInt:${curr.name?uncap_first}.${id.name}],</#list>
 			[${curr.name}WebServiceClientAdapter REST_FORMAT]]
                 withParams:[self itemToJson:${curr.name?uncap_first}]
               withCallback:restCallback];
@@ -453,7 +453,7 @@
         NSLog(@"Convert to item ${curr.name}.");
         
         if ([object isKindOfClass:[NSDictionary class]]) {
-            NSDictionary* json = (NSDictionary*) object;
+            NSMutableDictionary* json = [NSMutableDictionary dictionaryWithDictionary:(NSDictionary*) object];
             
             if ([self isValidJSON:json]) {
                 [self extract:json withItem:${curr.name?uncap_first}];

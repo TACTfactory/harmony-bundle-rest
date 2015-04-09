@@ -30,52 +30,13 @@
                withRequest:(NSString*) request
                 withParams:(NSMutableDictionary*) params
               withCallback: (void(^)(NSObject*)) callback {
-    if (self.isOnline){
-        NSString* url = [NSString stringWithFormat:@"%@://%@:%@/%@",
-                         self->scheme,
-                         self->host,
-                         self->port,
-                         self->prefix];
+    if (self.isOnline) {
+        RestClient *client = [[RestClient alloc] initWithServiceName:self->host withPort:[self->port intValue] withScheme:self->scheme];
         
-        AFHTTPRequestOperationManager *manager = [[AFHTTPRequestOperationManager alloc] initWithBaseURL:[NSURL URLWithString:url]];
-        manager.requestSerializer = [AFJSONRequestSerializer serializer];
-
-        if(verb == GET) {
-            [manager GET:[NSString stringWithFormat:@"%@/%@", url, request]
-              parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-                  callback(responseObject);
-              } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-                  NSLog(@"Error: %@", error);
-              }];
-        } else if (verb == POST) {
-            [manager POST:[NSString stringWithFormat:@"%@/%@", url, request]
-              parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-                  callback(responseObject);
-              } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-                  NSLog(@"Error: %@", error);
-              }];
-        } else if (verb == DELETE) {
-            [manager DELETE:[NSString stringWithFormat:@"%@/%@", url, request]
-              parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-                  callback(responseObject);
-              } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-                  NSLog(@"Error: %@", error);
-              }];
-        } else if (verb == PUT) {
-            [manager PUT:[NSString stringWithFormat:@"%@/%@", url, request]
-              parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-                  callback(responseObject);
-              } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-                  NSLog(@"Error: %@", error);
-              }];
-        } else if (verb == PATCH) {
-            [manager PATCH:[NSString stringWithFormat:@"%@/%@", url, request]
-              parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-                  callback(responseObject);
-              } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-                  NSLog(@"Error: %@", error);
-              }];
-        }
+        [client invoke:verb
+                    withPath:[NSString stringWithFormat:@"%@%@", self->prefix, request]
+              withJsonParams:params
+                withCallback:callback];
     }
 }
 
