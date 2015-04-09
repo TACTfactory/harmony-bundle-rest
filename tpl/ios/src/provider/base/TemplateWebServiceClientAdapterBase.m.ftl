@@ -379,11 +379,11 @@
     };
 
     [self invokeRequest:GET withRequest:[NSString stringWithFormat:@"%@<#list curr_ids as id>/%@</#list>%@",
-			[self getUri],
-                        <#list curr_ids as id>[NSNumber numberWithInt:${curr.name?uncap_first}.${id.name}],</#list>
-			[${curr.name}WebServiceClientAdapter REST_FORMAT]]
-                withParams:nil
-              withCallback:restCallback];
+                                         [self getUri],
+                                         <#list curr_ids as id>[NSNumber numberWithInt:${curr.name?uncap_first}.${id.name}],</#list>
+                                         [${curr.name}WebServiceClientAdapter REST_FORMAT]]
+             withParams:nil
+           withCallback:restCallback];
 
     return result;
 }
@@ -406,9 +406,11 @@
         callback(items);
     };
 
-    [self invokeRequest:GET withRequest:[NSString stringWithFormat:@"%@%@", [self getUri], [${curr.name}WebServiceClientAdapter REST_FORMAT]]
-                withParams:nil
-              withCallback:restCallback];
+    [self invokeRequest:GET withRequest:[NSString stringWithFormat:@"%@%@",
+                                         [self getUri],
+                                         [${curr.name}WebServiceClientAdapter REST_FORMAT]]
+             withParams:nil
+           withCallback:restCallback];
 
     return result;
 }
@@ -431,11 +433,11 @@
     };
     
     [self invokeRequest:PUT withRequest:[NSString stringWithFormat:@"%@<#list curr_ids as id>/%@</#list>%@",
-			[self getUri],
-                        <#list curr_ids as id>[NSNumber numberWithInt:${curr.name?uncap_first}.${id.name}],</#list>
-			[${curr.name}WebServiceClientAdapter REST_FORMAT]]
-                withParams:[self itemToJson:${curr.name?uncap_first}]
-              withCallback:restCallback];
+                                         [self getUri],
+                                         <#list curr_ids as id>[NSNumber numberWithInt:${curr.name?uncap_first}.${id.name}],</#list>
+                                         [${curr.name}WebServiceClientAdapter REST_FORMAT]]
+             withParams:[self itemToJson:${curr.name?uncap_first}]
+           withCallback:restCallback];
 
     return result;
 }
@@ -457,9 +459,11 @@
         callback(${curr.name?uncap_first});
     };
     
-    [self invokeRequest:POST withRequest:[NSString stringWithFormat:@"%@%@", [self getUri], [${curr.name}WebServiceClientAdapter REST_FORMAT]]
-                withParams:[self itemToJson:${curr.name?uncap_first}]
-              withCallback:restCallback];
+    [self invokeRequest:POST withRequest:[NSString stringWithFormat:@"%@%@",
+                                          [self getUri],
+                                          [${curr.name}WebServiceClientAdapter REST_FORMAT]]
+             withParams:[self itemToJson:${curr.name?uncap_first}]
+           withCallback:restCallback];
 
     return result;
 }

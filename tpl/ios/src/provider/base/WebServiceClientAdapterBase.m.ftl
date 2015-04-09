@@ -40,6 +40,17 @@
     }
 }
 
+- (NSArray *) itemsToJson:(NSArray*) items {
+    NSMutableArray *itemArray = [NSMutableArray new];
+    
+    for (int i = 0; i < [items count]; i++) {
+        id jsonItem = [self itemToJson:items[i]];
+        [itemArray addObject:jsonItem];
+    }
+    
+    return itemArray;
+}
+
 - (BOOL) isValidJSON:(NSObject *)json {
     return true;
 }

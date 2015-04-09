@@ -9,6 +9,9 @@
     NSString* prefix;
     NSNumber* port;
     NSString* scheme;
+
+    @public
+    NSInteger statusCode;
 }
 
 + (NSString *) REST_FORMAT;
@@ -30,11 +33,25 @@
 - (int) getItemId:(id) item;
 
 /**
+ * Convert an item to a JSONObject.
+ * @param item The item to convert
+ * @return The converted item
+ */
+- (NSMutableDictionary *) itemToJson:(id) item;
+
+/**
  * Convert a list of <entities> to a NSMutableDictionary.
  * @param users The array of <entities> to convert
  * @return The array of converted <entities>
  */
 - (NSArray *) itemsIdToJson:(NSArray*) items;
+
+/**
+ * Convert a list of <entities> to a NSMutableDictionary.
+ * @param users The array of <entities> to convert
+ * @return The array of converted <entities>
+ */
+- (NSArray *) itemsToJson:(NSArray*) items;
 
 - (int) extractItems:(NSArray*) jsonArray
            withItems:(NSMutableArray*) items;
