@@ -48,16 +48,23 @@
 }
 </#if>
 
-    /** Rest Date Format pattern. */
-+    (NSString *) REST_UPDATE_DATE_FORMAT;
+<#if (curr.options.sync??)>
+/** JSON mobile id. */
++ 	 (NSString *) JSON_MOBILE_ID;
+/** Sync Date Format pattern. */
++ 	(NSString *) SYNC_UPDATE_DATE_FORMAT;
+</#if>
+
+/** Rest Date Format pattern. */
++ 	(NSString *) REST_UPDATE_DATE_FORMAT;
     
-    /** JSON Object ${curr.name} pattern. */
-+    (NSString *) ${alias(curr.name, true)};
+/** JSON Object ${curr.name} pattern. */
++ 	(NSString *) ${alias(curr.name, true)};
     <#list curr.fields?values as field>
         <#if (!field.internal)>
             <#if (!field.relation??) || (isRestEntity(field.relation.targetEntity))>
-    /** ${alias(field.name)} attributes. */
-+    (NSString *) ${alias(field.name)};
+/** ${alias(field.name)} attributes. */
++ 	(NSString *) ${alias(field.name)};
             </#if>
         </#if>
     </#list>
