@@ -100,7 +100,7 @@
 	    <#if (isRestEntity(relation.relation.targetEntity))>
 	        <#if (!isInArray(import_array, relation.relation.targetEntity))>
 	            <#assign import_array = import_array + [relation.relation.targetEntity] />
-	#import "${relation.relation.targetEntity}WebServiceClientAdapter.h"
+#import "${relation.relation.targetEntity}WebServiceClientAdapter.h"
 	        </#if>
 	    </#if>
 	</#list>
@@ -128,10 +128,12 @@
             </#if>
         </#if>
     </#list>
-    <#if (curr.options.sync??)>
+<#if (curr.options.sync??)>
+/** JSON mobile id. */
++ (NSString *) JSON_MOBILE_ID				  { return @"mobile_id"; }
 /** Sync Date Format pattern. */
 + (NSString *) SYNC_UPDATE_DATE_FORMAT        { return @"${curr.options.sync.updateDateFormatJava}"; }
-    </#if>
+</#if>
 
 /** Rest Date Format pattern. */
 + (NSString *) REST_UPDATE_DATE_FORMAT        { return @"${curr.options.rest.dateFormat}"; }
@@ -245,7 +247,7 @@
 
     @try {
     <#if curr.options.sync??>
-    [params setValue:item.getserverId
+    [params setValue:[NSNumber numberWithInteger:item.serverId]
             forKey:${curr.ids[0].owner}WebServiceClientAdapter.${alias(curr.ids[0].name)}];
     <#else>
         <#list curr_ids as id>
@@ -288,7 +290,11 @@
             }
                         </#if><#elseif (curr.options.sync?? && field.name=="serverId")><#if !InheritanceUtils.isExtended(curr)>
             if (![self jsonIsNull:json withProperty:[${field.owner}WebServiceClientAdapter JSON_ID]]) {
-                item.${field.name?uncap_first} = [[json objectForKey:[${curr.name}WebServiceClientAdapter JSON_ID]] intValue];
+                int server_id = [[json objectForKey:[${curr.name}WebServiceClientAdapter JSON_ID]] intValue];
+                
+                if (server_id != 0) {
+           	    	item.serverId = server_id;
+            	}
             }
             
                         </#if><#else>
