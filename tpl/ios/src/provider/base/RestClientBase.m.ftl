@@ -7,6 +7,8 @@ static NSString* API_KEY;
 static NSString* SCHEME_HTTP;
 static NSString* SCHEME_HTTPS;
 static BOOL isAuth;
+static NSString* FILE_PARAM;
+
 
 @implementation RestClientBase
 
@@ -14,6 +16,7 @@ static BOOL isAuth;
     SCHEME_HTTP = @"http";
     SCHEME_HTTPS = @"https";
     isAuth = NO;
+    FILE_PARAM = @"file";
 }
 
 + (NSString*) API_KEY {
@@ -32,19 +35,6 @@ static BOOL isAuth;
     isAuth = auth;
 }
 
-+ (NSMutableDictionary*) buildRestJson:(NSString*) method {
-    return [RestClientBase buildRestJson:method withParams:[NSMutableDictionary dictionary]] ;
-}
-
-+ (NSMutableDictionary*) buildRestJson:(NSString*) method
-                           withParams:(NSMutableDictionary*) params {
-
-    NSMutableDictionary* result = [NSMutableDictionary dictionaryWithDictionary:params];
-    [result setObject:method forKey:@"method"];
-
-    return result;
-}
-
 - (id) initWithServiceName:(NSString*) urlHost {
     return [self initWithServiceName:urlHost withPort:80 withScheme:SCHEME_HTTP];
 }
@@ -55,76 +45,102 @@ static BOOL isAuth;
     if (!(self = [super init])) {
         return nil;
     }
-
+    
     self->serviceName = urlHost;
     self->scheme = urlScheme;
     self->port = urlPort;
-
+    
     return self;
 }
-
 
 - (void) invoke:(Verb) verb
        withPath:(NSString*) path
  withJsonParams:(NSMutableDictionary*) jsonParams
-   withCallback:(void(^)(HttpResponse*)) callback{
-	
+   withCallback:(void(^)(HttpResponse*)) callback {
+    
     NSString* URL = [NSString stringWithFormat:@"%@://%@:%@/%@",
                      self->scheme,
                      self->serviceName,
                      [NSNumber numberWithInt:self->port],
                      path];
-                     
-    AFHTTPRequestOperationManager *manager = [[AFHTTPRequestOperationManager alloc] initWithBaseURL:[NSURL URLWithString:URL]];
-    manager.requestSerializer = [AFJSONRequestSerializer serializer];
-    HttpResponse *httpResponse = [HttpResponse new ];
-
-    if(verb == GET) {
-        [manager GET:URL
-          parameters:jsonParams success:^(AFHTTPRequestOperation *operation, id responseObject) {
-              httpResponse.result = responseObject;
-              httpResponse.statusCode = [operation.response statusCode];
-              callback(httpResponse);
-        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-            NSLog(@"Error: %@", error);
-            httpResponse.statusCode = [operation.response statusCode];
-            callback(httpResponse);
-        }];
-    } else if(verb == PUT) {
-        [manager PUT:URL
-          parameters:jsonParams success:^(AFHTTPRequestOperation *operation, id responseObject) {
-              httpResponse.result = responseObject;
-              httpResponse.statusCode = [operation.response statusCode];
-              callback(httpResponse);
-        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-            NSLog(@"Error: %@", error);
-            httpResponse.statusCode = [operation.response statusCode];
-            callback(httpResponse);
-        }];
-    } else if(verb == POST) {
-        [manager POST:URL
-          parameters:jsonParams success:^(AFHTTPRequestOperation *operation, id responseObject) {
-              httpResponse.result = responseObject;
-              httpResponse.statusCode = [operation.response statusCode];
-              callback(httpResponse);
-        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-            NSLog(@"Error: %@", error);
-            httpResponse.statusCode = [operation.response statusCode];
-            callback(httpResponse);
-        }];
-    } else if(verb == DELETE) {
-        [manager POST:URL
-          parameters:jsonParams success:^(AFHTTPRequestOperation *operation, id responseObject) {
-              httpResponse.result = responseObject;
-              httpResponse.statusCode = [operation.response statusCode];
-              callback(httpResponse);
-        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-            NSLog(@"Error: %@", error);
-            httpResponse.statusCode = [operation.response statusCode];
-            callback(httpResponse);
-        }];
+    
+    void (^success)(AFHTTPRequestOperation *operation, id responseObject) = [self getSuccessCallback:callback];
+    void (^failure)(AFHTTPRequestOperation *operation, NSError *error) = [self getFailureCallback:callback];
+    
+    AFHTTPRequestOperationManager *manager = [[AFHTTPRequestOperationManager alloc]
+                                              initWithBaseURL:[NSURL URLWithString:URL]];
+    
+    if ([jsonParams objectForKey:FILE_PARAM] != nil) {
+        [self executeRequestFile:manager verb:verb url:URL params:jsonParams success:success failure:failure];
+    } else {
+        [self executeRequest:manager verb:verb url:URL params:jsonParams success:success failure:failure];
     }
 }
 
+- (void (^)(AFHTTPRequestOperation *operation, NSError *error)) getSuccessCallback:(void(^)(HttpResponse*)) callback {
+    void (^success)(AFHTTPRequestOperation *operation, id responseObject) =
+    ^(AFHTTPRequestOperation *operation, id responseObject) {
+        HttpResponse *httpResponse = [HttpResponse new];
+        httpResponse.result = responseObject;
+        httpResponse.statusCode = operation.response.statusCode;
+        
+        callback(httpResponse);
+    };
+    
+    return success;
+}
+
+- (void (^)(AFHTTPRequestOperation *operation, NSError *error)) getFailureCallback:(void(^)(HttpResponse*)) callback {
+    void (^failure)(AFHTTPRequestOperation *operation, NSError *error) =
+    ^(AFHTTPRequestOperation *operation, NSError *error) {
+        
+        NSLog(@"Error: %@", error);
+        HttpResponse *httpResponse = [HttpResponse new];
+        httpResponse.result = nil;
+        httpResponse.statusCode = [operation.response statusCode];
+        
+        callback(httpResponse);
+    };
+    
+    return failure;
+}
+
+- (void) executeRequest:(AFHTTPRequestOperationManager*) manager
+                   verb:(Verb) verb
+                    url:(NSString*) url
+                 params:(NSMutableDictionary*) params
+                success:(void (^)(AFHTTPRequestOperation *operation, id responseObject)) success
+                failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error)) failure {
+    
+    manager.requestSerializer = [AFJSONRequestSerializer serializer];
+    
+    if(verb == GET) {
+        [manager GET:url parameters:params success:success failure:failure];
+    } else if(verb == PUT) {
+        [manager PUT:url parameters:params success:success failure:failure];
+    } else if(verb == POST) {
+        [manager POST:url parameters:params success:success failure:failure];
+    } else if(verb == DELETE) {
+        [manager DELETE:url parameters:params success:success failure:failure];
+    } else if (verb == PATCH) {
+        [manager PATCH:url parameters:params success:success failure:failure];
+    }
+}
+
+- (void) executeRequestFile:(AFHTTPRequestOperationManager*) manager
+                   verb:(Verb) verb
+                    url:(NSString*) url
+                 params:(NSMutableDictionary*) params
+                success:(void (^)(AFHTTPRequestOperation *operation, id responseObject)) success
+                failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error)) failure {
+    
+    NSURL *filePath = [NSURL fileURLWithPath:[params objectForKey:FILE_PARAM]];
+    
+    [manager POST:url parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
+        [formData appendPartWithFileURL:filePath
+                                   name:FILE_PARAM
+                                  error:nil];
+    } success:success failure:failure];
+}
 
 @end
