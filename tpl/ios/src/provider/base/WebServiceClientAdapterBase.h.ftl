@@ -56,6 +56,9 @@
 - (int) extractItems:(NSArray*) jsonArray
            withItems:(NSMutableArray*) items;
 
+- (BOOL) extract:(NSMutableDictionary *)json
+        withItem:(id)item;
+
 /**
  * Tests if the json is a valid Server Object.
  *
