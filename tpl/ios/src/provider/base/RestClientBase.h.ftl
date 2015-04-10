@@ -15,7 +15,7 @@ typedef enum
 
 @interface RestClientBase : NSObject {
 
-@private
+@protected
     NSString* serviceName;
     NSString* scheme;
     int port;
