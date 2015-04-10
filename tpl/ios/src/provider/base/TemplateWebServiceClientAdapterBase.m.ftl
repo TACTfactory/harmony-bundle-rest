@@ -153,7 +153,17 @@
 }
 
 - (int) getItemId:(${curr.name}*) item {
+    <#if (curr.options.sync??)>
+    int result = 0;
+    
+    if (item.serverId != nil) {
+        result = [item.serverId intValue];
+    }
+
+    return result;
+    <#else>
     return item.${curr.ids[0].name};
+    </#if>
 }
 
 <#if curr.fields?size != 0>
@@ -176,25 +186,25 @@
     return items.count;
 }
 
--(NSMutableDictionary *) itemToJson:(${curr.name}*) ${curr.name?uncap_first} {
+- (NSMutableDictionary *) itemToJson:(${curr.name}*) ${curr.name?uncap_first} {
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
 
     @try {
         <#list curr.fields?values as field>
             <#if (!field.internal)>
                 <#if (!field.relation??)>
-                    <#if (curr.options.sync?? && field.name?lower_case=="id")><#if !InheritanceUtils.isExtended(curr)>
-        [params setValue:${FieldsUtils.generateFieldContentType("item", field)}${curr.name?uncap_first}.serverId]
+                    <#if field.name?lower_case=="id"> <#if !InheritanceUtils.isExtended(curr)>
+        [params setValue:[NSNumber numberWithInt:[self getItemId:${curr.name?uncap_first}]]
                 forKey:${curr.name}WebServiceClientAdapter.JSON_ID];
-                    </#if><#elseif (curr.options.sync?? && field.name=="serverId")><#if !InheritanceUtils.isExtended(curr)>
-        [params setValue:${FieldsUtils.generateFieldContentType("item", field)}${curr.name?uncap_first}.id]
+                    </#if><#elseif (curr.options.sync?? && field.name=="serverId")> <#if !InheritanceUtils.isExtended(curr)>
+        [params setValue:[NSNumber numberWithInt:${FieldsUtils.generateFieldContentType("item", field)}${curr.name?uncap_first}.id]
                 forKey:${curr.name}WebServiceClientAdapter.JSON_MOBILE_ID];
-                    </#if><#elseif (curr.options.sync?? && field.name=="sync_uDate")><#if !InheritanceUtils.isExtended(curr)>
+                    </#if><#elseif (curr.options.sync?? && field.name=="sync_uDate")> <#if !InheritanceUtils.isExtended(curr)>
         if (${curr.name?uncap_first}.${field.name?uncap_first} != nil) {
-        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-        [dateFormatter setDateFormat:${field.owner}WebServiceClientAdapter.SYNC_UPDATE_DATE_FORMAT];
+            NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+            [dateFormatter setDateFormat:${field.owner}WebServiceClientAdapter.SYNC_UPDATE_DATE_FORMAT];
 
-        [params setValue:[dateFormatter stringFromDate:${curr.name?uncap_first}.${field.name?uncap_first}]
+            [params setValue:[dateFormatter stringFromDate:${curr.name?uncap_first}.${field.name?uncap_first}]
                 forKey:${field.owner}WebServiceClientAdapter.${alias(field.name)}];
         }
                     </#if><#elseif (FieldsUtils.getObjectiveType(field)?lower_case == "datetime")>
@@ -247,7 +257,7 @@
 
     @try {
     <#if curr.options.sync??>
-    [params setValue:[NSNumber numberWithInteger:item.serverId]
+    [params setValue:item.serverId
             forKey:${curr.ids[0].owner}WebServiceClientAdapter.${alias(curr.ids[0].name)}];
     <#else>
         <#list curr_ids as id>
@@ -290,13 +300,12 @@
             }
                         </#if><#elseif (curr.options.sync?? && field.name=="serverId")><#if !InheritanceUtils.isExtended(curr)>
             if (![self jsonIsNull:json withProperty:[${field.owner}WebServiceClientAdapter JSON_ID]]) {
-                int server_id = [[json objectForKey:[${curr.name}WebServiceClientAdapter JSON_ID]] intValue];
+                NSNumber *server_id = [json objectForKey:[${curr.name}WebServiceClientAdapter JSON_ID]];
                 
                 if (server_id != 0) {
-           	    	item.serverId = server_id;
+                    item.serverId = server_id;
             	}
             }
-            
                         </#if><#else>
                         
             if (![self jsonIsNull:json withProperty:[${field.owner}WebServiceClientAdapter ${alias(field.name)}]]) {
