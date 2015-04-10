@@ -64,6 +64,12 @@ public class RestAdapterAndroid extends AndroidAdapter implements RestAdapter {
                 filePath + "RestClient.java",
                 false));
 
+        // Make RestClientBase
+        result.add(new SourceFile(
+                templatePath + "base/RestClientBase.java", 
+                filePath + "base/RestClientBase.java",
+                true));
+        
         return result;
     }
 
