@@ -213,7 +213,7 @@
             [dateFormatter setDateFormat:${field.owner}WebServiceClientAdapter.REST_UPDATE_DATE_FORMAT];
 
             [params setValue:[dateFormatter stringFromDate:${curr.name?uncap_first}.${field.name?uncap_first}]
-                    forKey:${field.owner}WebServiceClientAdapter.${alias(field.name)}];
+                forKey:${field.owner}WebServiceClientAdapter.${alias(field.name)}];
         }
                     <#elseif (field.harmony_type=="string" || field.harmony_type=="text")>
         if (${curr.name?uncap_first}.${field.name?uncap_first} != nil) {
@@ -222,9 +222,12 @@
         }
                     <#elseif (field.harmony_type=="enum")>
         //TODO enum
-                    <#else>
-        [params setValue:${FieldsUtils.generateFieldContentType("item", field)}${curr.name?uncap_first}.${field.name?uncap_first}]
-                forKey:${field.owner}WebServiceClientAdapter.${alias(field.name)}];
+                    <#elseif (field.harmony_type=="int")>
+            [params setValue:[NSNumber numberWithInt:${curr.name?uncap_first}.${field.name?uncap_first}]
+                    forKey:${field.owner}WebServiceClientAdapter.${alias(field.name)}];
+                    <#else> //TODO ${field.harmony_type}
+            [params setValue:${FieldsUtils.generateFieldContentType("item", field)}${curr.name?uncap_first}.${field.name?uncap_first}]
+                    forKey:${field.owner}WebServiceClientAdapter.${alias(field.name)}];
                     </#if>
                 <#else>
                     <#if (isRestEntity(field.relation.targetEntity))>
@@ -305,7 +308,7 @@
                         </#if><#elseif (curr.options.sync?? && field.name=="serverId")><#if !InheritanceUtils.isExtended(curr)>
             if (![self jsonIsNull:json withProperty:[${field.owner}WebServiceClientAdapter JSON_ID]]) {
                 NSNumber *server_id = [[NSNumberFormatter new]
-                numberFromString:[json objectForKey:[ProductWebServiceClientAdapter JSON_ID]]];
+                numberFromString:[json objectForKey:[${field.owner}WebServiceClientAdapter JSON_ID]]];
 
                 if (server_id != 0) {
                     item.serverId = server_id;
@@ -398,10 +401,10 @@
         callback(${curr.name?uncap_first});
     };
 
-    [self invokeRequest:GET withRequest:[NSString stringWithFormat:@"%@<#if (curr.options.sync??)>/%@"<#else><#list curr_ids as id>/%@</#list>%@",</#if>
+    [self invokeRequest:GET withRequest:[NSString stringWithFormat:@"%@<#if (curr.options.sync??)>/%@",<#else><#list curr_ids as id>/%@</#list>%@",</#if>
                                          [self getUri],
-                                         <#if (curr.options.sync??)>[NSNumber numberWithInt:${curr.name?uncap_first}.serverId]<#else><#list curr_ids as id>[NSNumber numberWithInt:${curr.name?uncap_first}.${id.name}],</#list><#/if><#/if>
-                                         [${curr.name}WebServiceClientAdapter REST_FORMAT]]
+                                         <#if (curr.options.sync??)>[NSNumber numberWithInt:${curr.name?uncap_first}.serverId],<#else><#list curr_ids as id>[NSNumber numberWithInt:${curr.name?uncap_first}.${id.name}],</#list></#if>
+                                       [${curr.name}WebServiceClientAdapter REST_FORMAT]]
              withParams:nil
            withCallback:restCallback];
 
@@ -452,9 +455,9 @@
         callback(${curr.name?uncap_first});
     };
     
-    [self invokeRequest:PUT withRequest:[NSString stringWithFormat:@"%@<#if (curr.options.sync??)>/%@"<#else><#list curr_ids as id>/%@</#list>%@",</#if>
+    [self invokeRequest:PUT withRequest:[NSString stringWithFormat:@"%@<#if (curr.options.sync??)>/%@",<#else><#list curr_ids as id>/%@</#list>%@",</#if>
                                          [self getUri],
-                                         <#if (curr.options.sync??)>[NSNumber numberWithInt:${curr.name?uncap_first}.serverId]<#else><#list curr_ids as id>[NSNumber numberWithInt:${curr.name?uncap_first}.${id.name}],</#list></#if></#if>
+                                         <#if (curr.options.sync??)>[NSNumber numberWithInt:${curr.name?uncap_first}.serverId],<#else><#list curr_ids as id>[NSNumber numberWithInt:${curr.name?uncap_first}.${id.name}],</#list></#if>
                                          [${curr.name}WebServiceClientAdapter REST_FORMAT]]
              withParams:[self itemToJson:${curr.name?uncap_first}]
            withCallback:restCallback];
