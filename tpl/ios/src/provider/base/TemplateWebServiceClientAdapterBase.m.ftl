@@ -286,8 +286,12 @@
 
 - (BOOL) extract:(NSMutableDictionary *)json
        withItem:(${curr.name} *)item {
-    
     BOOL result = [self isValidJSON:json];
+    
+    <#if (InheritanceUtils.isExtended(curr))>
+    result = [self->motherAdapter extract:json withItem:item];
+    
+    </#if>
     if (result) {
         <#assign shouldCatch = ((curr.fields?size - curr.relations?size) != 0) />   
         <#if shouldCatch>@try {</#if>
@@ -300,8 +304,9 @@
             }
                         </#if><#elseif (curr.options.sync?? && field.name=="serverId")><#if !InheritanceUtils.isExtended(curr)>
             if (![self jsonIsNull:json withProperty:[${field.owner}WebServiceClientAdapter JSON_ID]]) {
-                NSNumber *server_id = [json objectForKey:[${curr.name}WebServiceClientAdapter JSON_ID]];
-                
+                NSNumber *server_id = [[NSNumberFormatter new]
+                numberFromString:[json objectForKey:[ProductWebServiceClientAdapter JSON_ID]]];
+
                 if (server_id != 0) {
                     item.serverId = server_id;
             	}
