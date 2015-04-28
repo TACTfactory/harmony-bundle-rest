@@ -393,9 +393,9 @@
         callback(${curr.name?uncap_first});
     };
 
-    [self invokeRequest:GET withRequest:[NSString stringWithFormat:@"%@<#list curr_ids as id>/%@</#list>%@",
+    [self invokeRequest:GET withRequest:[NSString stringWithFormat:@"%@<#if (curr.options.sync??)>/%@"<#else><#list curr_ids as id>/%@</#list>%@",</#if>
                                          [self getUri],
-                                         <#list curr_ids as id>[NSNumber numberWithInt:${curr.name?uncap_first}.${id.name}],</#list>
+                                         <#if (curr.options.sync??)>[NSNumber numberWithInt:${curr.name?uncap_first}.serverId]<#else><#list curr_ids as id>[NSNumber numberWithInt:${curr.name?uncap_first}.${id.name}],</#list><#/if><#/if>
                                          [${curr.name}WebServiceClientAdapter REST_FORMAT]]
              withParams:nil
            withCallback:restCallback];
@@ -447,9 +447,9 @@
         callback(${curr.name?uncap_first});
     };
     
-    [self invokeRequest:PUT withRequest:[NSString stringWithFormat:@"%@<#list curr_ids as id>/%@</#list>%@",
+    [self invokeRequest:PUT withRequest:[NSString stringWithFormat:@"%@<#if (curr.options.sync??)>/%@"<#else><#list curr_ids as id>/%@</#list>%@",</#if>
                                          [self getUri],
-                                         <#list curr_ids as id>[NSNumber numberWithInt:${curr.name?uncap_first}.${id.name}],</#list>
+                                         <#if (curr.options.sync??)>[NSNumber numberWithInt:${curr.name?uncap_first}.serverId]<#else><#list curr_ids as id>[NSNumber numberWithInt:${curr.name?uncap_first}.${id.name}],</#list></#if></#if>
                                          [${curr.name}WebServiceClientAdapter REST_FORMAT]]
              withParams:[self itemToJson:${curr.name?uncap_first}]
            withCallback:restCallback];
