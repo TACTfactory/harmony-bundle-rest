@@ -323,7 +323,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
                     Verb.GET,
                     String.format(
                         this.getUri() + "<#list IdsUtils.getAllIdsGetters(curr) as id>/%s</#list>%s",
-                        <#list IdsUtils.getAllIdsGetters(curr) as id>${curr.name?uncap_first}${id},
+                        <#list IdsUtils.getAllIdsGetters(curr) as id><#if (curr.options.sync??)>${curr.name?uncap_first}.getServerId()<#else>${curr.name?uncap_first}${id}</#if>,
                         </#list>REST_FORMAT),
                     null);
 
@@ -354,7 +354,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
                     Verb.GET,
                     String.format(
                         this.getUri() + "<#list curr_ids as id>/%s</#list>%s",
-                        <#list curr_ids as id>${id.name},
+                        <#list curr_ids as id><#if (curr.options.sync??)>server${id.name?cap_first}<#else>${id.name}</#if>,
                         </#list>REST_FORMAT),
                     null);
 
@@ -389,7 +389,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
                     Verb.PUT,
                     String.format(
                         this.getUri() + "<#list IdsUtils.getAllIdsGetters(curr) as id>/%s</#list>%s",
-                        <#list IdsUtils.getAllIdsGetters(curr) as id>${curr.name?uncap_first}${id},
+                        <#list IdsUtils.getAllIdsGetters(curr) as id><#if (curr.options.sync??)>${curr.name?uncap_first}.getServerId()<#else>${curr.name?uncap_first}${id}</#if>,
                         </#list>REST_FORMAT),
                     itemToJson(${curr.name?uncap_first}));
 
@@ -411,7 +411,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
                     Verb.DELETE,
                     String.format(
                         this.getUri() + "<#list IdsUtils.getAllIdsGetters(curr) as id>/%s</#list>%s",
-                        <#list IdsUtils.getAllIdsGetters(curr) as id>${curr.name?uncap_first}${id},
+                        <#list IdsUtils.getAllIdsGetters(curr) as id><#if (curr.options.sync??)>${curr.name?uncap_first}.getServerId()<#else>${curr.name?uncap_first}${id}</#if>,
                         </#list>REST_FORMAT),
                     null);
 
@@ -439,7 +439,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
                     Verb.GET,
                     String.format(
                         this.getUri() + "<#list IdsUtils.getAllIdsGetters(entities[relation.relation.targetEntity]) as id>/%s</#list>%s",
-                        <#list IdsUtils.getAllIdsGetters(entities[relation.relation.targetEntity]) as id>${relation.relation.targetEntity?uncap_first}${id},
+                        <#list IdsUtils.getAllIdsGetters(entities[relation.relation.targetEntity]) as id><#if (curr.options.sync??)>${relation.relation.targetEntity?uncap_first}.getServerId()<#else>${relation.relation.targetEntity?uncap_first}${id}</#if>,
                         </#list>REST_FORMAT),
                     null);
 
@@ -469,7 +469,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
                     Verb.GET,
                     String.format(
                         this.getUri() + "<#list IdsUtils.getAllIdsGetters(entities[relation.relation.targetEntity]) as id>/%s</#list>%s",
-                        <#list IdsUtils.getAllIdsGetters(entities[relation.relation.targetEntity]) as id>${relation.relation.targetEntity?uncap_first}${id},
+                        <#list IdsUtils.getAllIdsGetters(entities[relation.relation.targetEntity]) as id><#if (curr.options.sync??)>${relation.relation.targetEntity?uncap_first}.getServerId()<#else>${relation.relation.targetEntity?uncap_first}${id}</#if>,
                         </#list>REST_FORMAT),
                     null);
 
