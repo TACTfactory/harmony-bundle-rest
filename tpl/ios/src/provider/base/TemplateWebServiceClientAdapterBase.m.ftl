@@ -197,7 +197,7 @@
         [params setValue:[NSNumber numberWithInt:[self getItemId:${curr.name?uncap_first}]]
                 forKey:${curr.name}WebServiceClientAdapter.JSON_ID];
                     </#if><#elseif (curr.options.sync?? && field.name=="serverId")> <#if !InheritanceUtils.isExtended(curr)>
-        [params setValue:[NSNumber numberWithInt:${FieldsUtils.generateFieldContentType("item", field)}${curr.name?uncap_first}.id]
+        [params setValue:[NSNumber numberWithInt:${curr.name?uncap_first}.id]
                 forKey:${curr.name}WebServiceClientAdapter.JSON_MOBILE_ID];
                     </#if><#elseif (curr.options.sync?? && field.name=="sync_uDate")> <#if !InheritanceUtils.isExtended(curr)>
         if (${curr.name?uncap_first}.${field.name?uncap_first} != nil) {
@@ -336,7 +336,7 @@
                                 <#if enums[field.enum.targetEnum].id??>
                 item.${field.name?uncap_first} = [[json objectForKey:[${curr.name}WebServiceClientAdapter ${alias(field.name)}]] ${typeToJsonType(field)}Value];
                                 </#if>
-                            <#elseif (FieldsUtils.getObjectiveType(field)=="int") || (FieldsUtils.getObjectiveType(field)=="integer")>
+                            <#elseif (FieldsUtils.getObjectiveType(field)?lower_case == "int") || (FieldsUtils.getObjectiveType(field)?lower_case == "nsnumber")>
                 item.${field.name?uncap_first} = [[json objectForKey:[${field.owner}WebServiceClientAdapter ${alias(field.name)}]] intValue];
                             <#elseif (FieldsUtils.getObjectiveType(field)=="long")>
                 item.${field.name?uncap_first} = [[json objectForKey:[${field.owner}WebServiceClientAdapter ${alias(field.name)}]] longLongValue];
