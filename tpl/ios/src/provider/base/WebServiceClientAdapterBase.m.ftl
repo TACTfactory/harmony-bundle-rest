@@ -85,4 +85,29 @@
     return true;
 }
 
+- (int) getItemId:(id) item {
+    //TODO get item id
+    return 0;
+}
+
+- (NSString *) getUri {
+    //TODO get URI
+    return nil;
+}
+
+- (NSArray *) itemsIdToJson:(NSArray*) item {
+    //TODO
+    return nil;
+}
+
+- (int) extractItems:(NSArray*) jsonArray
+           withItems:(NSMutableArray*) items {
+    //TODO
+    return 0;
+}
+
+- (bool) extract:(NSMutableDictionary *)json
+        withItem:(id)item {
+    return false;
+}
 @end
