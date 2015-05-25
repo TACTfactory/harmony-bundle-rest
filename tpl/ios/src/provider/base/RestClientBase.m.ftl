@@ -88,7 +88,7 @@ static NSString* FILE_PARAM;
         
             callback(httpResponse);
         });
-    }
+    };
     
     return success;
 }
@@ -105,7 +105,7 @@ static NSString* FILE_PARAM;
         
             callback(httpResponse);
         });
-    }
+    };
     
     return failure;
 }
