@@ -80,12 +80,15 @@ static NSString* FILE_PARAM;
 - (void (^)(AFHTTPRequestOperation *operation, NSError *error)) getSuccessCallback:(void(^)(HttpResponse*)) callback {
     void (^success)(AFHTTPRequestOperation *operation, id responseObject) =
     ^(AFHTTPRequestOperation *operation, id responseObject) {
-        HttpResponse *httpResponse = [HttpResponse new];
-        httpResponse.result = responseObject;
-        httpResponse.statusCode = operation.response.statusCode;
+    
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+            HttpResponse *httpResponse = [HttpResponse new];
+            httpResponse.result = responseObject;
+            httpResponse.statusCode = operation.response.statusCode;
         
-        callback(httpResponse);
-    };
+            callback(httpResponse);
+        });
+    }
     
     return success;
 }
@@ -93,14 +96,16 @@ static NSString* FILE_PARAM;
 - (void (^)(AFHTTPRequestOperation *operation, NSError *error)) getFailureCallback:(void(^)(HttpResponse*)) callback {
     void (^failure)(AFHTTPRequestOperation *operation, NSError *error) =
     ^(AFHTTPRequestOperation *operation, NSError *error) {
+    
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^ {
+            NSLog(@"Error: %@", error);
+            HttpResponse *httpResponse = [HttpResponse new];
+            httpResponse.result = nil;
+            httpResponse.statusCode = [operation.response statusCode];
         
-        NSLog(@"Error: %@", error);
-        HttpResponse *httpResponse = [HttpResponse new];
-        httpResponse.result = nil;
-        httpResponse.statusCode = [operation.response statusCode];
-        
-        callback(httpResponse);
-    };
+            callback(httpResponse);
+        });
+    }
     
     return failure;
 }
