@@ -60,10 +60,10 @@
         ${curr.name?uncap_first}.set${field.name?cap_first}(${field.name?uncap_first}Formatter.parseDateTime(json.opt${typeToJsonType(field)}(${alias(field.name)}, ${curr.name?uncap_first}.get${field.name?cap_first}().toString())));
                     <#break />
                 <#case "boolean">
-        ${curr.name?uncap_first}.set${field.name?cap_first}(json.opt${typeToJsonType(field)}(${alias(field.name)}, ${curr.name?uncap_first}.is${field.name?cap_first}()));    
+        ${curr.name?uncap_first}.set${field.name?cap_first}(json.opt${typeToJsonType(field)}(${alias(field.name)}, ${curr.name?uncap_first}.is${field.name?cap_first}()));
                     <#break />
                 <#default>
-        ${curr.name?uncap_first}.set${field.name?cap_first}(json.opt${typeToJsonType(field)}(${alias(field.name)}, ${curr.name?uncap_first}.get${field.name?cap_first}()));    
+        ${curr.name?uncap_first}.set${field.name?cap_first}(json.opt${typeToJsonType(field)}(${alias(field.name)}, ${curr.name?uncap_first}.get${field.name?cap_first}()));
                     <#break />
             </#switch>
         <#else>
@@ -173,8 +173,8 @@ import ${curr.namespace}.entity.base.EntityBase;
     <#assign extends="WebServiceClientAdapter<${curr.name?cap_first}>" />
 </#if>
 /**
- * 
- * <b><i>This class will be overwrited whenever you regenerate the project with Harmony. 
+ *
+ * <b><i>This class will be overwrited whenever you regenerate the project with Harmony.
  * You should edit ${curr.name}WebServiceClientAdapter class instead of this one or you will lose all your modifications.</i></b>
  *
  */
@@ -203,6 +203,9 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
 
     /** Sync Date Format pattern. */
     public static final String SYNC_UPDATE_DATE_FORMAT = "${curr.options.sync.updateDateFormatJava}";
+
+    /** JSON hash. */
+    protected static String JSON_HASH = "hash";
     </#if>
 
     /** Rest Date Format pattern. */
@@ -284,7 +287,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
                 context, host, port, scheme, prefix);
         </#if>
     }
-    
+
     /**
      * Retrieve all the ${curr.name}s in the given list. Uses the route : ${curr.options.rest.uri}.
      * @param ${curr.name?uncap_first}s : The list in which the ${curr.name}s will be returned
@@ -486,11 +489,11 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
 
         return result;
     }
-    
+
             </#if>
         </#if>
     </#list>
-    
+
     /**
      * Tests if the json is a valid ${curr.name} Object.
      *
@@ -534,11 +537,14 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
                 if (json.has(${field.owner}WebServiceClientAdapter.JSON_ID)) {
                     int server_id = json.optInt(
                               ${curr.name}WebServiceClientAdapter.JSON_ID);
-                
+
                     if (server_id != 0) {
                         ${curr.name?uncap_first}.setServerId(server_id);
                     }
                 }
+                        </#if><#elseif (curr.options.sync?? && field.name=="hash")><#if !InheritanceUtils.isExtended(curr)>
+                    ${curr.name?uncap_first}.set${field.name?cap_first}(
+                            json.get${typeToJsonType(field)}(${field.owner}WebServiceClientAdapter.${alias(field.name)}));
                         </#if><#else>
 
                 if (json.has(${field.owner}WebServiceClientAdapter.${alias(field.name)})
@@ -547,7 +553,6 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
                     DateTimeFormatter ${field.name?uncap_first}Formatter = <#if (curr.options.sync?? && field.name=="sync_uDate")>DateTimeFormat.forPattern(
                             ${field.owner}WebServiceClientAdapter.SYNC_UPDATE_DATE_FORMAT)<#else>DateTimeFormat.forPattern(
                             ${field.owner}WebServiceClientAdapter.REST_UPDATE_DATE_FORMAT)</#if>;
-
                     try {
                         ${curr.name?uncap_first}.set${field.name?cap_first}(
                                 ${field.name?uncap_first}Formatter.withOffsetParsed().parseDateTime(
@@ -575,7 +580,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
                         </#if>
                     <#else>
                         <#if (isRestEntity(field.relation.targetEntity))>
-                        
+
                 if (json.has(${field.owner}WebServiceClientAdapter.${alias(field.name)})
                         && !json.isNull(${field.owner}WebServiceClientAdapter.${alias(field.name)})) {
                             <#if (field.relation.type=="OneToMany" || field.relation.type=="ManyToMany")>
@@ -608,7 +613,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
                                 new ${field.relation.targetEntity}WebServiceClientAdapter(this.context);
                         ${field.relation.targetEntity} ${field.name?uncap_first} =
                                 new ${field.relation.targetEntity}();
-                        
+
                         if (${field.name}Adapter.extract(
                                 json.opt${typeToJsonType(field)}(
                                         ${field.owner}WebServiceClientAdapter.${alias(field.name)}),
@@ -655,7 +660,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
                         <#assign i = i + 1 />
                     </#list>
                 }
-                <#else>                    
+                <#else>
                     <#assign jsonAlias = jsonAlias />
                 if (json.has(${jsonAlias})) {
                     row[${i}] = json.getString(${jsonAlias});
@@ -663,13 +668,13 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
                     <#assign i = i + 1 />
                 </#if>
             </#list>
-            
+
                 cursor.addRow(row);
                 result = true;
             } catch (JSONException e) {
                 Log.e(TAG, e.getMessage());
             }
-        } 
+        }
 
         return result;
     }
@@ -684,10 +689,10 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
     public int extractItems(JSONObject json,
             String paramName,
             List<${curr.name}> items) throws JSONException {
-            
+
         return this.extractItems(json, paramName, items, 0);
     }
-    
+
     /**
      * Extract a list of <T> from a JSONObject describing an array of <T> given the array name.
      * @param json The JSONObject describing the array of <T>
@@ -700,14 +705,14 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
             String paramName,
             List<${curr.name}> items,
             int limit) throws JSONException {
-            
+
         JSONArray itemArray = json.optJSONArray(paramName);
 
         int result = -1;
 
         if (itemArray != null) {
             int count = itemArray.length();
-            
+
             if (limit > 0 && count > limit) {
                 count = limit;
             }
@@ -723,7 +728,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
                 }
             }
         }
-        
+
         if (!json.isNull("Meta")) {
             JSONObject meta = json.optJSONObject("Meta");
             result = meta.optInt("nbt",0);
@@ -731,7 +736,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
 
         return result;
     }
-    
+
     /**
      * Convert a ${curr.name} to a JSONObject.
      * @param ${curr.name?uncap_first} The ${curr.name} to convert
@@ -755,7 +760,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
             params.put(${curr.name}WebServiceClientAdapter.JSON_MOBILE_ID,
                     ${curr.name?uncap_first}.getId());
                         </#if><#elseif (curr.options.sync?? && field.name=="sync_uDate")><#if !InheritanceUtils.isExtended(curr)>
-            
+
             if (${curr.name?uncap_first}.get${field.name?cap_first}() != null) {
                 params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)},
                         ${curr.name?uncap_first}.get${field.name?cap_first}().toString(SYNC_UPDATE_DATE_FORMAT));
@@ -810,7 +815,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
         return params;
     }
 
-    
+
     /**
      * Convert a <T> to a JSONObject.
      * @param item The <T> to convert
@@ -858,6 +863,9 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
             params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)},
                     new DateTime(values.get(
                             ${ContractUtils.getContractCol(field)})).toString(SYNC_UPDATE_DATE_FORMAT));
+            </#if><#elseif (curr.options.sync?? && field.name == "hash")><#if !InheritanceUtils.isExtended(curr)>
+            params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)},
+                    values.get(${curr.name?cap_first}Contract.COL_HASH));
                     </#if><#else>
                         <#if FieldsUtils.getJavaType(field)?lower_case == "datetime">
             params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)},
@@ -865,7 +873,6 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
                             ${ContractUtils.getContractCol(field)})).toString(REST_UPDATE_DATE_FORMAT));
                         <#else>
                             <#if field.relation??>
-
             ${field.relation.targetEntity?cap_first}WebServiceClientAdapter ${field.name}Adapter =
                     new ${field.relation.targetEntity?cap_first}WebServiceClientAdapter(this.context);
 
