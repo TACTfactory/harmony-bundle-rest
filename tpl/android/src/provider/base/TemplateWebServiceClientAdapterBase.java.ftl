@@ -313,6 +313,35 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
     }
 
     /**
+     * Retrieve all the ${curr.name}s in the given list. Uses the route : ${curr.options.rest.uri}.
+     * @param ${curr.name?uncap_first}s : The list in which the ${curr.name}s will be returned
+     * @param page The number of page to return
+     * @return The number of ${curr.name}s returned
+     */
+    public int getAll(List<${curr.name}> ${curr.name?uncap_first}s, int page, String subQuery) {
+        int result = -1;
+        String response = this.invokeRequest(
+                    Verb.GET,
+                    this.addPagination(String.format(
+                        this.getUri() + "%s?sub=%s",
+                        REST_FORMAT,
+                        subQuery), page),
+                    null);
+
+        if (this.isValidResponse(response) && this.isValidRequest()) {
+            try {
+                JSONObject json = new JSONObject(response);
+                result = this.extractItemsPaginate(${curr.name}.class, json, "${curr.name?cap_first}s", ${curr.name?uncap_first}s);
+            } catch (JSONException e) {
+                Log.e(TAG, e.getMessage());
+                ${curr.name?uncap_first}s = null;
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * Retrieve one ${curr.name}. Uses the route : ${curr.options.rest.uri}/%id%.
      * @param ${curr.name?uncap_first} : The ${curr.name} to retrieve (set the ID)
      * @return -1 if an error has occurred. 0 if not.
@@ -394,7 +423,13 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
                     itemToJson(${curr.name?uncap_first}));
 
         if (this.isValidResponse(response) && this.isValidRequest()) {
-            result = 0;
+            try {
+                JSONObject json = new JSONObject(response);
+                this.extract(json, ${curr.name?uncap_first});
+                result = 0;
+            } catch (JSONException e) {
+                Log.e(TAG, e.getMessage());
+            }
         }
 
         return result;
@@ -490,6 +525,35 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
             </#if>
         </#if>
     </#list>
+
+    <#if (curr.options.sync??)><#if curr.name?lower_case == "image">@Override
+    public String upload(Resource item) {
+        String result = null;
+
+        this.headers.clear();
+        JSONObject json = this.itemToJson((${curr.name}) item);
+
+        try {
+            json.put(ImageUtils.IMAGE_KEY_JSON, item.getLocalPath());
+        } catch (JSONException e) {
+            Log.e(TAG, e.getMessage());
+        }
+
+        String response = this.invokeRequest(
+                Verb.POST,
+                String.format(
+                    "%s/upload/%s",
+                    this.getUri(),
+                    item.getServerId(),
+                    REST_FORMAT),
+                    json);
+
+        if (this.isValidResponse(response) && this.isValidRequest()) {
+            result = response;
+        }
+
+        return result;
+    }</#if></#if>
 
     /**
      * Tests if the json is a valid ${curr.name} Object.
