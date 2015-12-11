@@ -47,4 +47,10 @@ public class RestAdapterWinphone
         return null;
     }
 
+    @Override
+    public List<IUpdater> getEntityResourceUpdaters(EntityMetadata entity) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

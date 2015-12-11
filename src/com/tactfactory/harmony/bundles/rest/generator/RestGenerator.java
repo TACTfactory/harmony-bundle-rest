@@ -30,7 +30,7 @@ public class RestGenerator extends BaseGenerator<RestAdapter> {
     /**
      * Constructor.
      * @param adapter The used adapter.
-     * @throws Exception 
+     * @throws Exception
      */
     public RestGenerator(final RestAdapter adapter) throws Exception {
         super(adapter);
@@ -41,6 +41,23 @@ public class RestGenerator extends BaseGenerator<RestAdapter> {
      * Generates everything.
      */
     public final void generateAll() {
+        List<IUpdater> updaters = null;
+
+        Iterable<EntityMetadata> entities =
+                this.getAppMetas().getEntities().values();
+
+        for (final EntityMetadata entity : entities) {
+//            if (!entity.getFields().isEmpty()
+//                    && entity.getOptions().containsKey("sync")) {
+                this.getDatamodel().put(
+                        TagConstant.CURRENT_ENTITY,
+                        entity.getName());
+
+                updaters = this.getAdapter().getEntityResourceUpdaters(entity);
+                this.processUpdater(updaters);
+//            }
+        }
+
         this.generateWSAdapter();
 
         try {

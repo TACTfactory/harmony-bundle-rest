@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.tactfactory.harmony.bundles.rest.platform.RestAdapter;
+import com.tactfactory.harmony.bundles.rest.platform.android.updater.AddImplementsRestAndroid;
 import com.tactfactory.harmony.generator.androidxml.ManifestUpdater;
 import com.tactfactory.harmony.meta.EntityMetadata;
 import com.tactfactory.harmony.platform.android.AndroidAdapter;
@@ -54,15 +55,34 @@ public class RestAdapterAndroid extends AndroidAdapter implements RestAdapter {
 
         // Make Abstract Adapter Base general for all entities
         result.add(new SourceFile(
-                templatePath + "WebServiceClientAdapter.java", 
+                templatePath + "WebServiceClientAdapter.java",
                 filePath + "WebServiceClientAdapter.java",
                 false));
 
-        // Make RestClient
         result.add(new SourceFile(
-                templatePath + "RestClient.java", 
+                templatePath + "base/ResourceWebServiceClientAdapterBase.java",
+                filePath + "base/ResourceWebServiceClientAdapterBase.java",
+                true));
+
+        result.add(new SourceFile(
+                templatePath + "ResourceWebServiceClientAdapter.java",
+                filePath + "ResourceWebServiceClientAdapter.java",
+                false));
+
+        result.add(new SourceFile(
+                templatePath + "RestClient.java",
                 filePath + "RestClient.java",
                 false));
+
+        templatePath = this.getTemplateSourceEntityBasePath();
+        filePath = this.getSourcePath()
+                + this.getApplicationMetadata().getProjectNameSpace()
+                + "/" + this.getModel() + "/";
+
+        result.add(new SourceFile(
+                templatePath + "RestResource.java",
+                filePath + "base/RestResource.java",
+                true));
 
         return result;
     }
@@ -133,6 +153,17 @@ public class RestAdapterAndroid extends AndroidAdapter implements RestAdapter {
                 String.format("%s%sTestWS.java",
                         filePath, entity.getName()),
                         false));
+
+        return result;
+    }
+
+    @Override
+    public List<IUpdater> getEntityResourceUpdaters(EntityMetadata entity) {
+        List<IUpdater> result = new ArrayList<IUpdater>();
+
+        if (!entity.isInternal()) {
+            result.add(new AddImplementsRestAndroid(this, entity));
+        }
 
         return result;
     }

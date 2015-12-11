@@ -121,6 +121,7 @@
         </#if>
     </#if>
 </#list>
+
 package ${curr.data_namespace}.base;
 
 import java.util.List;
@@ -149,6 +150,9 @@ import android.database.MatrixCursor;
 
 import ${data_namespace}.*;
 import ${curr.namespace}.entity.${curr.name};
+<#if (curr.resource==true)>
+import ${curr.namespace}.entity.base.Resource;
+</#if>
 import ${data_namespace}.RestClient.Verb;
 import ${project_namespace}.provider.contract.${curr.name?cap_first}Contract;
 <#if InheritanceUtils.isExtended(curr)>import ${project_namespace}.provider.contract.${curr.inheritance.superclass.name?cap_first}Contract;</#if>
@@ -526,7 +530,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
         </#if>
     </#list>
 
-    <#if (curr.options.sync??)><#if curr.name?lower_case == "image">@Override
+    @Override
     public String upload(Resource item) {
         String result = null;
 
@@ -553,7 +557,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
         }
 
         return result;
-    }</#if></#if>
+    }
 
     /**
      * Tests if the json is a valid ${curr.name} Object.
