@@ -23,6 +23,7 @@ import com.tactfactory.harmony.bundles.rest.annotation.Rest;
 import com.tactfactory.harmony.bundles.rest.annotation.RestField;
 import com.tactfactory.harmony.bundles.rest.meta.RestFieldMetadata;
 import com.tactfactory.harmony.bundles.rest.meta.RestMetadata;
+import com.tactfactory.harmony.completor.ResourceCompletor;
 import com.tactfactory.harmony.meta.ApplicationMetadata;
 import com.tactfactory.harmony.meta.ClassMetadata;
 import com.tactfactory.harmony.meta.FieldMetadata;
@@ -36,10 +37,10 @@ public class RestParser extends BaseParser {
     /** Bundle name. */
     private static final String REST = "rest";
     /** Rest annotation name. */
-    private static final String ANNOT_REST = 
+    private static final String ANNOT_REST =
             PackageUtils.extractNameEntity(Rest.class);
     /** Rest annotation name. */
-    private static final String ANNOT_REST_FIELD = 
+    private static final String ANNOT_REST_FIELD =
             PackageUtils.extractNameEntity(RestField.class);
     /** Security argument name. */
     private static final String ANNOT_REST_SECURITY = "security";
@@ -51,14 +52,14 @@ public class RestParser extends BaseParser {
     private static final String ANNOT_REST_FIELD_NAME = "name";
 
     @Override
-    public void visitClass(final ClassOrInterfaceDeclaration field, 
+    public void visitClass(final ClassOrInterfaceDeclaration field,
             final ClassMetadata meta) {
         // TODO Auto-generated method stub
 
     }
 
     @Override
-    public void visitField(final FieldDeclaration field, 
+    public void visitField(final FieldDeclaration field,
             final ClassMetadata meta) {
         // TODO Auto-generated method stub
 
@@ -72,7 +73,7 @@ public class RestParser extends BaseParser {
     }
 
     @Override
-    public void visitImport(final ImportDeclaration imp, 
+    public void visitImport(final ImportDeclaration imp,
             final ClassMetadata meta) {
         // TODO Auto-generated method stub
 
@@ -135,16 +136,16 @@ public class RestParser extends BaseParser {
             final AnnotationExpr fieldAnnot, final ClassMetadata meta) {
         if (fieldAnnot.getName().toString().equals(ANNOT_REST_FIELD)) {
             final RestFieldMetadata rm = new RestFieldMetadata(meta);
-            
+
             if (fieldAnnot instanceof NormalAnnotationExpr) {
                 final NormalAnnotationExpr norm =
                         (NormalAnnotationExpr) fieldAnnot;
                 final List<MemberValuePair> pairs = norm.getPairs();
-                
+
                 if (pairs != null) {
-                    
+
                     for (final MemberValuePair pair : pairs) {
-                        
+
                         if (pair.getName().equals(ANNOT_REST_FIELD_NAME)) {
                             String name = "";
 
@@ -160,13 +161,15 @@ public class RestParser extends BaseParser {
                     }
                 }
             }
-            
+
             field.getOptions().put(REST, rm);
         }
     }
 
     @Override
     public void callFinalCompletor() {
+        ResourceCompletor.completeEntities();
+
         new RestCompletor().generateApplicationRestMetadata(
                 ApplicationMetadata.INSTANCE);
     }

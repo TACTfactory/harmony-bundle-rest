@@ -151,7 +151,9 @@ import android.database.MatrixCursor;
 import ${data_namespace}.*;
 import ${curr.namespace}.entity.${curr.name};
 <#if (curr.resource==true)>
-import ${curr.namespace}.entity.base.Resource;
+import ${curr.namespace}.entity.base.EntityResourceBase;
+import ${curr.namespace}.utils.ImageUtils;
+
 </#if>
 import ${data_namespace}.RestClient.Verb;
 import ${project_namespace}.provider.contract.${curr.name?cap_first}Contract;
@@ -183,7 +185,7 @@ import ${curr.namespace}.entity.base.EntityBase;
  *
  */
 public abstract class ${curr.name}WebServiceClientAdapterBase
-        extends ${extends} {
+        extends ${extends}<#if (curr.resource)> implements SyncClientAdapterResource<${curr.name?cap_first}></#if> {
     /** ${curr.name}WebServiceClientAdapterBase TAG. */
     protected static final String TAG = "${curr.name}WSClientAdapter";
 
@@ -530,34 +532,40 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
         </#if>
     </#list>
 
-    @Override
-    public String upload(Resource item) {
+    <#if (curr.resource==true)>
+    public String upload(EntityResourceBase item) {
         String result = null;
 
-        this.headers.clear();
-        JSONObject json = this.itemToJson((${curr.name}) item);
+        ResourceWebServiceClientAdapter resourceWebServiceClientAdapter =
+                new ResourceWebServiceClientAdapter(this);
+
+        result = resourceWebServiceClientAdapter.upload(item);
+
+        return result;
+    }
+
+    @Override
+    public boolean extractResource(JSONObject json, EntityResourceBase resource) {
+        boolean result = false;
 
         try {
-            json.put(ImageUtils.IMAGE_KEY_JSON, item.getLocalPath());
+            if (json.has(ImageWebServiceClientAdapter.JSON_PATH)
+                    && !json.isNull(${curr.name?cap_first}WebServiceClientAdapter.JSON_PATH)) {
+                resource.setPath(json.getString(${curr.name?cap_first}WebServiceClientAdapter.JSON_PATH));
+                result = true;
+            }
+
+            if (json.has(${curr.name?cap_first}WebServiceClientAdapter.JSON_ORIGINALPATH)
+                    && !json.isNull(${curr.name?cap_first}WebServiceClientAdapter.JSON_ORIGINALPATH)) {
+                resource.setLocalPath(
+                        json.getString(${curr.name?cap_first}WebServiceClientAdapter.JSON_ORIGINALPATH));
+            }
         } catch (JSONException e) {
             Log.e(TAG, e.getMessage());
         }
 
-        String response = this.invokeRequest(
-                Verb.POST,
-                String.format(
-                    "%s/upload/%s",
-                    this.getUri(),
-                    item.getServerId(),
-                    REST_FORMAT),
-                    json);
-
-        if (this.isValidResponse(response) && this.isValidRequest()) {
-            result = response;
-        }
-
         return result;
-    }
+    }</#if>
 
     /**
      * Tests if the json is a valid ${curr.name} Object.

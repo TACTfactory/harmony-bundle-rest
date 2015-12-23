@@ -123,14 +123,14 @@ public abstract class WebServiceClientAdapterBase<T> {
      */
     public WebServiceClientAdapterBase(Context context,
             String host, Integer port, String scheme, String prefix) {
-        this.headers.add(new BasicHeader("Content-Type","application/json"));
+        this.headers.add(new BasicHeader("Content-Type","application/json; charset=utf-8"));
         this.headers.add(new BasicHeader("Accept","application/json"));
 
         this.context = context;
 
         Uri configUri;
 
-        if (${project_name?cap_first}Application.DEBUG) {
+        if (BusyPandaApplication.DEBUG) {
             configUri = Uri.parse(
                 this.context.getString(R.string.rest_url_dev));
         } else {
@@ -183,7 +183,7 @@ public abstract class WebServiceClientAdapterBase<T> {
     protected synchronized String invokeRequest(Verb verb, String request, JSONObject params) {
         String response = "";
         if (this.isOnline()) {
-            this.restClient = new RestClient(this.host, this.port, this.scheme);
+            this.restClient = this.getRestClient();
 
             if (this.login != null && !this.login.isEmpty()
                     && this.password != null && !this.password.isEmpty()) {
@@ -207,7 +207,7 @@ public abstract class WebServiceClientAdapterBase<T> {
             } catch (Exception e) {
                 this.displayOups();
 
-                if (${project_name?cap_first}Application.DEBUG) {
+                if (BusyPandaApplication.DEBUG) {
                     String message = String.format(
                         "Error in invokeRequest, statusCode = %s; uri = %s",
                         this.restClient.getStatusCode(),
@@ -224,6 +224,14 @@ public abstract class WebServiceClientAdapterBase<T> {
         }
 
         return response;
+    }
+
+    protected RestClient getRestClient() {
+        return new RestClient(this.host, this.port, this.scheme);
+    }
+
+    public void shutdownHttpClientManager() {
+        this.restClient.shutdownHttpClient();
     }
 
     /**
@@ -456,7 +464,6 @@ public abstract class WebServiceClientAdapterBase<T> {
      */
     public int insert(T item) {
         int result = -1;
-
         String response = this.invokeRequest(
                     Verb.POST,
                     String.format(
@@ -464,15 +471,8 @@ public abstract class WebServiceClientAdapterBase<T> {
                         this.getUri(),
                         REST_FORMAT),
                     this.itemToJson(item));
-
         if (this.isValidResponse(response) && this.isValidRequest()) {
-            try {
-                JSONObject json = new JSONObject(response);
-                this.extract(json, item);
-                result = 0;
-            } catch (JSONException e) {
-                Log.e(TAG, e.getMessage());
-            }
+            result = 0;
         }
 
         return result;

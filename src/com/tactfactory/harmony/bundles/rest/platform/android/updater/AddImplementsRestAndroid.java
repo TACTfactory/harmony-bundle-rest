@@ -22,55 +22,53 @@ public class AddImplementsRestAndroid implements IExecutor {
 
     @Override
     public void execute() {
-        this.addImplements();
+        if (this.entity.isResource()) {
+            this.addExtendResource();
+        }
     }
 
     /**
      * Add inheritance to java Entity and complete parcelable methods.
      * @param cm The entity metadata
      */
-    private void addImplements() {
-        boolean addImplements = false;
+    private void addExtendResource() {
+        boolean replaceImplement = false;
+        boolean addImplement = true;
+
         final String entityName = this.entity.getName();
         final File entityFile =
                 new File(this.adapter.getSourcePath()
                         + this.adapter.getApplicationMetadata().getProjectNameSpace()
                         + "/entity/" + entityName + ".java");
         final StringBuffer sb = TactFileUtils.fileToStringBuffer(entityFile);
-        final String extendsString = " implements Resource";
-        final String extendsNewImplements = ", Resource";
+        final String extendsString;
+        final int indexEntityBase = this.indexOf(sb, "extends", false);
         final String classDeclaration = "class " + entityName;
-        final String classExtends = " extends " + this.entity.getInheritance().getName();
+        String classExtends;
+
+        if (this.entity.getInheritance().getName() != null || indexEntityBase > -1) {
+            classExtends = " extends EntityBase";
+        } else {
+            classExtends = "";
+        }
+
         final int aClassDefinitionIndex =
                 this.indexOf(sb, classDeclaration + classExtends, false)
                 + classDeclaration.length();
 
-        if (this.entity.getImplementTypes() != null
-                && this.entity.getImplementTypes().size() > 0) {
-            // Entity already extends something
-            for (final String implementedClass : this.entity.getImplementTypes()) {
-                // Extended class is not Entity Base
-                if (!implementedClass.equals("Resource")) {
-                        addImplements = false;
-                        break;
-                        //FileUtils.stringBufferToFile(sb, entityFile);
-                    }
-                }
-        } else { // Entity doesn't extend anything
-            sb.insert(aClassDefinitionIndex, extendsString);
+        if (indexEntityBase == -1) {
+            sb.insert(aClassDefinitionIndex, " extends EntityResourceBase");
+        } else {
+            sb.replace(aClassDefinitionIndex, aClassDefinitionIndex + "EntityBase".length(), " EntityResourceBase");
         }
-
-        if (addImplements) {
-            sb.insert(aClassDefinitionIndex, extendsNewImplements);
-        }
-
+//
         // Add import EntityBase if it doesn't exist yet
-        if (!this.entity.getImports().contains("Resource")) {
+        if (!this.entity.getImports().contains("EntityResourceBase")) {
             final int packageIndex = this.indexOf(sb, "package", false);
             final int lineAfterPackageIndex =
                     sb.indexOf("\n", packageIndex) + 1;
             sb.insert(lineAfterPackageIndex,
-                    String.format("%nimport %s.%s.base.Resource;%n",
+                    String.format("%nimport %s.%s.base.EntityResourceBase;%n",
                             this.adapter.getApplicationMetadata()
                                     .getProjectNameSpace().replace('/', '.'),
                             this.adapter.getModel()));

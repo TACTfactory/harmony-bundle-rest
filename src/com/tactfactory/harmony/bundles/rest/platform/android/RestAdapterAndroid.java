@@ -43,7 +43,7 @@ public class RestAdapterAndroid extends AndroidAdapter implements RestAdapter {
         result.add(new ManifestPermissionAndroid(
                 this, ManifestUpdater.Permissions.ACCESS_NETWORK_STATE));
 
-        String templatePath = this.getTemplateSourceProviderPath();
+        String templatePath = this.getTemplateSourceDataPath();
         String filePath = this.getSourcePath()
                 + this.getApplicationMetadata().getProjectNameSpace()
                 + "/" + this.getData() + "/";
@@ -91,7 +91,7 @@ public class RestAdapterAndroid extends AndroidAdapter implements RestAdapter {
     public List<IUpdater> getRestEntityUpdaters(EntityMetadata entity) {
         List<IUpdater> result = new ArrayList<IUpdater>();
 
-        String templatePath = this.getTemplateSourceProviderPath();
+        String templatePath = this.getTemplateSourceDataPath();
         String filePath = this.getSourcePath()
                 + this.getApplicationMetadata().getProjectNameSpace()
                 + "/" + this.getData() + "/";
