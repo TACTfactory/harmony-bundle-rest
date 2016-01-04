@@ -191,13 +191,16 @@
         <#list curr.fields?values as field>
             <#if (!field.internal)>
                 <#if (!field.relation??)>
-                    <#if field.name?lower_case=="id"> <#if !InheritanceUtils.isExtended(curr)>
+                    <#if field.name?lower_case=="id"><#if !InheritanceUtils.isExtended(curr)>
         [params setValue:[NSNumber numberWithInt:[self getItemId:${curr.name?uncap_first}]]
                   forKey:${curr.name}WebServiceClientAdapter.JSON_ID];
-                    </#if><#elseif (curr.options.sync?? && field.name=="serverId")> <#if !InheritanceUtils.isExtended(curr)>
+
+                    </#if><#elseif (curr.options.sync?? && field.name=="serverId")><#if !InheritanceUtils.isExtended(curr)>
         [params setValue:[NSNumber numberWithInt:${curr.name?uncap_first}.id]
                   forKey:${curr.name}WebServiceClientAdapter.JSON_MOBILE_ID];
-                    </#if><#elseif (curr.options.sync?? && field.name=="sync_uDate")> <#if !InheritanceUtils.isExtended(curr)>
+
+                    </#if><#elseif (curr.options.sync?? && field.name=="sync_uDate")>
+<#if !InheritanceUtils.isExtended(curr)>
         if (${curr.name?uncap_first}.${field.name?uncap_first} != nil) {
             NSDateFormatter *dateFormatter = [NSDateFormatter new];
             [dateFormatter setDateFormat:${field.owner}WebServiceClientAdapter.SYNC_UPDATE_DATE_FORMAT];
@@ -206,7 +209,7 @@
                      forKey:${field.owner}WebServiceClientAdapter.${alias(field.name)}];
         }
 
-                    </#if><#elseif (FieldsUtils.getObjectiveType(field)?lower_case == "datetime")>
+</#if><#elseif (FieldsUtils.getObjectiveType(field)?lower_case == "datetime")>
         if (${curr.name?uncap_first}.${field.name?uncap_first} != nil) {
             NSDateFormatter *dateFormatter = [NSDateFormatter new];
             [dateFormatter setDateFormat:${field.owner}WebServiceClientAdapter.REST_UPDATE_DATE_FORMAT];
@@ -215,8 +218,8 @@
                       forKey:${field.owner}WebServiceClientAdapter.${alias(field.name)}];
         }
 
-                    <#elseif (field.harmony_type=="string" || field.harmony_type=="text")>
-if (${curr.name?uncap_first}.${field.name?uncap_first} != nil) {
+<#elseif (field.harmony_type=="string" || field.harmony_type=="text")>
+        if (${curr.name?uncap_first}.${field.name?uncap_first} != nil) {
             [params setValue:${curr.name?uncap_first}.${field.name?uncap_first}
                       forKey:${field.owner}WebServiceClientAdapter.${alias(field.name)}];
         }
