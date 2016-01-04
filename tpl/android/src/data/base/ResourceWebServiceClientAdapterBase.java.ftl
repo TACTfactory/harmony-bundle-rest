@@ -18,7 +18,7 @@ import org.json.JSONException;
 import ${data_namespace}.RestClient.Verb;
 import ${project_namespace}.R;
 import ${project_namespace}.${project_name?cap_first}Application;
-import ${project_namespace}.utils.ImageUtils;
+import ${project_namespace}.harmony.util.ImageUtils;
 import ${entity_namespace}.base.EntityResourceBase;
 
 import android.app.Activity;
@@ -77,7 +77,7 @@ public abstract class ResourceWebServiceClientAdapterBase extends WebServiceClie
                 String.format(
                     "%s/upload/%s",
                     this.getUri(),
-                    item.getServerId(),
+                    item.get<#if curr.sync??>ServerId<#else>ResourceId</#if>(),
                     REST_FORMAT),
                     json);
 

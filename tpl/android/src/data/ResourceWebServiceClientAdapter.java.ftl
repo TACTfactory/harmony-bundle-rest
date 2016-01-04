@@ -2,8 +2,8 @@
 package ${data_namespace};
 
 import ${data_namespace}.base.ResourceWebServiceClientAdapterBase;
-
-import android.content.Context;
+import ${data_namespace}.base.WebServiceClientAdapterBase;
+import ${entity_namespace}.base.EntityResourceBase;
 
 /**
  * Class for all your ResourceWebServiceClient adapters.

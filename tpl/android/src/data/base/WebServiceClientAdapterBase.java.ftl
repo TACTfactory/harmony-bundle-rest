@@ -130,7 +130,7 @@ public abstract class WebServiceClientAdapterBase<T> {
 
         Uri configUri;
 
-        if (BusyPandaApplication.DEBUG) {
+        if (${project_name?cap_first}Application.DEBUG) {
             configUri = Uri.parse(
                 this.context.getString(R.string.rest_url_dev));
         } else {
@@ -207,7 +207,7 @@ public abstract class WebServiceClientAdapterBase<T> {
             } catch (Exception e) {
                 this.displayOups();
 
-                if (BusyPandaApplication.DEBUG) {
+                if (${project_name?cap_first}Application.DEBUG) {
                     String message = String.format(
                         "Error in invokeRequest, statusCode = %s; uri = %s",
                         this.restClient.getStatusCode(),

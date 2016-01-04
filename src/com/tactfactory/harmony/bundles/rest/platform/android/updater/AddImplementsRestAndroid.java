@@ -46,7 +46,7 @@ public class AddImplementsRestAndroid implements IExecutor {
         final String classDeclaration = "class " + entityName;
         String classExtends;
 
-        if (this.entity.getInheritance().getName() != null || indexEntityBase > -1) {
+        if (this.entity.getInheritance() != null || indexEntityBase > -1) {
             classExtends = " extends EntityBase";
         } else {
             classExtends = "";
