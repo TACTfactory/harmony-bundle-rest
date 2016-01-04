@@ -229,7 +229,6 @@
         [params setValue:[NSNumber numberWithInt:${curr.name?uncap_first}.${field.name?uncap_first}]
                   forKey:${field.owner}WebServiceClientAdapter.${alias(field.name)}];
                     <#else>
-        //TODO ${field.harmony_type}
         [params setValue:${FieldsUtils.generateFieldContentType("item", field)}${curr.name?uncap_first}.${field.name?uncap_first}]
                   forKey:${field.owner}WebServiceClientAdapter.${alias(field.name)}];
                     </#if>
@@ -370,7 +369,7 @@
 
                 item.${field.name?uncap_first} = ${field.relation.targetEntity};
                                 <#else>
-                item.${field.name?uncap_first} = [${field.relation.targetEntity?uncap_first}SqlAdapter getByServerID:[[json objectForKey:[${field.owner}WebServiceClientAdapter ${alias(field.name)}]]
+                item.${field.name?uncap_first} = [${field.relation.targetEntity?uncap_first}SqlAdapter getByID:[[json objectForKey:[${field.owner}WebServiceClientAdapter ${alias(field.name)}]]
                                                  objectForKey:[${field.relation.targetEntity}WebServiceClientAdapter JSON_ID]]];
                                 </#if>
                             <#else>
