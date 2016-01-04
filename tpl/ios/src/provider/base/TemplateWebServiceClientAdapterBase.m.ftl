@@ -298,7 +298,7 @@
     if (result) {
     <#if (InheritanceUtils.isExtended(curr))>
         result = [self->motherAdapter extract:json withItem:item];
-    </#if>
+    <#else>
         <#assign shouldCatch = ((curr.fields?size - curr.relations?size) != 0) />
         <#if shouldCatch>@try {</#if>
             <#list curr.fields?values as field>
@@ -383,6 +383,7 @@
         <#if shouldCatch>} @catch (NSException *e) {
             NSLog(@"Exception %@", e);
         }</#if>
+    </#if>
     }
 
     return result;
