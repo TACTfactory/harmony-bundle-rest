@@ -1,6 +1,7 @@
 <@header?interpret />
 
 #import "WebServiceClientAdapterBase.h"
+#import "Reachability.h"
 
 @implementation WebServiceClientAdapterBase
 
@@ -82,8 +83,16 @@
 }
 
 - (bool) isOnline {
-    // TODO check if network is available
-    return true;
+    bool result = false;
+
+    Reachability *reachability = [Reachability reachabilityForInternetConnection];
+    NetworkStatus networkStatus = [reachability currentReachibilityStatus];
+
+    if (networkStatus != NotReachable) {
+        result = true;
+    }
+
+    return result;
 }
 
 - (int) getItemId:(id) item {
