@@ -360,8 +360,8 @@
                             <#elseif ((field.relation.type=="ManyToOne") || (field.relation.type=="OneToOne"))>
                 ${field.relation.targetEntity}SQLiteAdapter *${field.relation.targetEntity?uncap_first}SqlAdapter = [${field.relation.targetEntity}SQLiteAdapter new];
                                 <#if (curr.options.sync??)>
-                ${field.relation.targetEntity}WebServiceClientAdapter *${field.relation.targetEntity?uncap_first}WebService = [${field.relation.targetEntity}WebServiceClientAdapter new];
                 ${field.relation.targetEntity} *${field.relation.targetEntity?uncap_first} = [${field.relation.targetEntity} new];
+                ${field.relation.targetEntity}WebServiceClientAdapter *${field.relation.targetEntity?uncap_first}WebService = [${field.relation.targetEntity}WebServiceClientAdapter new];
 
                 [${field.relation.targetEntity?uncap_first}WebService extract:[json objectForKey:[${field.owner}WebServiceClientAdapter ${alias(field.name)}]]
                                 withItem:${field.relation.targetEntity?uncap_first}];
@@ -369,8 +369,8 @@
 
                 item.${field.name?uncap_first} = ${field.relation.targetEntity};
                                 <#else>
-                item.${field.name?uncap_first} = [${field.relation.targetEntity?uncap_first}SqlAdapter getByID:[[json objectForKey:[${field.owner}WebServiceClientAdapter ${alias(field.name)}]]
-                                                 objectForKey:[${field.relation.targetEntity}WebServiceClientAdapter JSON_ID]]];
+                ${field.relation.targetEntity} *${field.relation.targetEntity?uncap_first} = [json objectForKey:[${field.owner}WebServiceClientAdapter ${alias(field.name)}]];
+                item.${field.name?uncap_first} = [${field.relation.targetEntity?uncap_first}SqlAdapter getByID:${field.relation.targetEntity?uncap_first}];
                                 </#if>
                             <#else>
                                 <#if (curr.options.sync??)>
