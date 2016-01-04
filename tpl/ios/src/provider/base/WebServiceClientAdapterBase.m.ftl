@@ -134,7 +134,7 @@
 - (int) extractItems:(NSMutableDictionary *) json
        withParamName:(NSString *) paramName
            withItems:(NSMutableArray *) items
-           withLimit:(NSMutableArray *) limit {
+           withLimit:(int) limit {
     return 0;
 }
 

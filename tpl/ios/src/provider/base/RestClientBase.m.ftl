@@ -3,11 +3,11 @@
 #import "RestClientBase.h"
 #import "AppDelegate.h"
 
-static NSString * API_KEY;
-static NSString * SCHEME_HTTP;
-static NSString * SCHEME_HTTPS;
+static NSString *API_KEY;
+static NSString *SCHEME_HTTP;
+static NSString *SCHEME_HTTPS;
 static bool isAuth;
-static NSString * FILE_PARAM;
+static NSString *FILE_PARAM;
 
 @implementation RestClientBase
 
@@ -104,7 +104,7 @@ static NSString * FILE_PARAM;
             httpResponse.result = nil;
             httpResponse.statusCode = [operation.response statusCode];
 
-            if (callbacl != nil) {
+            if (callback != nil) {
                 callback(httpResponse);
             }
         });

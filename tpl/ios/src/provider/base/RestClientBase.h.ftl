@@ -4,8 +4,7 @@
 #import "AFHTTPRequestOperationManager.h"
 #import "HttpResponse.h"
 
-typedef enum
-{
+typedef enum {
     GET,
     POST,
     PUT,

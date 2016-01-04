@@ -408,7 +408,7 @@
             NSDictionary *jsonItem = itemArray[i];
             ${curr.name} *item = [${curr.name} new];
 
-            [self extract:NSMutableDictionary dictionaryWithDictionary:jsonItem] withItem:item];
+            [self extract:[NSMutableDictionary dictionaryWithDictionary:jsonItem] withItem:item];
 
             if (item != nil) {
                 [items addObject:item];
