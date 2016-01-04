@@ -243,10 +243,11 @@
 
         if (${curr.name?uncap_first}.${field.name?uncap_first} != nil) {
             ${field.relation.targetEntity}WebServiceClientAdapter *${field.name}Adapter = [${field.relation.targetEntity}WebServiceClientAdapter new];
-        
+
             [params setValue:[${field.name}Adapter ${converter}:${curr.name?uncap_first}.${field.name?uncap_first}]
                       forKey:${field.owner}WebServiceClientAdapter.${alias(field.name)}];
         }
+
                     </#if>
                 </#if>
             </#if>
@@ -294,12 +295,11 @@
         withItem:(${curr.name} *) item {
     bool result = [self isValidJSON:json];
 
+    if (result) {
     <#if (InheritanceUtils.isExtended(curr))>
     result = [self->motherAdapter extract:json withItem:item];
-
     </#if>
-    if (result) {
-        <#assign shouldCatch = ((curr.fields?size - curr.relations?size) != 0) />   
+        <#assign shouldCatch = ((curr.fields?size - curr.relations?size) != 0) />
         <#if shouldCatch>@try {</#if>
             <#list curr.fields?values as field>
                 <#if (!field.internal)>
@@ -315,7 +315,7 @@
 
                 if (server_id != 0) {
                     item.serverId = server_id;
-            	}
+                }
             }
                         </#if><#else>
                         
@@ -349,29 +349,34 @@
                          </#if>
                      <#else>
                         <#if (isRestEntity(field.relation.targetEntity))>
-                                
+
             if (![self jsonIsNull:json withProperty:[${field.owner}WebServiceClientAdapter ${alias(field.name)}]]) {
-                                <#if ((field.relation.type=="OneToMany") || (field.relation.type=="ManyToMany"))>
-                NSMutableArray* ${field.name?uncap_first} = [NSMutableArray array];
-                ${field.relation.targetEntity}WebServiceClientAdapter* ${field.name?uncap_first}Adapter = [${field.relation.targetEntity}WebServiceClientAdapter new];
+                            <#if ((field.relation.type=="OneToMany") || (field.relation.type=="ManyToMany"))>
+                NSMutableArray *${field.name?uncap_first} = [NSMutableArray array];
+                ${field.relation.targetEntity}WebServiceClientAdapter *${field.name?uncap_first}Adapter = [${field.relation.targetEntity}WebServiceClientAdapter new];
                 if ([${field.name?uncap_first}Adapter extractItems:[json objectForKey:[${field.owner}WebServiceClientAdapter ${alias(field.name)}]]
-                                     withItems:${field.name?uncap_first}]) {
+                                    withItems:${field.name?uncap_first}]) {
                     item.${field.name?uncap_first} = ${field.name?uncap_first};
                 }
-                        <#else>
-                            <#if (curr.options.sync??)>
-                    //TODO Sync ${field.relation.type}
+                            <#elseif (field.relation.type="ManyToOne")>
+                ${field.relation.targetEntity}SQLiteAdapter *${field.name?uncap_first}SqlAdapter = [${field.relation.targetEntity}SQLiteAdapter new];
+
+                item.${field.name?uncap_first} = [${field.name?uncap_first}SqlAdapter getByServerID:[[json objectForKey:[${field.owner} ${alias(field.name)}]]
+                                                        objectForKey:[${field.relation.targetEntity}WebServiceClientAdapter JSON_ID]]];
                             <#else>
+                                <#if (curr.options.sync??)>
+                //TODO Sync ${field.relation.type}
+                                <#else>
 
-                    @try {
-                      //TODO ${field.relation.type}
-                    } @catch (NSException *e) {
-                        NSLog(@"Exception %@", @"Json doesn't contains ${field.relation.targetEntity} data");
-                    }
+                @try {
+                  //TODO ${field.relation.type}
+                } @catch (NSException *e) {
+                    NSLog(@"Exception %@", @"Json doesn't contains ${field.relation.targetEntity} data");
+                }
+                                </#if>
                             </#if>
-                        </#if>
-
             }
+
                     </#if>
                 </#if>
             </#if>
@@ -445,8 +450,8 @@
     [self invokeRequest:GET
             withRequest:[NSString stringWithFormat:@"%@<#if (curr.options.sync??)>/%@<#else><#list curr_ids as id>/%@</#list></#if>%@",
                          [self getUri],
-                          <#if (curr.options.sync??)>${curr.name?uncap_first}.serverId,<#else><#list curr_ids as id>[NSNumber numberWithInt:${curr.name?uncap_first}.${id.name}],</#list></#if>
-                          [${curr.name}WebServiceClientAdapter REST_FORMAT]]
+                         <#if (curr.options.sync??)>${curr.name?uncap_first}.serverId,<#else><#list curr_ids as id>[NSNumber numberWithInt:${curr.name?uncap_first}.${id.name}],</#list></#if>
+                         [${curr.name}WebServiceClientAdapter REST_FORMAT]]
              withParams:nil
            withCallback:restCallback];
 
