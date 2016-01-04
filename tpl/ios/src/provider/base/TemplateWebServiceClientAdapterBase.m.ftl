@@ -199,8 +199,7 @@
         [params setValue:[NSNumber numberWithInt:${curr.name?uncap_first}.id]
                   forKey:${curr.name}WebServiceClientAdapter.JSON_MOBILE_ID];
 
-                    </#if><#elseif (curr.options.sync?? && field.name=="sync_uDate")>
-<#if !InheritanceUtils.isExtended(curr)>
+                    </#if><#elseif (curr.options.sync?? && field.name=="sync_uDate")><#if !InheritanceUtils.isExtended(curr)>
         if (${curr.name?uncap_first}.${field.name?uncap_first} != nil) {
             NSDateFormatter *dateFormatter = [NSDateFormatter new];
             [dateFormatter setDateFormat:${field.owner}WebServiceClientAdapter.SYNC_UPDATE_DATE_FORMAT];
@@ -209,7 +208,7 @@
                      forKey:${field.owner}WebServiceClientAdapter.${alias(field.name)}];
         }
 
-</#if><#elseif (FieldsUtils.getObjectiveType(field)?lower_case == "datetime")>
+                    </#if><#elseif (FieldsUtils.getObjectiveType(field)?lower_case == "datetime")>
         if (${curr.name?uncap_first}.${field.name?uncap_first} != nil) {
             NSDateFormatter *dateFormatter = [NSDateFormatter new];
             [dateFormatter setDateFormat:${field.owner}WebServiceClientAdapter.REST_UPDATE_DATE_FORMAT];
@@ -218,7 +217,7 @@
                       forKey:${field.owner}WebServiceClientAdapter.${alias(field.name)}];
         }
 
-<#elseif (field.harmony_type=="string" || field.harmony_type=="text")>
+                    <#elseif (field.harmony_type=="string" || field.harmony_type=="text")>
         if (${curr.name?uncap_first}.${field.name?uncap_first} != nil) {
             [params setValue:${curr.name?uncap_first}.${field.name?uncap_first}
                       forKey:${field.owner}WebServiceClientAdapter.${alias(field.name)}];
@@ -227,11 +226,12 @@
                     <#elseif (field.harmony_type=="enum")>
         //TODO enum
                     <#elseif (field.harmony_type=="int")>
-            [params setValue:[NSNumber numberWithInt:${curr.name?uncap_first}.${field.name?uncap_first}]
-                      forKey:${field.owner}WebServiceClientAdapter.${alias(field.name)}];
-                    <#else> //TODO ${field.harmony_type}
-            [params setValue:${FieldsUtils.generateFieldContentType("item", field)}${curr.name?uncap_first}.${field.name?uncap_first}]
-                      forKey:${field.owner}WebServiceClientAdapter.${alias(field.name)}];
+        [params setValue:[NSNumber numberWithInt:${curr.name?uncap_first}.${field.name?uncap_first}]
+                  forKey:${field.owner}WebServiceClientAdapter.${alias(field.name)}];
+                    <#else>
+        //TODO ${field.harmony_type}
+        [params setValue:${FieldsUtils.generateFieldContentType("item", field)}${curr.name?uncap_first}.${field.name?uncap_first}]
+                  forKey:${field.owner}WebServiceClientAdapter.${alias(field.name)}];
                     </#if>
                 <#else>
                     <#if (isRestEntity(field.relation.targetEntity))>
