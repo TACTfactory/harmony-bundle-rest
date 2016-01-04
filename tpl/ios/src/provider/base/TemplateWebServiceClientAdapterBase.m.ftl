@@ -358,11 +358,21 @@
                                     withItems:${field.name?uncap_first}]) {
                     item.${field.name?uncap_first} = ${field.name?uncap_first};
                 }
-                            <#elseif (field.relation.type="ManyToOne")>
+                            <#elseif ((field.relation.type=="ManyToOne") || (field.relation.type=="OneToOne"))>
                 ${field.relation.targetEntity}SQLiteAdapter *${field.relation.targetEntity?uncap_first}SqlAdapter = [${field.relation.targetEntity}SQLiteAdapter new];
+                                <#if (curr.options.sync??)>
+                ${field.relation.targetEntity}WebServiceClientAdapter *${field.relation.targetEntity?uncap_first}WebService = [${field.relation.targetEntity}WebServiceClientAdapter new];
+                ${field.relation.targetEntity} *${field.relation.targetEntity?uncap_first} = [${field.relation.targetEntity} new];
 
+                [${field.relation.targetEntity?uncap_first}WebService extract:[json objectForKey:[${field.owner}WebServiceClientAdapter ${alias(field.name)}]]
+                                withItem:${field.relation.targetEntity?uncap_first}];
+                ${field.relation.targetEntity} = [sqlAdapter getByServerID:${field.relation.targetEntity}.serverId];
+
+                item.${field.name?uncap_first} = ${field.relation.targetEntity};
+                                <#else>
                 item.${field.name?uncap_first} = [${field.relation.targetEntity?uncap_first}SqlAdapter getByServerID:[[json objectForKey:[${field.owner}WebServiceClientAdapter ${alias(field.name)}]]
                                                  objectForKey:[${field.relation.targetEntity}WebServiceClientAdapter JSON_ID]]];
+                                </#if>
                             <#else>
                                 <#if (curr.options.sync??)>
                 //TODO Sync ${field.relation.type}
