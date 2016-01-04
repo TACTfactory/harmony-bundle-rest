@@ -100,6 +100,7 @@
             <#if (!isInArray(import_array, relation.relation.targetEntity))>
                 <#assign import_array = import_array + [relation.relation.targetEntity] />
 #import "${relation.relation.targetEntity}WebServiceClientAdapter.h"
+#import "${relation.relation.targetEntity}SQLiteAdapter.h"
             </#if>
         </#if>
     </#list>
@@ -170,8 +171,7 @@
 }
 
 </#if>
-- (int) extractItems:(NSArray *) jsonArray
-           withItems:(NSMutableArray *) items {
+- (int) extractItems:(NSArray *) jsonArray withItems:(NSMutableArray *) items {
     
     for (NSDictionary *json in jsonArray) {
         ${curr.name} *item = [${curr.name} new];
@@ -297,7 +297,7 @@
 
     if (result) {
     <#if (InheritanceUtils.isExtended(curr))>
-    result = [self->motherAdapter extract:json withItem:item];
+        result = [self->motherAdapter extract:json withItem:item];
     </#if>
         <#assign shouldCatch = ((curr.fields?size - curr.relations?size) != 0) />
         <#if shouldCatch>@try {</#if>
@@ -318,7 +318,7 @@
                 }
             }
                         </#if><#else>
-                        
+
             if (![self jsonIsNull:json withProperty:[${field.owner}WebServiceClientAdapter ${alias(field.name)}]]) {
                             <#if (FieldsUtils.getObjectiveType(field)?lower_case == "datetime")>
                 NSDateFormatter *dateFormatter = [NSDateFormatter new];
@@ -359,10 +359,10 @@
                     item.${field.name?uncap_first} = ${field.name?uncap_first};
                 }
                             <#elseif (field.relation.type="ManyToOne")>
-                ${field.relation.targetEntity}SQLiteAdapter *${field.name?uncap_first}SqlAdapter = [${field.relation.targetEntity}SQLiteAdapter new];
+                ${field.relation.targetEntity}SQLiteAdapter *${field.relation.targetEntity?uncap_first}SqlAdapter = [${field.relation.targetEntity}SQLiteAdapter new];
 
-                item.${field.name?uncap_first} = [${field.name?uncap_first}SqlAdapter getByServerID:[[json objectForKey:[${field.owner} ${alias(field.name)}]]
-                                                        objectForKey:[${field.relation.targetEntity}WebServiceClientAdapter JSON_ID]]];
+                item.${field.name?uncap_first} = [${field.relation.targetEntity?uncap_first}SqlAdapter getByServerID:[[json objectForKey:[${field.owner}WebServiceClientAdapter ${alias(field.name)}]]
+                                                 objectForKey:[${field.relation.targetEntity}WebServiceClientAdapter JSON_ID]]];
                             <#else>
                                 <#if (curr.options.sync??)>
                 //TODO Sync ${field.relation.type}
@@ -376,7 +376,6 @@
                                 </#if>
                             </#if>
             }
-
                     </#if>
                 </#if>
             </#if>
