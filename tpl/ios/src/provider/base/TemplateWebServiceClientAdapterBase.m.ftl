@@ -370,7 +370,7 @@
                 item.${field.name?uncap_first} = ${field.relation.targetEntity};
                                 <#else>
                 ${field.relation.targetEntity} *${field.relation.targetEntity?uncap_first} = [json objectForKey:[${field.owner}WebServiceClientAdapter ${alias(field.name)}]];
-                item.${field.name?uncap_first} = [${field.relation.targetEntity?uncap_first}SqlAdapter getByID:${field.relation.targetEntity?uncap_first}];
+                item.${field.name?uncap_first} = [${field.relation.targetEntity?uncap_first}SqlAdapter getByID:${field.relation.targetEntity?uncap_first}.id];
                                 </#if>
                             <#else>
                                 <#if (curr.options.sync??)>
