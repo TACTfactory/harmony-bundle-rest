@@ -86,7 +86,7 @@
     bool result = false;
 
     Reachability *reachability = [Reachability reachabilityForInternetConnection];
-    NetworkStatus networkStatus = [reachability currentReachibilityStatus];
+    NetworkStatus networkStatus = [reachability currentReachabilityStatus];
 
     if (networkStatus != NotReachable) {
         result = true;

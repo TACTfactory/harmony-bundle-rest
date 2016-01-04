@@ -216,7 +216,7 @@
         }
 
                     <#elseif (field.harmony_type=="string" || field.harmony_type=="text")>
-        if (${curr.name?uncap_first}.${field.name?uncap_first} != nil) {
+if (${curr.name?uncap_first}.${field.name?uncap_first} != nil) {
             [params setValue:${curr.name?uncap_first}.${field.name?uncap_first}
                       forKey:${field.owner}WebServiceClientAdapter.${alias(field.name)}];
         }
@@ -239,8 +239,7 @@
                         </#if>
 
         if (${curr.name?uncap_first}.${field.name?uncap_first} != nil) {
-            ${field.relation.targetEntity}WebServiceClientAdapter *${field.name}Adapter =
-                   [[${field.relation.targetEntity}WebServiceClientAdapter alloc] init];
+            ${field.relation.targetEntity}WebServiceClientAdapter *${field.name}Adapter = [${field.relation.targetEntity}WebServiceClientAdapter new];
         
             [params setValue:[${field.name}Adapter ${converter}:${curr.name?uncap_first}.${field.name?uncap_first}]
                       forKey:${field.owner}WebServiceClientAdapter.${alias(field.name)}];
