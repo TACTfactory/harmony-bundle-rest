@@ -152,7 +152,7 @@ import ${data_namespace}.*;
 import ${curr.namespace}.entity.${curr.name};
 <#if (curr.resource==true)>
 import ${curr.namespace}.entity.base.EntityResourceBase;
-import ${curr.namespace}.utils.ImageUtils;
+import ${curr.namespace}.harmony.util.ImageUtils;
 
 </#if>
 import ${data_namespace}.RestClient.Verb;
@@ -309,35 +309,6 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
             try {
                 JSONObject json = new JSONObject(response);
                 result = extractItems(json, "${curr.name?cap_first}s", ${curr.name?uncap_first}s);
-            } catch (JSONException e) {
-                Log.e(TAG, e.getMessage());
-                ${curr.name?uncap_first}s = null;
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Retrieve all the ${curr.name}s in the given list. Uses the route : ${curr.options.rest.uri}.
-     * @param ${curr.name?uncap_first}s : The list in which the ${curr.name}s will be returned
-     * @param page The number of page to return
-     * @return The number of ${curr.name}s returned
-     */
-    public int getAll(List<${curr.name}> ${curr.name?uncap_first}s, int page, String subQuery) {
-        int result = -1;
-        String response = this.invokeRequest(
-                    Verb.GET,
-                    this.addPagination(String.format(
-                        this.getUri() + "%s?sub=%s",
-                        REST_FORMAT,
-                        subQuery), page),
-                    null);
-
-        if (this.isValidResponse(response) && this.isValidRequest()) {
-            try {
-                JSONObject json = new JSONObject(response);
-                result = this.extractItemsPaginate(${curr.name}.class, json, "${curr.name?cap_first}s", ${curr.name?uncap_first}s);
             } catch (JSONException e) {
                 Log.e(TAG, e.getMessage());
                 ${curr.name?uncap_first}s = null;
@@ -549,16 +520,10 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
         boolean result = false;
 
         try {
-            if (json.has(ImageWebServiceClientAdapter.JSON_PATH)
+            if (json.has(${curr.name?cap_first}WebServiceClientAdapter.JSON_PATH)
                     && !json.isNull(${curr.name?cap_first}WebServiceClientAdapter.JSON_PATH)) {
                 resource.setPath(json.getString(${curr.name?cap_first}WebServiceClientAdapter.JSON_PATH));
                 result = true;
-            }
-
-            if (json.has(${curr.name?cap_first}WebServiceClientAdapter.JSON_ORIGINALPATH)
-                    && !json.isNull(${curr.name?cap_first}WebServiceClientAdapter.JSON_ORIGINALPATH)) {
-                resource.setLocalPath(
-                        json.getString(${curr.name?cap_first}WebServiceClientAdapter.JSON_ORIGINALPATH));
             }
         } catch (JSONException e) {
             Log.e(TAG, e.getMessage());

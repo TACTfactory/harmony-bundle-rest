@@ -3,35 +3,19 @@
 
 package ${data_namespace}.base;
 
-import ${data_namespace}.*;
-import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.http.Header;
-import org.apache.http.message.BasicHeader;
-import org.joda.time.DateTime;
-import org.joda.time.format.ISODateTimeFormat;
-import org.json.JSONObject;
-import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.content.ContentValues;
+import android.database.MatrixCursor;
+import android.util.Log;
 
 import ${data_namespace}.RestClient.Verb;
-import ${project_namespace}.R;
-import ${project_namespace}.${project_name?cap_first}Application;
-import ${project_namespace}.harmony.util.ImageUtils;
+import ${data_namespace}.WebServiceClientAdapter;
 import ${entity_namespace}.base.EntityResourceBase;
-
-import android.app.Activity;
-import android.content.ContentValues;
-import android.content.Context;
-import android.database.Cursor;
-import android.database.MatrixCursor;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.Uri;
-import android.text.TextUtils;
-import android.util.Log;
-import android.widget.Toast;
+import ${project_namespace}.harmony.util.ImageUtils;
 
 /**
  *
@@ -86,6 +70,74 @@ public abstract class ResourceWebServiceClientAdapterBase extends WebServiceClie
         }
 
         return result;
+    }
+
+        @Override
+    public JSONObject itemToJson(EntityResourceBase item) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public JSONObject contentValuesToJson(ContentValues values) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public JSONObject itemIdToJson(EntityResourceBase item) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public boolean extract(JSONObject json, EntityResourceBase item) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public int extractItems(JSONObject json, String paramName,
+            List<EntityResourceBase> items) throws JSONException {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public int extractItems(JSONObject json, String paramName,
+            List<EntityResourceBase> items, int limit) throws JSONException {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public int delete(EntityResourceBase item) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public int update(EntityResourceBase item) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public int getAll(List<EntityResourceBase> items) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public int get(EntityResourceBase item) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public boolean extractCursor(JSONObject json, MatrixCursor cursor) {
+        // TODO Auto-generated method stub
+        return false;
     }
 
 }

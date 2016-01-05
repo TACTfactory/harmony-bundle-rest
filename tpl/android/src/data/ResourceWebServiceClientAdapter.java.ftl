@@ -9,11 +9,11 @@ import ${entity_namespace}.base.EntityResourceBase;
  * Class for all your ResourceWebServiceClient adapters.
  * You can add your own/customize your methods here.
  */
-public abstract class ResourceWebServiceClientAdapter<T>
+public class ResourceWebServiceClientAdapter
         extends ResourceWebServiceClientAdapterBase {
 
     public ResourceWebServiceClientAdapter(
-            WebServiceClientAdapterBase<EntityResourceBase> webServiceClientAdapterBase) {
+            WebServiceClientAdapterBase<? extends EntityResourceBase> webServiceClientAdapterBase) {
         super(webServiceClientAdapterBase);
     }
 }
