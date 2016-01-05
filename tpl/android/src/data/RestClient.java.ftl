@@ -44,6 +44,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import ${project_namespace}.${project_name?cap_first}Application;
+import ${project_namespace}.harmony.util.ImageUtils;
 
 /**
  * Rest Client Class.
@@ -339,7 +340,7 @@ public class RestClient {
 
                 bitmap.compress(CompressFormat.PNG, 100, bos);
 
-                fileName = file.getName() + file.getExtension();
+                fileName = file.getName();
                 data = bos.toByteArray();
 
                 ByteArrayBody fileBin = new ByteArrayBody(
