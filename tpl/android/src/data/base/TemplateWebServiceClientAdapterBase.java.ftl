@@ -185,7 +185,7 @@ import ${curr.namespace}.entity.base.EntityBase;
  *
  */
 public abstract class ${curr.name}WebServiceClientAdapterBase
-        extends ${extends}<#if (curr.resource)> implements SyncClientAdapterResource<${curr.name?cap_first}></#if> {
+        extends ${extends}<#if (curr.resource) && curr.options.sync??> implements SyncClientAdapterResource<${curr.name?cap_first}></#if> {
     /** ${curr.name}WebServiceClientAdapterBase TAG. */
     protected static final String TAG = "${curr.name}WSClientAdapter";
 
@@ -205,7 +205,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
     </#list>
     <#if (curr.options.sync??)>
     /** JSON mobile id. */
-    protected static String JSON_MOBILE_ID = "mobile_id";
+    protected static String JSON_MOBILE_ID = "mobileId";
 
     /** Sync Date Format pattern. */
     public static final String SYNC_UPDATE_DATE_FORMAT = "${curr.options.sync.updateDateFormatJava}";
@@ -381,7 +381,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
      * @return the URI.
      */
     public String getUri() {
-        return "${curr.options.rest.uri}";
+        return "${curr.options.rest.uri?lower_case}";
     }
 
     /**
@@ -504,6 +504,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
     </#list>
 
     <#if (curr.resource==true)>
+    <#if curr.options.sync??>@Override</#if>
     public String upload(EntityResourceBase item) {
         String result = null;
 
@@ -515,7 +516,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
         return result;
     }
 
-    @Override
+    <#if curr.options.sync??>@Override</#if>
     public boolean extractResource(JSONObject json, EntityResourceBase resource) {
         boolean result = false;
 
