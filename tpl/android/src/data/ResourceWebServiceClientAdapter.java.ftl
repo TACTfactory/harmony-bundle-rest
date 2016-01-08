@@ -16,5 +16,10 @@ public class ResourceWebServiceClientAdapter
             WebServiceClientAdapterBase<? extends EntityResourceBase> webServiceClientAdapterBase) {
         super(webServiceClientAdapterBase);
     }
+
+    public ResourceWebServiceClientAdapter(Context context, String host,
+            Integer port, String scheme, String prefix) {
+        super(context, host, port, scheme, prefix);
+    }
 }
 
