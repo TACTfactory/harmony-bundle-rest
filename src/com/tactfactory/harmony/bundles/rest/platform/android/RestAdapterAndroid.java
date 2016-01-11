@@ -33,6 +33,8 @@ public class RestAdapterAndroid extends AndroidAdapter implements RestAdapter {
         List<String> libraries = new ArrayList<String>();
         libraries.add("bundle-rest-annotations.jar");
         libraries.add("httpmime-4.1.1.jar");
+        libraries.add("apache-httpcomponents-httpclient.jar");
+        libraries.add("http-core-4.1.jar");
 
         result.addAll(this.getLibrariesCopyFile(libraries));
 
@@ -54,13 +56,13 @@ public class RestAdapterAndroid extends AndroidAdapter implements RestAdapter {
 
         // Make Abstract Adapter Base general for all entities
         result.add(new SourceFile(
-                templatePath + "WebServiceClientAdapter.java", 
+                templatePath + "WebServiceClientAdapter.java",
                 filePath + "WebServiceClientAdapter.java",
                 false));
 
         // Make RestClient
         result.add(new SourceFile(
-                templatePath + "RestClient.java", 
+                templatePath + "RestClient.java",
                 filePath + "RestClient.java",
                 false));
 
