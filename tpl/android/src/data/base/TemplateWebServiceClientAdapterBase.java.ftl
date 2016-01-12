@@ -922,12 +922,10 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
         return this.motherAdapter.contentValuesToJson(values);
     }
 
-    @Override
     public String upload(EntityResourceBase item) {
         return this.motherAdapter.upload(item);
     }
 
-    @Override
     public boolean extractResource(JSONObject json, EntityResourceBase resource) {
         return this.motherAdapter.extractResource(json, resource);
     }

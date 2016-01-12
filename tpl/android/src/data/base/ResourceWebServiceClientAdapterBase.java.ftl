@@ -75,7 +75,7 @@ public abstract class ResourceWebServiceClientAdapterBase <#if sync>extends Sync
     </#if>
 
     <#if sync>/** Sync Date Format pattern. */
-    public static final String SYNC_UPDATE_DATE_FORMAT = "${curr.options.sync.updateDateFormatJava}";</#if>
+    public static final String SYNC_UPDATE_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";</#if>
 
     /** Rest Date Format pattern. */
     public static final String REST_UPDATE_DATE_FORMAT = "${curr.options.rest.dateFormat}";
