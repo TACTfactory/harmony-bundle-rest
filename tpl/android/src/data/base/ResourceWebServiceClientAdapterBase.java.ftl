@@ -1,3 +1,13 @@
+<#assign sync=false />
+<#assign rest=false />
+<#list entities?values as entity>
+    <#if entity.options.rest??>
+        <#assign rest=true />
+    </#if>
+    <#if entity.options.sync??>
+        <#assign sync=true />
+    </#if>
+</#list>
 <@header?interpret />
 <#assign curr = entities[current_entity] />
 
@@ -39,18 +49,19 @@ import ${project_namespace}.provider.contract.ResourceContract;
  * You should edit WebServiceClientAdapter class instead of this one or you will lose all your modifications.</i></b>
  * @param <T> Generic Type
  */
-public abstract class ResourceWebServiceClientAdapterBase extends SyncClientAdapterBase<EntityResourceBase>
-        implements SyncClientAdapterResource<EntityResourceBase> {
+public abstract class ResourceWebServiceClientAdapterBase <#if sync>extends SyncClientAdapterBase<EntityResourceBase>
+        implements SyncClientAdapterResource<EntityResourceBase> <#else>extends WebServiceClientAdapter<EntityResourceBase></#if>{
     /** Class Tag. */
     private static final String TAG = "ResourceWebServiceClientAdapterBase";
-    /** JSON_SERVERID attributes. */
-    protected static String JSON_SERVERID = "serverId";
     /** JSON Object Image pattern. */
     protected static String JSON_OBJECT_RESOURCE = "Resource";
     /** JSON_ID attributes. */
     protected static String JSON_ID = "id";
     /** JSON_PATH attributes. */
     protected static String JSON_PATH = "path";
+    <#if sync>
+    /** JSON_SERVERID attributes. */
+    protected static String JSON_SERVERID = "serverId";
     /** JSON_ORIGINALPATH attributes. */
     public static String JSON_ORIGINALPATH = "originalpath";
     /** JSON_SYNC_UDATE attributes. */
@@ -61,27 +72,13 @@ public abstract class ResourceWebServiceClientAdapterBase extends SyncClientAdap
     public static String JSON_MOBILE_ID = "mobileId";
     /** JSON_HASH attributes. */
     protected static String JSON_HASH = "hash";
+    </#if>
 
-    /** Sync Date Format pattern. */
-    public static final String SYNC_UPDATE_DATE_FORMAT = "${curr.options.sync.updateDateFormatJava}";
+    <#if sync>/** Sync Date Format pattern. */
+    public static final String SYNC_UPDATE_DATE_FORMAT = "${curr.options.sync.updateDateFormatJava}";</#if>
 
     /** Rest Date Format pattern. */
     public static final String REST_UPDATE_DATE_FORMAT = "${curr.options.rest.dateFormat}";
-
-   // private WebServiceClientAdapterBase<? extends EntityResourceBase> webServiceClientAdapterBase;
-
-    /**
-     * Constructor with overriden port and host.
-     *
-     * @param context The context
-     */
- /*   public ResourceWebServiceClientAdapterBase(
-            WebServiceClientAdapterBase<? extends EntityResourceBase> webServiceClientAdapterBase) {
-        super(webServiceClientAdapterBase.context, webServiceClientAdapterBase.host, webServiceClientAdapterBase.port,
-                webServiceClientAdapterBase.scheme, webServiceClientAdapterBase.prefix);
-
-        this.webServiceClientAdapterBase = webServiceClientAdapterBase;
-    }*/
 
     /**
      * Constructor with overriden port and host.
@@ -145,11 +142,11 @@ public abstract class ResourceWebServiceClientAdapterBase extends SyncClientAdap
     /** Resource REST Columns. */
     public static String[] REST_COLS = new String[]{
             ResourceContract.COL_ID,
-            ResourceContract.COL_PATH,
+            ResourceContract.COL_PATH<#if sync>,
             ResourceContract.COL_SERVERID,
             ResourceContract.COL_SYNC_DTAG,
             ResourceContract.COL_SYNC_UDATE,
-            ResourceContract.COL_HASH
+            ResourceContract.COL_HASH</#if>
     };
 
     public String getUri() {
@@ -160,9 +157,10 @@ public abstract class ResourceWebServiceClientAdapterBase extends SyncClientAdap
        JSONObject params = new JSONObject();
         try {
             params.put(ResourceWebServiceClientAdapter.JSON_ID,
-                    item.getServerId());
+                    item.get<#if sync>Server</#if>Id());
             params.put(ResourceWebServiceClientAdapter.JSON_PATH,
                     item.getPath());
+            <#if sync>
             params.put(ResourceWebServiceClientAdapter.JSON_MOBILE_ID,
                     item.getId());
             params.put(ResourceWebServiceClientAdapter.JSON_SYNC_DTAG,
@@ -182,6 +180,7 @@ public abstract class ResourceWebServiceClientAdapterBase extends SyncClientAdap
             }
 
             params.put(ResourceWebServiceClientAdapter.JSON_ORIGINALPATH, path);
+            </#if>
         } catch (JSONException e) {
             Log.e(TAG, e.getMessage());
         }
@@ -194,9 +193,10 @@ public abstract class ResourceWebServiceClientAdapterBase extends SyncClientAdap
 
         try {
             params.put(ResourceWebServiceClientAdapter.JSON_ID,
-                    values.get(ResourceContract.COL_SERVERID));
+                    values.get(ResourceContract.COL_<#if sync>SERVER</#if>ID));
             params.put(ResourceWebServiceClientAdapter.JSON_PATH,
                     values.get(ResourceContract.COL_PATH));
+            <#if sync>
             params.put(ResourceWebServiceClientAdapter.JSON_MOBILE_ID,
                     values.get(ResourceContract.COL_ID));
             params.put(ResourceWebServiceClientAdapter.JSON_SYNC_DTAG,
@@ -206,6 +206,7 @@ public abstract class ResourceWebServiceClientAdapterBase extends SyncClientAdap
                             ResourceContract.COL_SYNC_UDATE)).toString(SYNC_UPDATE_DATE_FORMAT));
             params.put(ResourceWebServiceClientAdapter.JSON_HASH,
                     values.get(ResourceContract.COL_HASH));
+            </#if>
         } catch (JSONException e) {
             Log.e(TAG, e.getMessage());
         }
@@ -270,7 +271,7 @@ public abstract class ResourceWebServiceClientAdapterBase extends SyncClientAdap
                     Verb.DELETE,
                     String.format(
                         this.getUri() + "/%s%s",
-                        resource.getServerId(),
+                        resource.get<#if sync>Server</#if>Id(),
                         REST_FORMAT),
                     null);
 
@@ -310,7 +311,7 @@ public abstract class ResourceWebServiceClientAdapterBase extends SyncClientAdap
                     Verb.GET,
                     String.format(
                         this.getUri() + "/%s%s",
-                        item.getServerId(),
+                        item.get<#if sync>Server</#if>Id(),
                         REST_FORMAT),
                     null);
 
@@ -328,10 +329,6 @@ public abstract class ResourceWebServiceClientAdapterBase extends SyncClientAdap
 
         return result;
     }
-
-//    public boolean extractCursor(JSONObject json, MatrixCursor cursor) {
-//        return this.webServiceClientAdapterBase.extractCursor(json, cursor);
-//    }
 
     public int insert(EntityResourceBase item) {
         int result = -1;
@@ -358,7 +355,7 @@ public abstract class ResourceWebServiceClientAdapterBase extends SyncClientAdap
                     result = 0;
                 } else {
                     item.setPath(originalPath);
-                    item.setSync_uDate(DateTime.now());
+                    <#if sync>item.setSync_uDate(DateTime.now());</#if>
                 }
             } catch (JSONException e) {
                 Log.e(TAG, e.getMessage());
@@ -372,14 +369,14 @@ public abstract class ResourceWebServiceClientAdapterBase extends SyncClientAdap
         int result = -1;
 
         if (item != null) {
-            if (item.getServerId() == null || item.getServerId() == 0) {
+            if (<#if sync>item.getServerId() == null || </#if>item.get<#if sync>Server</#if>Id() == 0) {
                 this.insert(item);
             } else  {
                 String response = this.invokeRequest(
                         Verb.PUT,
                         String.format(
                                 this.getUri() + "/%s%s",
-                                item.getServerId(),
+                                item.get<#if sync>Server</#if>Id(),
                                 REST_FORMAT),
                                 this.itemToJson(item));
 
@@ -402,7 +399,7 @@ public abstract class ResourceWebServiceClientAdapterBase extends SyncClientAdap
                                     ImageLoader.getInstance().getDiscCache());
                         } else {
                             item.setPath(originalPath);
-                            item.setSync_uDate(DateTime.now());
+                            <#if sync>item.setSync_uDate(DateTime.now());</#if>
                         }
                     } catch (JSONException e) {
                         Log.e(TAG, e.getMessage());
@@ -421,7 +418,7 @@ public abstract class ResourceWebServiceClientAdapterBase extends SyncClientAdap
         JSONObject json = this.itemToJson(item);
 
         try {
-            json.put(ImageUtils.IMAGE_KEY_JSON, item.getLocalPath());
+            json.put(ImageUtils.IMAGE_KEY_JSON, item.get<#if sync>Local</#if>Path());
         } catch (JSONException e) {
             Log.e(TAG, e.getMessage());
         }
@@ -431,7 +428,7 @@ public abstract class ResourceWebServiceClientAdapterBase extends SyncClientAdap
                 String.format(
                     "%s/upload/%s",
                     this.getUri(),
-                    item.getServerId(),
+                    item.get<#if sync>Server</#if>Id(),
                     REST_FORMAT),
                     json);
 
@@ -447,25 +444,26 @@ public abstract class ResourceWebServiceClientAdapterBase extends SyncClientAdap
 
         if (result) {
             try {
-                if (json.has(ResourceWebServiceClientAdapter.JSON_MOBILE_ID)
-                        && !json.isNull(ResourceWebServiceClientAdapter.JSON_MOBILE_ID)) {
-                    resource.setId(json.getInt(
-                               ResourceWebServiceClientAdapter.JSON_MOBILE_ID));
-                }
-
                 if (json.has(ResourceWebServiceClientAdapter.JSON_PATH)
                         && !json.isNull(ResourceWebServiceClientAdapter.JSON_PATH)) {
                     resource.setPath(
                             json.getString(ResourceWebServiceClientAdapter.JSON_PATH));
                 }
                 if (json.has(ResourceWebServiceClientAdapter.JSON_ID)) {
-                    int server_id = json.optInt(
+                    int id = json.optInt(
                               ResourceWebServiceClientAdapter.JSON_ID);
 
-                    if (server_id != 0) {
-                        resource.setServerId(server_id);
+                    if (id != 0) {
+                        resource.set<#if sync>Server</#if>Id(id);
                     }
                 }
+
+            <#if sync>
+            if (json.has(ResourceWebServiceClientAdapter.JSON_MOBILE_ID)
+                    && !json.isNull(ResourceWebServiceClientAdapter.JSON_MOBILE_ID)) {
+                resource.setId(json.getInt(
+                           ResourceWebServiceClientAdapter.JSON_MOBILE_ID));
+            }
 
             if (json.has(ResourceWebServiceClientAdapter.JSON_ORIGINALPATH)
                     && !json.isNull(ResourceWebServiceClientAdapter.JSON_ORIGINALPATH)) {
@@ -494,6 +492,7 @@ public abstract class ResourceWebServiceClientAdapterBase extends SyncClientAdap
                 }
                     resource.setHash(
                             json.getString(ResourceWebServiceClientAdapter.JSON_HASH));
+            </#if>
             } catch (JSONException e) {
                 Log.e(TAG, e.getMessage());
             }
@@ -520,14 +519,14 @@ public abstract class ResourceWebServiceClientAdapterBase extends SyncClientAdap
         JSONObject params = new JSONObject();
 
         try {
-            String path = resource.getLocalPath();
+            String path = resource.get<#if sync>Local</#if>Path();
 
             if (Strings.isNullOrEmpty(path)) {
                 path = resource.getPath();
             }
 
-            params.put(ResourceWebServiceClientAdapter.JSON_ID, resource.getServerId());
-            params.put(ResourceWebServiceClientAdapter.JSON_ORIGINALPATH, path);
+            params.put(ResourceWebServiceClientAdapter.JSON_ID, resource.get<#if sync>Server</#if>Id());
+            params.put(ResourceWebServiceClientAdapter.JSON_<#if sync>ORIGINAL</#if>PATH, path);
         } catch (JSONException e) {
             Log.e(TAG, e.getMessage());
         }
@@ -569,7 +568,7 @@ public abstract class ResourceWebServiceClientAdapterBase extends SyncClientAdap
         String id = json.optString(ResourceWebServiceClientAdapter.JSON_ID, null);
         if (id != null) {
             try {
-                String[] row = new String[7];
+                String[] row = new String[<#if sync>7<#else>2</#if>];
                 if (json.has(ResourceWebServiceClientAdapter.JSON_ID)) {
                     row[0] = json.getString(ResourceWebServiceClientAdapter.JSON_ID);
                 }
@@ -577,6 +576,7 @@ public abstract class ResourceWebServiceClientAdapterBase extends SyncClientAdap
                     row[1] = json.getString(ResourceWebServiceClientAdapter.JSON_PATH);
                 }
 
+                <#if sync>
                 if (json.has(ResourceWebServiceClientAdapter.JSON_SERVERID)) {
                     row[3] = json.getString(ResourceWebServiceClientAdapter.JSON_SERVERID);
                 }
@@ -589,6 +589,7 @@ public abstract class ResourceWebServiceClientAdapterBase extends SyncClientAdap
                 if (json.has(ResourceWebServiceClientAdapter.JSON_HASH)) {
                     row[6] = json.getString(ResourceWebServiceClientAdapter.JSON_HASH);
                 }
+                </#if>
 
                 cursor.addRow(row);
                 result = true;
@@ -610,11 +611,13 @@ public abstract class ResourceWebServiceClientAdapterBase extends SyncClientAdap
                 result = true;
             }
 
+            <#if sync>
             if (json.has(ResourceWebServiceClientAdapter.JSON_ORIGINALPATH)
                     && !json.isNull(ResourceWebServiceClientAdapter.JSON_ORIGINALPATH)) {
                 resource.setLocalPath(
                         json.getString(ResourceWebServiceClientAdapter.JSON_ORIGINALPATH));
             }
+            </#if>
         } catch (JSONException e) {
             Log.e(TAG, e.getMessage());
         }
@@ -622,8 +625,10 @@ public abstract class ResourceWebServiceClientAdapterBase extends SyncClientAdap
         return result;
     }
 
+    <#if sync>
     @Override
     public String getSyncUri() {
         return "/sync";
     }
+    </#if>
 }

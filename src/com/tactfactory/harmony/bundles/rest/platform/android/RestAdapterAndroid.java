@@ -84,6 +84,14 @@ public class RestAdapterAndroid extends AndroidAdapter implements RestAdapter {
                 filePath + "base/RestResource.java",
                 true));
 
+        templatePath = this.getTemplateUtilPath();
+        filePath = this.getUtilPath();
+
+        result.add(new SourceFile(
+                templatePath + "CacheProgressImageLoaderListener.java",
+                filePath + "CacheProgressImageLoaderListener.java",
+                false));
+
         return result;
     }
 

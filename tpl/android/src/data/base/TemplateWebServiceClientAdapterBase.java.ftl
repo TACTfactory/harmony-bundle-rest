@@ -896,8 +896,8 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
     }
 
     @Override
-    public boolean extract(JSONObject json, ${curr.name?cap_first} ${curr.name?cap_first}) {
-        return this.motherAdapter.extract(json, ${curr.name?cap_first});
+    public boolean extract(JSONObject json, ${curr.name?cap_first} ${curr.name?uncap_first}) {
+        return this.motherAdapter.extract(json, ${curr.name?uncap_first});
     }
 
     @Override
@@ -906,8 +906,8 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
     }
 
     @Override
-    public JSONObject itemToJson(${curr.name?cap_first} ${curr.name?cap_first}) {
-        return this.motherAdapter.itemToJson(${curr.name?cap_first});
+    public JSONObject itemToJson(${curr.name?cap_first} ${curr.name?uncap_first}) {
+        return this.motherAdapter.itemToJson(${curr.name?uncap_first});
     }
 
 
@@ -999,7 +999,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
 <#elseif (syncResource && curr.resource)>
     @Override
     public String getSyncUri() {
-        return "sync";
+        return "/sync";
     }
 </#if>
 }

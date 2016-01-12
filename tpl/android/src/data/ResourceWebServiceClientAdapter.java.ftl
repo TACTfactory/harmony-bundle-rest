@@ -1,9 +1,9 @@
 <@header?interpret />
 package ${data_namespace};
 
+import android.content.Context;
+
 import ${data_namespace}.base.ResourceWebServiceClientAdapterBase;
-import ${data_namespace}.base.WebServiceClientAdapterBase;
-import ${entity_namespace}.base.EntityResourceBase;
 
 /**
  * Class for all your ResourceWebServiceClient adapters.
@@ -11,11 +11,6 @@ import ${entity_namespace}.base.EntityResourceBase;
  */
 public class ResourceWebServiceClientAdapter
         extends ResourceWebServiceClientAdapterBase {
-
-    public ResourceWebServiceClientAdapter(
-            WebServiceClientAdapterBase<? extends EntityResourceBase> webServiceClientAdapterBase) {
-        super(webServiceClientAdapterBase);
-    }
 
     public ResourceWebServiceClientAdapter(Context context, String host,
             Integer port, String scheme, String prefix) {
