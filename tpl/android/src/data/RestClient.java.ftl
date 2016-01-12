@@ -1,6 +1,7 @@
 <@header?interpret />
 package ${data_namespace};
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -18,11 +19,12 @@ import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntity;
-import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.ByteArrayBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -36,10 +38,13 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
 import android.text.TextUtils;
 import android.util.Log;
 
 import ${project_namespace}.${project_name?cap_first}Application;
+import ${project_namespace}.harmony.util.ImageUtils;
 
 /**
  * Rest Client Class.
@@ -47,7 +52,7 @@ import ${project_namespace}.${project_name?cap_first}Application;
 public class RestClient {
     /** RestClient TAG. */
     private final static String TAG = "WebService";
-    
+
     /** Scheme HTTP. */
     public final static String SCHEME_HTTP = "http";
     /** Scheme HTTPS. */
@@ -94,14 +99,14 @@ public class RestClient {
      */
     public RestClient(String serviceName, int port, String scheme) {
         HttpParams myParams = new BasicHttpParams();
-        
+
         // Set timeout
         myParams.setParameter(CoreProtocolPNames.PROTOCOL_VERSION,
             HttpVersion.HTTP_1_1);
         HttpConnectionParams.setConnectionTimeout(myParams, 30000);
         HttpConnectionParams.setSoTimeout(myParams, 20000);
         HttpProtocolParams.setUseExpectContinue(myParams, true);
-        
+
         this.httpClient = new DefaultHttpClient(myParams);
         this.serviceName = serviceName;
         this.port = port;
@@ -117,7 +122,7 @@ public class RestClient {
         this.login = login;
         this.password = password;
     }
-    
+
     /**
      * Get Session Index.
      * @return sessionId
@@ -125,7 +130,7 @@ public class RestClient {
     public String getSessionId() {
         return this.sessionId;
     }
-    
+
     /**
      * Get Token.
      * @return CSRFtoken
@@ -133,7 +138,7 @@ public class RestClient {
     public String getCSRFToken() {
         return this.CSRFtoken;
     }
-    
+
     /**
      * Set CSRFtoken.
      * @param CSRFtoken Token to set
@@ -141,7 +146,7 @@ public class RestClient {
     public void setCSRFtoken(String CSRFtoken) {
         this.CSRFtoken = CSRFtoken;
     }
-    
+
     /**
      * Get Request status code.
      * @return statusCode
@@ -149,7 +154,7 @@ public class RestClient {
     public int getStatusCode() {
         return this.statusCode;
     }
-    
+
     /**
      * Send REST request on WebService.
      * @param verb {@link Verb}
@@ -162,7 +167,7 @@ public class RestClient {
             throws Exception {
         return this.invoke(verb, path, jsonParams, null);
     }
-    
+
     /**
      * Send REST request on WebService.
      * @param verb {@link Verb}
@@ -178,57 +183,57 @@ public class RestClient {
         long startTime = 0, endTime = 0;
         String result = null;
         this.statusCode = 404;
-        
+
         HttpResponse response = null;
         HttpHost targetHost = new HttpHost(
             this.serviceName, this.port, this.scheme);
-        
+
         //HttpEntity entity = this.buildMultipartEntity(params);
         HttpEntity entity = null;
-        
+
         if (jsonParams != null && jsonParams.has("file")) {
             entity = this.buildMultipartEntity(jsonParams);
         } else {
             entity = this.buildJsonEntity(jsonParams);
         }
-        
+
         HttpRequest request = this.buildHttpRequest(
             verb, path, entity, headers);
-        
+
         if (this.login != null && this.password != null) {
             request.addHeader(BasicScheme.authenticate(
                 new UsernamePasswordCredentials(this.login, this.password),
                 "UTF-8", false));
         }
-        
+
         if (!TextUtils.isEmpty(this.CSRFtoken)) {
             request.addHeader("X-CSRF-Token", this.CSRFtoken);
         }
-        
+
         try {
             if (debugWeb) {
                 startTime = System.currentTimeMillis();
             }
-            
+
             response = this.httpClient.execute(targetHost, request);
             this.statusCode = response.getStatusLine().getStatusCode();
-            
+
             this.readHeader(response);
-            
+
             if (debugWeb) {
                 endTime = System.currentTimeMillis();
             }
-            
+
             // we assume that the response body contains the error message
             HttpEntity resultEntity = response.getEntity();
-            
+
             if (resultEntity != null) {
                 result = EntityUtils.toString(resultEntity, HTTP.UTF_8);
             }
-            
+
             if (debugWeb && ${project_name?cap_first}Application.DEBUG) {
                 final long endTime2 = System.currentTimeMillis();
-                
+
                 //System.out.println(
                 //    "The REST response is:\n " + serviceResponse);
                 Log.d(TAG, "Time taken in REST operation : "
@@ -236,34 +241,34 @@ public class RestClient {
                 Log.d(TAG, "Time taken in service response construction : "
                     + (endTime2 - endTime) + " ms.");
             }
-        
+
         } catch (ConnectTimeoutException e) {
             Log.e(TAG, "Connection timed out. The host may be unreachable.");
             e.printStackTrace();
-            
+
             throw new Exception(e.getMessage());
         } catch (IOException e) {
             Log.e(TAG, e.getCause().getMessage());
-            
+
             throw new Exception(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            
+
             throw e;
         } finally {
             this.httpClient.getConnectionManager().shutdown();
         }
-        
+
         return result;
     }
-    
+
     /**
      * Clear all cookies on CookieStore.
      */
     public void clearCookies() {
         this.httpClient.getCookieStore().clear();
     }
-    
+
     /**
      * Check if HTTP client is not null and show message if is null
      * show nothing.
@@ -278,7 +283,7 @@ public class RestClient {
             System.out.println("Your App Name Here" + e);
         }
     }
-    
+
     /**
      * Read Header and set value in token.
      * @param responce Response header to read
@@ -288,7 +293,7 @@ public class RestClient {
             this.CSRFtoken = responce.getFirstHeader("csrf-token").getValue();
         }
     }
-    
+
     /**
      * Build {@link HttpEntity} with {@link JSONObject}.
      * @param json {@link JSONObject} To convert
@@ -296,7 +301,7 @@ public class RestClient {
      */
     protected HttpEntity buildJsonEntity(JSONObject json) {
         StringEntity entity = null;
-        
+
         if (json != null) {
             try {
                 entity = new StringEntity(json.toString(), "UTF-8");
@@ -305,10 +310,10 @@ public class RestClient {
                 e.printStackTrace();
             }
         }
-        
+
         return entity;
     }
-    
+
     /**
      * Build {@link MultipartEntity} with JSON parameter.
      * @param jsonParams JSON parameter to convert {@link JSONObject}
@@ -317,27 +322,33 @@ public class RestClient {
     protected HttpEntity buildMultipartEntity(JSONObject jsonParams) {
         MultipartEntity entity = new MultipartEntity(
             HttpMultipartMode.BROWSER_COMPATIBLE);
-        
+
         try {
             String path = jsonParams.getString("file");
-    
+
             if (debugWeb && ${project_name?cap_first}Application.DEBUG) {
                 Log.d(TAG, "key : file value :" + path);
             }
-            
+
             if (!TextUtils.isEmpty(path)) {
-                // File entry
                 File file = new File(path);
-                FileBody fileBin = new FileBody(file, "application/octet");
+                byte[] data = null;
+                String fileName = null;
+
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                Bitmap bitmap = ImageUtils.resize(file, 1024);
+
+                bitmap.compress(CompressFormat.PNG, 100, bos);
+
+                fileName = file.getName();
+                data = bos.toByteArray();
+
+                ByteArrayBody fileBin = new ByteArrayBody(
+                        data, "application/octet", fileName);
                 entity.addPart("file", fileBin);
-                
+
                 try {
-                    entity.addPart(
-                            "file",
-                            new StringBody(
-                                path,
-                                "text/plain",
-                                Charset.forName( HTTP.UTF_8 )));
+                    entity.addPart("file", new StringBody(path, "text/plain", Charset.forName(HTTP.UTF_8)));
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                     Log.e(TAG, e.getMessage());
@@ -347,10 +358,10 @@ public class RestClient {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        
+
         return entity;
     }
-    
+
     /**
      * Build HTTP request and return result.
      * @param verb {@link Verb}
@@ -362,12 +373,12 @@ public class RestClient {
     protected HttpRequest buildHttpRequest(Verb verb, String path,
             HttpEntity httpEntity, List<Header> headers) {
         HttpRequest result;
-        
+
         if (verb == Verb.GET) {
             result = new HttpGet(path);
         } else if (verb == Verb.POST) {
             result = new HttpPost(path);
-            
+
             if (httpEntity != null) {
                 ((HttpPost)result).setEntity(httpEntity);
             }
@@ -375,12 +386,12 @@ public class RestClient {
             result = new HttpDelete(path);
         } else {
             result = new HttpPut(path);
-            
+
             if (httpEntity != null) {
                 ((HttpPut)result).setEntity(httpEntity);
             }
         }
-        
+
         if (result !=null) {
             if (headers != null) {
                 for (Header header : headers) {
@@ -388,10 +399,17 @@ public class RestClient {
                 }
             }
         }
-        
+
         return result;
     }
-    
+
+    /**
+     * Shutdown the {@link ClientConnectionManager}.
+     */
+    public void shutdownHttpClient() {
+        this.httpClient.getConnectionManager().shutdown();
+    }
+
     /**
      * Request Constants.
      * <li> HTTP </li>
@@ -415,7 +433,7 @@ public class RestClient {
         /** Carriage Return Scheme. */
         public static final String CARRIAGE_RETURN = "\r\n";
     }
-    
+
     /**
      * JSON rest method.
      * <li> GET </li>
