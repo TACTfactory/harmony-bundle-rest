@@ -37,12 +37,8 @@ public class RestAdapterAndroid extends AndroidAdapter implements RestAdapter {
         libraries.add("httpcore-4.0.1.jar");
 
         result.addAll(this.getLibrariesCopyFile(libraries));
-
-        result.add(new ManifestPermissionAndroid(
-                this, ManifestUpdater.Permissions.INTERNET));
-
-        result.add(new ManifestPermissionAndroid(
-                this, ManifestUpdater.Permissions.ACCESS_NETWORK_STATE));
+        result.add(new ManifestPermissionAndroid(ManifestUpdater.Permissions.INTERNET));
+        result.add(new ManifestPermissionAndroid(ManifestUpdater.Permissions.ACCESS_NETWORK_STATE));
 
         String templatePath = this.getTemplateSourceProviderPath();
         String filePath = this.getSourcePath()
