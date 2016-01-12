@@ -375,7 +375,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
 
     /**
      * Retrieve one ${curr.name}. Uses the route : ${curr.options.rest.uri}/%id%.
-     * @param ${curr.name?uncap_first} : The ${curr.name} to retrieve (set the ID)
+     * @param ${curr.name?uncap_first} : The ${curr.name} to retrieve (set the <#if (curr.options.sync??)>server</#if> ID)
      * @return -1 if an error has occurred. 0 if not.
      */
     public Cursor query(<#list curr_ids as id>final ${FieldsUtils.getJavaType(id)} <#if (curr.options.sync??)>server${id.name?cap_first}<#else>${id.name}</#if><#if (id_has_next)>,
