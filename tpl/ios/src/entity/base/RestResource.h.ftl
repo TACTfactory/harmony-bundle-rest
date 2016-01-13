@@ -1,5 +1,7 @@
 <@header?interpret />
+
 #import <Foundation/Foundation.h>
+#import "Resource.h"
 
 @protocol RestResource <Resource>
 
