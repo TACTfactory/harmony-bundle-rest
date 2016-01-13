@@ -2,28 +2,24 @@ package com.tactfactory.harmony.bundles.rest.platform.android.updater;
 
 import java.io.File;
 
-import com.tactfactory.harmony.meta.ClassMetadata;
+import com.tactfactory.harmony.generator.BaseGenerator;
 import com.tactfactory.harmony.meta.EntityMetadata;
-import com.tactfactory.harmony.platform.android.AndroidAdapter;
+import com.tactfactory.harmony.platform.IAdapter;
 import com.tactfactory.harmony.updater.IExecutor;
-import com.tactfactory.harmony.utils.ConsoleUtils;
 import com.tactfactory.harmony.utils.TactFileUtils;
 
 public class AddImplementsRestAndroid implements IExecutor {
 
-    private final AndroidAdapter adapter;
     private final EntityMetadata entity;
 
-    public AddImplementsRestAndroid(
-            AndroidAdapter adapter, EntityMetadata entity) {
-        this.adapter = adapter;
+    public AddImplementsRestAndroid(EntityMetadata entity) {
         this.entity = entity;
     }
 
     @Override
-    public void execute() {
+    public void execute(BaseGenerator<? extends IAdapter> generator) {
         if (this.entity.isResource()) {
-            this.addExtendResource();
+            this.addExtendResource(generator);
         }
     }
 
@@ -31,17 +27,13 @@ public class AddImplementsRestAndroid implements IExecutor {
      * Add inheritance to java Entity and complete parcelable methods.
      * @param cm The entity metadata
      */
-    private void addExtendResource() {
-        boolean replaceImplement = false;
-        boolean addImplement = true;
-
+    private void addExtendResource(BaseGenerator<? extends IAdapter> generator) {
         final String entityName = this.entity.getName();
         final File entityFile =
-                new File(this.adapter.getSourcePath()
-                        + this.adapter.getApplicationMetadata().getProjectNameSpace()
+                new File(generator.getAdapter().getSourcePath()
+                        + generator.getAdapter().getApplicationMetadata().getProjectNameSpace()
                         + "/entity/" + entityName + ".java");
         final StringBuffer sb = TactFileUtils.fileToStringBuffer(entityFile);
-        final String extendsString;
         final int indexEntityBase = this.indexOf(sb, "extends", false);
         final String classDeclaration = "class " + entityName;
         String classExtends;
@@ -69,9 +61,9 @@ public class AddImplementsRestAndroid implements IExecutor {
                     sb.indexOf("\n", packageIndex) + 1;
             sb.insert(lineAfterPackageIndex,
                     String.format("%nimport %s.%s.base.EntityResourceBase;%n",
-                            this.adapter.getApplicationMetadata()
-                                    .getProjectNameSpace().replace('/', '.'),
-                            this.adapter.getModel()));
+                            generator.getAdapter().getApplicationMetadata()
+                            .getProjectNameSpace().replace('/', '.'),
+                            generator.getAdapter().getModel()));
         }
 
         TactFileUtils.stringBufferToFile(sb, entityFile);

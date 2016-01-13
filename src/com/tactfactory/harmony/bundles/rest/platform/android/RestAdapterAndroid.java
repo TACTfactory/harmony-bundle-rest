@@ -168,7 +168,7 @@ public class RestAdapterAndroid extends AndroidAdapter implements RestAdapter {
         List<IUpdater> result = new ArrayList<IUpdater>();
 
         if (!entity.isInternal()) {
-            result.add(new AddImplementsRestAndroid(this, entity));
+            result.add(new AddImplementsRestAndroid(entity));
         }
 
         return result;
