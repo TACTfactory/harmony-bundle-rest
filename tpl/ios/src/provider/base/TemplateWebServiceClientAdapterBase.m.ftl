@@ -309,7 +309,7 @@
             }
                         </#if><#elseif (curr.options.sync?? && field.name=="serverId")><#if !InheritanceUtils.isExtended(curr)>
             if (![self jsonIsNull:json withProperty:[${field.owner}WebServiceClientAdapter JSON_ID]]) {
-                NSNumber *server_id = [NSNumberFormatter new]
+                NSNumber *server_id = [[NSNumberFormatter new]
                 numberFromString:[json objectForKey:[${field.owner}WebServiceClientAdapter JSON_ID]]];
 
                 if (server_id != 0) {
@@ -365,7 +365,7 @@
                 [${field.relation.targetEntity?uncap_first}WebService extract:[json objectForKey:[${field.owner}WebServiceClientAdapter ${alias(field.name)}]]
                                 withItem:${field.relation.targetEntity?uncap_first}];
                                 <#if (curr.options.sync??)>
-                item.${field.name?uncap_first} = [sqlAdapter getByServerID:${field.relation.targetEntity}.serverId];
+                item.${field.name?uncap_first} = [${field.relation.targetEntity?uncap_first}sqlAdapter getByServerID:${field.relation.targetEntity}.serverId];
                                 <#else>
                 item.${field.name?uncap_first} = [${field.relation.targetEntity?uncap_first}SqlAdapter getByID:${field.relation.targetEntity?uncap_first}.id];
                                 </#if>
