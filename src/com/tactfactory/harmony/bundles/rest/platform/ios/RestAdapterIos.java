@@ -95,6 +95,12 @@ public class RestAdapterIos extends IosAdapter implements RestAdapter {
                 templatePath + "Reachability.m", 
                 filePath + "Reachability.m",
                 false));
+
+        result.add(new SourceFile(
+                this.getTemplateSourceEntityBasePath() + "RestResource.h", 
+                this.getSourcePath() + "/Entity/Base/RestResource.h",
+                true));
+
         return result;
     }
 
