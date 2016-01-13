@@ -121,6 +121,13 @@
         </#if>
     </#if>
 </#list>
+<#assign syncResource=false />
+<#list entities?values as entity>
+    <#if entity.options.sync??>
+        <#assign syncResource=true />
+    </#if>
+</#list>
+
 package ${curr.data_namespace}.base;
 
 import java.util.List;
@@ -149,6 +156,12 @@ import android.database.MatrixCursor;
 
 import ${data_namespace}.*;
 import ${curr.namespace}.entity.${curr.name};
+<#if (curr.resource==true)>
+import ${curr.namespace}.entity.base.EntityResourceBase;
+import ${curr.namespace}.harmony.util.ImageUtils;
+import ${data_namespace}.ResourceWebServiceClientAdapter;
+
+</#if>
 import ${data_namespace}.RestClient.Verb;
 import ${project_namespace}.provider.contract.${curr.name?cap_first}Contract;
 <#if InheritanceUtils.isExtended(curr)>import ${project_namespace}.provider.contract.${curr.inheritance.superclass.name?cap_first}Contract;</#if>
@@ -167,7 +180,7 @@ ${ImportUtils.importRelatedEnums(curr)}
 import ${curr.namespace}.entity.base.EntityBase;
 </#if>
 
-<#if (curr.options.sync??)>
+<#if (curr.options.sync?? || (syncResource && curr.resource))>
     <#assign extends="SyncClientAdapterBase<${curr.name?cap_first}>" />
 <#else>
     <#assign extends="WebServiceClientAdapter<${curr.name?cap_first}>" />
@@ -179,10 +192,13 @@ import ${curr.namespace}.entity.base.EntityBase;
  *
  */
 public abstract class ${curr.name}WebServiceClientAdapterBase
-        extends ${extends} {
+        extends ${extends}<#if (curr.resource) && syncResource> implements SyncClientAdapterResource<${curr.name?cap_first}></#if> {
     /** ${curr.name}WebServiceClientAdapterBase TAG. */
     protected static final String TAG = "${curr.name}WSClientAdapter";
 
+<#if curr.resource>
+    private final ResourceWebServiceClientAdapter motherAdapter;
+</#if>
     /** JSON Object ${curr.name} pattern. */
     protected static String ${alias(curr.name, true)} = "${curr.name}";
     <#list curr.fields?values as field>
@@ -199,7 +215,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
     </#list>
     <#if (curr.options.sync??)>
     /** JSON mobile id. */
-    protected static String JSON_MOBILE_ID = "mobile_id";
+    protected static String JSON_MOBILE_ID = "mobileId";
 
     /** Sync Date Format pattern. */
     public static final String SYNC_UPDATE_DATE_FORMAT = "${curr.options.sync.updateDateFormatJava}";
@@ -283,6 +299,13 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
             new ${curr.inheritance.superclass.name}WebServiceClientAdapter(
                 context, host, port, scheme, prefix);
         </#if>
+
+        <#if curr.resource>this.motherAdapter = new ResourceWebServiceClientAdapter(context, host, port, scheme, prefix) {
+            @Override
+            public String getUri() {
+                return ${curr.name?cap_first}WebServiceClientAdapterBase.this.getUri();
+            }
+        };</#if>
     }
 
     /**
@@ -312,6 +335,14 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
         return result;
     }
 
+    /**
+     * @return the URI.
+     */
+    public String getUri() {
+        return "${curr.options.rest.uri?lower_case}";
+    }
+
+<#if !curr.resource>
     /**
      * Retrieve one ${curr.name}. Uses the route : ${curr.options.rest.uri}/%id%.
      * @param ${curr.name?uncap_first} : The ${curr.name} to retrieve (set the ID)
@@ -372,13 +403,6 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
     }
 
     /**
-     * @return the URI.
-     */
-    public String getUri() {
-        return "${curr.options.rest.uri}";
-    }
-
-    /**
      * Update a ${curr.name}. Uses the route : ${curr.options.rest.uri}/%id%.
      * @param ${curr.name?uncap_first} : The ${curr.name} to update
      * @return -1 if an error has occurred. 0 if not.
@@ -394,7 +418,13 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
                     itemToJson(${curr.name?uncap_first}));
 
         if (this.isValidResponse(response) && this.isValidRequest()) {
-            result = 0;
+            try {
+                JSONObject json = new JSONObject(response);
+                this.extract(json, ${curr.name?uncap_first});
+                result = 0;
+            } catch (JSONException e) {
+                Log.e(TAG, e.getMessage());
+            }
         }
 
         return result;
@@ -677,64 +707,6 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
     }
 
     /**
-     * Extract a list of <T> from a JSONObject describing an array of <T> given the array name.
-     * @param json The JSONObject describing the array of <T>
-     * @param items The returned list of <T>
-     * @param paramName The name of the array
-     * @return The number of <T> found in the JSON
-     */
-    public int extractItems(JSONObject json,
-            String paramName,
-            List<${curr.name}> items) throws JSONException {
-
-        return this.extractItems(json, paramName, items, 0);
-    }
-
-    /**
-     * Extract a list of <T> from a JSONObject describing an array of <T> given the array name.
-     * @param json The JSONObject describing the array of <T>
-     * @param items The returned list of <T>
-     * @param paramName The name of the array
-     * @param limit Limit the number of items to parse
-     * @return The number of <T> found in the JSON
-     */
-    public int extractItems(JSONObject json,
-            String paramName,
-            List<${curr.name}> items,
-            int limit) throws JSONException {
-
-        JSONArray itemArray = json.optJSONArray(paramName);
-
-        int result = -1;
-
-        if (itemArray != null) {
-            int count = itemArray.length();
-
-            if (limit > 0 && count > limit) {
-                count = limit;
-            }
-
-            for (int i = 0; i < count; i++) {
-                JSONObject jsonItem = itemArray.getJSONObject(i);
-                ${curr.name} item = new ${curr.name}();
-                this.extract(jsonItem, item);
-                if (item!=null) {
-                    synchronized (items) {
-                        items.add(item);
-                    }
-                }
-            }
-        }
-
-        if (!json.isNull("Meta")) {
-            JSONObject meta = json.optJSONObject("Meta");
-            result = meta.optInt("nbt",0);
-        }
-
-        return result;
-    }
-
-    /**
      * Convert a ${curr.name} to a JSONObject.
      * @param ${curr.name?uncap_first} The ${curr.name} to convert
      * @return The converted ${curr.name}
@@ -889,10 +861,143 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
         return params;
     }
 
+<#else>
+    @Override
+    public int get(${curr.name?cap_first} ${curr.name?cap_first}) {
+        return this.motherAdapter.get(${curr.name?cap_first});
+    }
+
+    /**
+     * Retrieve one Image. Uses the route : image/%id%.
+     * @param image : The Image to retrieve (set the ID)
+     * @return -1 if an error has occurred. 0 if not.
+     */
+    public Cursor query(final int id) {
+        return this.motherAdapter.query(id);
+    }
+
+    @Override
+    public int insert(${curr.name?cap_first} item) {
+        return this.motherAdapter.insert(item);
+    }
+
+    @Override
+    public int update(${curr.name?cap_first} ${curr.name?cap_first}) {
+        return this.motherAdapter.update(${curr.name?cap_first});
+    }
+
+    @Override
+    public int delete(${curr.name?cap_first} ${curr.name?cap_first}) {
+        return this.motherAdapter.delete(${curr.name?cap_first});
+    }
+
+    public boolean isValidJSON(JSONObject json) {
+        return this.motherAdapter.isValidJSON(json);
+    }
+
+    @Override
+    public boolean extract(JSONObject json, ${curr.name?cap_first} ${curr.name?uncap_first}) {
+        return this.motherAdapter.extract(json, ${curr.name?uncap_first});
+    }
+
+    @Override
+    public boolean extractCursor(JSONObject json, MatrixCursor cursor) {
+        return this.motherAdapter.extractCursor(json, cursor);
+    }
+
+    @Override
+    public JSONObject itemToJson(${curr.name?cap_first} ${curr.name?uncap_first}) {
+        return this.motherAdapter.itemToJson(${curr.name?uncap_first});
+    }
+
+
+    @Override
+    public JSONObject itemIdToJson(${curr.name?cap_first} item) {
+        return this.motherAdapter.itemIdToJson(item);
+    }
+
+
+    @Override
+    public JSONObject contentValuesToJson(ContentValues values) {
+        return this.motherAdapter.contentValuesToJson(values);
+    }
+
+    public String upload(EntityResourceBase item) {
+        return this.motherAdapter.upload(item);
+    }
+
+    public boolean extractResource(JSONObject json, EntityResourceBase resource) {
+        return this.motherAdapter.extractResource(json, resource);
+    }
+</#if>
+
+    /**
+     * Extract a list of <T> from a JSONObject describing an array of <T> given the array name.
+     * @param json The JSONObject describing the array of <T>
+     * @param items The returned list of <T>
+     * @param paramName The name of the array
+     * @param limit Limit the number of items to parse
+     * @return The number of <T> found in the JSON
+     */
+    public int extractItems(JSONObject json,
+            String paramName,
+            List<${curr.name}> items,
+            int limit) throws JSONException {
+
+        JSONArray itemArray = json.optJSONArray(paramName);
+
+        int result = -1;
+
+        if (itemArray != null) {
+            int count = itemArray.length();
+
+            if (limit > 0 && count > limit) {
+                count = limit;
+            }
+
+            for (int i = 0; i < count; i++) {
+                JSONObject jsonItem = itemArray.getJSONObject(i);
+                ${curr.name} item = new ${curr.name}();
+                this.extract(jsonItem, item);
+                if (item!=null) {
+                    synchronized (items) {
+                        items.add(item);
+                    }
+                }
+            }
+        }
+
+        if (!json.isNull("Meta")) {
+            JSONObject meta = json.optJSONObject("Meta");
+            result = meta.optInt("nbt",0);
+        }
+
+        return result;
+    }
+
+    /**
+     * Extract a list of <T> from a JSONObject describing an array of <T> given the array name.
+     * @param json The JSONObject describing the array of <T>
+     * @param items The returned list of <T>
+     * @param paramName The name of the array
+     * @return The number of <T> found in the JSON
+     */
+    public int extractItems(JSONObject json,
+            String paramName,
+            List<${curr.name}> items) throws JSONException {
+
+        return this.extractItems(json, paramName, items, 0);
+    }
+
 <#if (curr.options.sync??)>
     @Override
     public String getSyncUri() {
         return "${curr.options.sync.syncUri}";
+    }
+<#elseif (syncResource && curr.resource)>
+    @Override
+    public String getSyncUri() {
+        return "/sync";
     }
 </#if>
 }

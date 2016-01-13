@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.tactfactory.harmony.bundles.rest.platform.RestAdapter;
+import com.tactfactory.harmony.bundles.rest.platform.android.updater.AddImplementsRestAndroid;
 import com.tactfactory.harmony.generator.androidxml.ManifestUpdater;
 import com.tactfactory.harmony.meta.EntityMetadata;
 import com.tactfactory.harmony.platform.android.AndroidAdapter;
@@ -37,14 +38,10 @@ public class RestAdapterAndroid extends AndroidAdapter implements RestAdapter {
         libraries.add("httpcore-4.0.1.jar");
 
         result.addAll(this.getLibrariesCopyFile(libraries));
+        result.add(new ManifestPermissionAndroid(ManifestUpdater.Permissions.INTERNET));
+        result.add(new ManifestPermissionAndroid(ManifestUpdater.Permissions.ACCESS_NETWORK_STATE));
 
-        result.add(new ManifestPermissionAndroid(
-                this, ManifestUpdater.Permissions.INTERNET));
-
-        result.add(new ManifestPermissionAndroid(
-                this, ManifestUpdater.Permissions.ACCESS_NETWORK_STATE));
-
-        String templatePath = this.getTemplateSourceProviderPath();
+        String templatePath = this.getTemplateSourceDataPath();
         String filePath = this.getSourcePath()
                 + this.getApplicationMetadata().getProjectNameSpace()
                 + "/" + this.getData() + "/";
@@ -60,18 +57,39 @@ public class RestAdapterAndroid extends AndroidAdapter implements RestAdapter {
                 filePath + "WebServiceClientAdapter.java",
                 false));
 
-        // Make RestClient
+        result.add(new SourceFile(
+                templatePath + "base/ResourceWebServiceClientAdapterBase.java",
+                filePath + "base/ResourceWebServiceClientAdapterBase.java",
+                true));
+
+        result.add(new SourceFile(
+                templatePath + "ResourceWebServiceClientAdapter.java",
+                filePath + "ResourceWebServiceClientAdapter.java",
+                false));
+
         result.add(new SourceFile(
                 templatePath + "RestClient.java",
                 filePath + "RestClient.java",
                 false));
 
-        // Make RestClientBase
+        templatePath = this.getTemplateSourceEntityBasePath();
+        filePath = this.getSourcePath()
+                + this.getApplicationMetadata().getProjectNameSpace()
+                + "/" + this.getModel() + "/";
+
         result.add(new SourceFile(
-                templatePath + "base/RestClientBase.java", 
-                filePath + "base/RestClientBase.java",
+                templatePath + "RestResource.java",
+                filePath + "base/RestResource.java",
                 true));
-        
+
+        templatePath = this.getTemplateUtilPath();
+        filePath = this.getUtilPath();
+
+        result.add(new SourceFile(
+                templatePath + "CacheProgressImageLoaderListener.java",
+                filePath + "CacheProgressImageLoaderListener.java",
+                false));
+
         return result;
     }
 
@@ -79,7 +97,7 @@ public class RestAdapterAndroid extends AndroidAdapter implements RestAdapter {
     public List<IUpdater> getRestEntityUpdaters(EntityMetadata entity) {
         List<IUpdater> result = new ArrayList<IUpdater>();
 
-        String templatePath = this.getTemplateSourceProviderPath();
+        String templatePath = this.getTemplateSourceDataPath();
         String filePath = this.getSourcePath()
                 + this.getApplicationMetadata().getProjectNameSpace()
                 + "/" + this.getData() + "/";
@@ -141,6 +159,17 @@ public class RestAdapterAndroid extends AndroidAdapter implements RestAdapter {
                 String.format("%s%sTestWS.java",
                         filePath, entity.getName()),
                         false));
+
+        return result;
+    }
+
+    @Override
+    public List<IUpdater> getEntityResourceUpdaters(EntityMetadata entity) {
+        List<IUpdater> result = new ArrayList<IUpdater>();
+
+        if (!entity.isInternal()) {
+            result.add(new AddImplementsRestAndroid(entity));
+        }
 
         return result;
     }

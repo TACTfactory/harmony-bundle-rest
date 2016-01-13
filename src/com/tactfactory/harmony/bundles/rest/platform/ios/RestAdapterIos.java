@@ -208,4 +208,10 @@ public class RestAdapterIos extends IosAdapter implements RestAdapter {
         return result;
     }
 
+    @Override
+    public List<IUpdater> getEntityResourceUpdaters(EntityMetadata entity) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

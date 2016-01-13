@@ -13,6 +13,7 @@ import java.util.List;
 import com.tactfactory.harmony.bundles.rest.platform.RestAdapter;
 import com.tactfactory.harmony.generator.BaseGenerator;
 import com.tactfactory.harmony.generator.ConfigGenerator;
+import com.tactfactory.harmony.generator.EntityGenerator;
 import com.tactfactory.harmony.generator.TagConstant;
 import com.tactfactory.harmony.generator.TranslationGenerator;
 import com.tactfactory.harmony.meta.ConfigMetadata;
@@ -30,7 +31,7 @@ public class RestGenerator extends BaseGenerator<RestAdapter> {
     /**
      * Constructor.
      * @param adapter The used adapter.
-     * @throws Exception 
+     * @throws Exception
      */
     public RestGenerator(final RestAdapter adapter) throws Exception {
         super(adapter);
@@ -41,9 +42,27 @@ public class RestGenerator extends BaseGenerator<RestAdapter> {
      * Generates everything.
      */
     public final void generateAll() {
+        List<IUpdater> updaters = null;
+
+        Iterable<EntityMetadata> entities =
+                this.getAppMetas().getEntities().values();
+
+        for (final EntityMetadata entity : entities) {
+//            if (!entity.getFields().isEmpty()
+//                    && entity.getOptions().containsKey("sync")) {
+                this.getDatamodel().put(
+                        TagConstant.CURRENT_ENTITY,
+                        entity.getName());
+
+                updaters = this.getAdapter().getEntityResourceUpdaters(entity);
+                this.processUpdater(updaters);
+//            }
+        }
+
         this.generateWSAdapter();
 
         try {
+            new EntityGenerator(this.getAdapter()).generateAllBase();
             new TestWSGenerator(this.getAdapter()).generateAll();
 
         } catch (final Exception e) {
