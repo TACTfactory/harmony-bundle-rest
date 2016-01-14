@@ -14,6 +14,14 @@
             <#case "int">
                 <#return "Int" />
                 <#break />
+            <#case "short">
+                <#return "Int" />
+                <#break />
+            <#case "byte">
+            <#case "char">
+            <#case "Character">
+                <#return "String" />
+                <#break />
             <#case "float">
                 <#return "Float" />
                 <#break />
@@ -599,6 +607,15 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
                     ${curr.name?uncap_first}.set${field.name?cap_first}(${field.enum.targetEnum}.valueOf(json.get${typeToJsonType(field)}(
                                     ${field.owner}WebServiceClientAdapter.${alias(field.name)})));
                                 </#if>
+                            <#elseif (field.harmony_type == "byte")>
+                    ${curr.name?uncap_first}.set${field.name?cap_first}(Byte.valueOf(
+                            json.get${typeToJsonType(field)}(${field.owner}WebServiceClientAdapter.${alias(field.name)})));
+                            <#elseif (field.harmony_type == "short")>
+                    ${curr.name?uncap_first}.set${field.name?cap_first}((short)
+                            json.get${typeToJsonType(field)}(${field.owner}WebServiceClientAdapter.${alias(field.name)}));
+                            <#elseif (field.harmony_type == "char") || (field.harmony_type == "Character")>
+                    ${curr.name?uncap_first}.set${field.name?cap_first}(
+                            json.get${typeToJsonType(field)}(${field.owner}WebServiceClientAdapter.${alias(field.name)}).charAt(0));
                             <#else>
                     ${curr.name?uncap_first}.set${field.name?cap_first}(
                             json.get${typeToJsonType(field)}(${field.owner}WebServiceClientAdapter.${alias(field.name)}));
