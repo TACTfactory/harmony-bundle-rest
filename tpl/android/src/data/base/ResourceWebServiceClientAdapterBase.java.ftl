@@ -77,9 +77,6 @@ public abstract class ResourceWebServiceClientAdapterBase <#if sync>extends Sync
     <#if sync>/** Sync Date Format pattern. */
     public static final String SYNC_UPDATE_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";</#if>
 
-    /** Rest Date Format pattern. */
-    public static final String REST_UPDATE_DATE_FORMAT = "${curr.options.rest.dateFormat}";
-
     /**
      * Constructor with overriden port and host.
      *
@@ -426,7 +423,7 @@ public abstract class ResourceWebServiceClientAdapterBase <#if sync>extends Sync
         String response = this.invokeRequest(
                 Verb.POST,
                 String.format(
-                    "%s/upload/%s",
+                    "%s/upload/%s%s",
                     this.getUri(),
                     item.get<#if sync>Server</#if>Id(),
                     REST_FORMAT),
@@ -446,12 +443,10 @@ public abstract class ResourceWebServiceClientAdapterBase <#if sync>extends Sync
             try {
                 if (json.has(ResourceWebServiceClientAdapter.JSON_PATH)
                         && !json.isNull(ResourceWebServiceClientAdapter.JSON_PATH)) {
-                    resource.setPath(
-                            json.getString(ResourceWebServiceClientAdapter.JSON_PATH));
+                    resource.setPath(json.getString(ResourceWebServiceClientAdapter.JSON_PATH));
                 }
                 if (json.has(ResourceWebServiceClientAdapter.JSON_ID)) {
-                    int id = json.optInt(
-                              ResourceWebServiceClientAdapter.JSON_ID);
+                    int id = json.optInt(ResourceWebServiceClientAdapter.JSON_ID);
 
                     if (id != 0) {
                         resource.set<#if sync>Server</#if>Id(id);
@@ -471,27 +466,28 @@ public abstract class ResourceWebServiceClientAdapterBase <#if sync>extends Sync
                         json.getString(ResourceWebServiceClientAdapter.JSON_ORIGINALPATH));
             }
 
-                if (json.has(ResourceWebServiceClientAdapter.JSON_SYNC_DTAG)
-                        && !json.isNull(ResourceWebServiceClientAdapter.JSON_SYNC_DTAG)) {
-                    resource.setSync_dTag(
-                            json.getBoolean(ResourceWebServiceClientAdapter.JSON_SYNC_DTAG));
+            if (json.has(ResourceWebServiceClientAdapter.JSON_SYNC_DTAG)
+                    && !json.isNull(ResourceWebServiceClientAdapter.JSON_SYNC_DTAG)) {
+                resource.setSync_dTag(
+                        json.getBoolean(ResourceWebServiceClientAdapter.JSON_SYNC_DTAG));
                 }
 
-                if (json.has(ResourceWebServiceClientAdapter.JSON_SYNC_UDATE)
-                        && !json.isNull(ResourceWebServiceClientAdapter.JSON_SYNC_UDATE)) {
-                    DateTimeFormatter sync_uDateFormatter = DateTimeFormat.forPattern(
-                            ResourceWebServiceClientAdapter.SYNC_UPDATE_DATE_FORMAT);
-                    try {
-                        resource.setSync_uDate(
-                                sync_uDateFormatter.withOffsetParsed().parseDateTime(
-                                        json.getString(
-                                        ResourceWebServiceClientAdapter.JSON_SYNC_UDATE)));
-                    } catch (IllegalArgumentException e) {
-                        Log.e(TAG, e.getMessage());
-                    }
+            if (json.has(ResourceWebServiceClientAdapter.JSON_SYNC_UDATE)
+                    && !json.isNull(ResourceWebServiceClientAdapter.JSON_SYNC_UDATE)) {
+                DateTimeFormatter sync_uDateFormatter = DateTimeFormat.forPattern(
+                        ResourceWebServiceClientAdapter.SYNC_UPDATE_DATE_FORMAT);
+                try {
+                   resource.setSync_uDate(
+                            sync_uDateFormatter.withOffsetParsed().parseDateTime(
+                                   json.getString(
+                                   ResourceWebServiceClientAdapter.JSON_SYNC_UDATE)));
+                } catch (IllegalArgumentException e) {
+                    Log.e(TAG, e.getMessage());
                 }
-                    resource.setHash(
-                            json.getString(ResourceWebServiceClientAdapter.JSON_HASH));
+            }
+
+                resource.setHash(
+                        json.getString(ResourceWebServiceClientAdapter.JSON_HASH));
             </#if>
             } catch (JSONException e) {
                 Log.e(TAG, e.getMessage());

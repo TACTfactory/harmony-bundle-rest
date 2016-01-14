@@ -31,7 +31,7 @@ public class RestAdapterIos extends IosAdapter implements RestAdapter {
         String templatePath = this.getTemplateSourceProviderPath();
         String filePath = this.getSourcePath()
                 + "/Data/WebService/";
- 
+        
         result.add(new SourceFile(
                 templatePath + "base/WebServiceClientAdapterBase.h",
                 filePath + "base/WebServiceClientAdapterBase.h",
@@ -40,6 +40,16 @@ public class RestAdapterIos extends IosAdapter implements RestAdapter {
         result.add(new SourceFile(
                 templatePath + "base/WebServiceClientAdapterBase.m",
                 filePath + "base/WebServiceClientAdapterBase.m",
+                true));
+ 
+        result.add(new SourceFile(
+                templatePath + "base/ResourceWebServiceClientAdapterBase.h",
+                filePath + "base/ResourceWebServiceClientAdapterBase.h",
+                true));
+
+        result.add(new SourceFile(
+                templatePath + "base/ResourceWebServiceClientAdapterBase.m",
+                filePath + "base/ResourceWebServiceClientAdapterBase.m",
                 true));
 
         // Make Abstract Adapter Base general for all entities
