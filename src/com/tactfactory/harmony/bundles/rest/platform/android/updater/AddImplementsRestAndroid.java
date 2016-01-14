@@ -28,45 +28,48 @@ public class AddImplementsRestAndroid implements IExecutor {
      * @param cm The entity metadata
      */
     private void addExtendResource(BaseGenerator<? extends IAdapter> generator) {
-        final String entityName = this.entity.getName();
-        final File entityFile =
-                new File(generator.getAdapter().getSourcePath()
-                        + generator.getAdapter().getApplicationMetadata().getProjectNameSpace()
-                        + "/entity/" + entityName + ".java");
-        final StringBuffer sb = TactFileUtils.fileToStringBuffer(entityFile);
-        final int indexEntityBase = this.indexOf(sb, "extends", false);
-        final String classDeclaration = "class " + entityName;
-        String classExtends;
-
-        if (this.entity.getInheritance() != null || indexEntityBase > -1) {
-            classExtends = " extends EntityBase";
-        } else {
-            classExtends = "";
-        }
-
-        final int aClassDefinitionIndex =
-                this.indexOf(sb, classDeclaration + classExtends, false)
-                + classDeclaration.length();
-
-        if (indexEntityBase == -1) {
-            sb.insert(aClassDefinitionIndex, " extends EntityResourceBase");
-        } else {
-            sb.replace(aClassDefinitionIndex, aClassDefinitionIndex + "EntityBase".length(), " EntityResourceBase");
-        }
-//
-        // Add import EntityBase if it doesn't exist yet
         if (!this.entity.getImports().contains("EntityResourceBase")) {
-            final int packageIndex = this.indexOf(sb, "package", false);
-            final int lineAfterPackageIndex =
-                    sb.indexOf("\n", packageIndex) + 1;
-            sb.insert(lineAfterPackageIndex,
-                    String.format("%nimport %s.%s.base.EntityResourceBase;%n",
-                            generator.getAdapter().getApplicationMetadata()
-                            .getProjectNameSpace().replace('/', '.'),
-                            generator.getAdapter().getModel()));
+            final String entityName = this.entity.getName();
+            final File entityFile =
+                    new File(generator.getAdapter().getSourcePath()
+                            + generator.getAdapter().getApplicationMetadata().getProjectNameSpace()
+                            + "/entity/" + entityName + ".java");
+            final StringBuffer sb = TactFileUtils.fileToStringBuffer(entityFile);
+            final int indexEntityBase = this.indexOf(sb, "extends", false);
+            final String classDeclaration = "class " + entityName;
+            String classExtends;
+
+            if (this.entity.getInheritance() != null || indexEntityBase > -1) {
+                classExtends = " extends EntityBase";
+            } else {
+                classExtends = "";
+            }
+
+            final int aClassDefinitionIndex =
+                    this.indexOf(sb, classDeclaration + classExtends, false)
+                    + classDeclaration.length();
+
+            if (indexEntityBase == -1) {
+                sb.insert(aClassDefinitionIndex, " extends EntityResourceBase");
+            } else {
+                sb.replace(aClassDefinitionIndex, aClassDefinitionIndex + "EntityBase".length(), " EntityResourceBase");
+            }
+            //
+            // Add import EntityBase if it doesn't exist yet
+            if (!this.entity.getImports().contains("EntityResourceBase")) {
+                final int packageIndex = this.indexOf(sb, "package", false);
+                final int lineAfterPackageIndex =
+                        sb.indexOf("\n", packageIndex) + 1;
+                sb.insert(lineAfterPackageIndex,
+                        String.format("%nimport %s.%s.base.EntityResourceBase;%n",
+                                generator.getAdapter().getApplicationMetadata()
+                                .getProjectNameSpace().replace('/', '.'),
+                                generator.getAdapter().getModel()));
+            }
+
+            TactFileUtils.stringBufferToFile(sb, entityFile);
         }
 
-        TactFileUtils.stringBufferToFile(sb, entityFile);
     }
 
     /**
