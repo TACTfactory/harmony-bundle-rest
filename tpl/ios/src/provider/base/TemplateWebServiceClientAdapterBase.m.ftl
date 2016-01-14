@@ -372,7 +372,7 @@
                                 <#if (curr.options.sync??)>
                 item.${field.name?uncap_first} = [${field.relation.targetEntity?uncap_first}SqlAdapter getByServerID:${field.relation.targetEntity}.serverId];
                                 <#else>
-                item.${field.name?uncap_first} = [${field.relation.targetEntity?uncap_first}SqlAdapter getByID:${field.relation.targetEntity?uncap_first}.<#list curr_ids as id><#if id_index != 0> with${id.name?cap_first}</#if>:item.${id.name}</#list>];
+                item.${field.name?uncap_first} = [${field.relation.targetEntity?uncap_first}SqlAdapter getByID<#list field.relation.tagetEntity.curr_ids as id><#if id_index != 0> with${id.name?cap_first}</#if>:${field.relation.targetEntity?uncap_first}.${id.name}</#list>];
                                 </#if>
                             <#else>
                                 <#if (curr.options.sync??)>
