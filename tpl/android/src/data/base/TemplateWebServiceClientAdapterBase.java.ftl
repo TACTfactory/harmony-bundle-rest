@@ -232,6 +232,9 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
     /** Rest Date Format pattern. */
     public static final String REST_UPDATE_DATE_FORMAT = "${curr.options.rest.dateFormat}";
 
+    /** Time pattern.*/
+    public static final String TIME_FORMAT = "HH:mm:ss";
+
     /** ${curr.name} REST Columns. */
     public static String[] REST_COLS = new String[]{
             <#list restFields as field>
@@ -586,7 +589,8 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
                         && !json.isNull(${field.owner}WebServiceClientAdapter.${alias(field.name)})) {
                             <#if (FieldsUtils.getJavaType(field)?lower_case == "datetime")>
                     DateTimeFormatter ${field.name?uncap_first}Formatter = <#if (curr.options.sync?? && field.name=="sync_uDate")>DateTimeFormat.forPattern(
-                            ${field.owner}WebServiceClientAdapter.SYNC_UPDATE_DATE_FORMAT)<#else>DateTimeFormat.forPattern(
+                            ${field.owner}WebServiceClientAdapter.SYNC_UPDATE_DATE_FORMAT)<#elseif (field.harmony_type?lower_case == "time")>DateTimeFormat.forPattern(
+                            ${field.owner}WebServiceClientAdapter.TIME_FORMAT)<#else>DateTimeFormat.forPattern(
                             ${field.owner}WebServiceClientAdapter.REST_UPDATE_DATE_FORMAT)</#if>;
                     try {
                         ${curr.name?uncap_first}.set${field.name?cap_first}(

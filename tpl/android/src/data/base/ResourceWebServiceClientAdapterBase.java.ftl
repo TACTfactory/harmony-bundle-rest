@@ -72,13 +72,9 @@ public abstract class ResourceWebServiceClientAdapterBase <#if sync>extends Sync
     public static String JSON_MOBILE_ID = "mobileId";
     /** JSON_HASH attributes. */
     protected static String JSON_HASH = "hash";
-    </#if>
 
-    <#if sync>/** Sync Date Format pattern. */
+    /** Sync Date Format pattern. */
     public static final String SYNC_UPDATE_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";</#if>
-
-    /** Rest Date Format pattern. */
-    public static final String REST_UPDATE_DATE_FORMAT = "${curr.options.rest.dateFormat}";
 
     /**
      * Constructor with overriden port and host.

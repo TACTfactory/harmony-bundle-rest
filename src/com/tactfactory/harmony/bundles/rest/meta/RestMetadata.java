@@ -28,7 +28,7 @@ public class RestMetadata extends BaseMetadata {
     /** URI. */
     private String uri;
     /** DateFormat. */
-    private String dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ";
+    private String dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ";
 
     /**
      * Constructor.
