@@ -229,7 +229,7 @@
         [params setValue:[NSNumber numberWithInt:${curr.name?uncap_first}.${field.name?uncap_first}]
                   forKey:${field.owner}WebServiceClientAdapter.${alias(field.name)}];
                     <#else>
-                        <#if FieldsUtils.getObjectiveType(id)?lower_case=="string">
+                        <#if FieldsUtils.getObjectiveType(field)?lower_case=="string">
         [params setValue:${FieldsUtils.generateFieldContentType("item", field)}${curr.name?uncap_first}.${field.name?uncap_first}
                   forKey:${field.owner}WebServiceClientAdapter.${alias(field.name)}];
                         <#else>

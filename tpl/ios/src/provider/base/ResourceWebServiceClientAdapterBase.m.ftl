@@ -50,11 +50,11 @@
 /** Resource REST Columns. */
 + (NSArray *) REST_COLS {
             ResourceContract.COL_ID,
-            ResourceContract.COL_PATH<#if sync>,
+            ResourceContract.COL_PATH,<#if sync>
             ResourceContract.COL_SERVERID,
             ResourceContract.COL_SYNC_DTAG,
             ResourceContract.COL_SYNC_UDATE,
-            ResourceContract.COL_HASH</#if>
+            ResourceContract.COL_HASH,</#if>
             nil];
 };
 
