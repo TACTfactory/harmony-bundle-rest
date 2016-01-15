@@ -16,6 +16,9 @@
 #import "ResourceContract.h"
 #import "EntityResourceBase.h"
 #import "ImageUtils.h"
+<#if sync>#import "SyncClientAdapterBase.h"
+#import "SyncClientAdapterResource.h"
+</#if>
 
 /**
  * 

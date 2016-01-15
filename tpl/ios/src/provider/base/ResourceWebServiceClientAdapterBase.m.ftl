@@ -69,32 +69,32 @@
     @try {
     <#if sync>
         [params setValue:item.serverId
-                  forKey:ResourceWebServiceClientAdapter.JSON_ID];
+                  forKey:ResourceWebServiceClientAdapterBase.JSON_ID];
     <#else>
         [params setValue:[NSNumber numberWithInt:item.id]
-                  forKey:ResourceWebServiceClientAdapter.JSON_ID];
+                  forKey:ResourceWebServiceClientAdapterBase.JSON_ID];
     </#if>
 
         [params setValue:item.path
-                  forKey:ResourceWebServiceClientAdapter.JSON_PATH];
+                  forKey:ResourceWebServiceClientAdapterBase.JSON_PATH];
 
     <#if sync>
         [params setValue:[NSNumber numberWithInt:item.id]
-                  forKey:ResourceWebServiceClientAdapter.JSON_MOBILE_ID];
+                  forKey:ResourceWebServiceClientAdapterBase.JSON_MOBILE_ID];
 
-        [params setValue:item.sync_dTag
-                  forKey:ResourceWebServiceClientAdapter.JSON_SYNC_DTAG];
+        [params setValue:[NSNumber numberWithBool:item.sync_dtag]
+                  forKey:ResourceWebServiceClientAdapterBase.JSON_SYNC_DTAG];
 
         if (item.sync_uDate != nil) {
             NSDateFormatter *dateFormatter = [NSDateFormatter new];
-            [dateFormatter setDateFormat:ResourceWebServiceClientAdapter.SYNC_UPDATE_DATE_FORMAT];
+            [dateFormatter setDateFormat:ResourceWebServiceClientAdapterBase.SYNC_UPDATE_DATE_FORMAT];
 
             [params setValue:[dateFormatter stringFromDate:item.sync_uDate]
-                     forKey:ResourceWebServiceClientAdapter.JSON_SYNC_UDATE];
+                     forKey:ResourceWebServiceClientAdapterBase.JSON_SYNC_UDATE];
         }
 
         [params setValue:item.uuid
-                  forKey:ResourceWebServiceClientAdapter.JSON_HASH];
+                  forKey:ResourceWebServiceClientAdapterBase.JSON_HASH];
 
         NSString *path = item.localPath;
 
@@ -102,7 +102,7 @@
             path = item.path;
         }
 
-        [params setValue:path forKey:ResourceWebServiceClientAdapter.JSON_ORIGINALPATH];
+        [params setValue:path forKey:ResourceWebServiceClientAdapterBase.JSON_ORIGINALPATH];
     </#if>
 
     } @catch(NSException *e) {
@@ -176,7 +176,7 @@
             withRequest:[NSString stringWithFormat:@"%@/%@%@",
                          [self getUri],
                          <#if sync>resource.serverId<#else>[NSNumber numberWithInt:resource.id]</#if>,
-                         [ResourceWebServiceClientAdapter REST_FORMAT]]
+                         [ResourceWebServiceClientAdapterBase REST_FORMAT]]
              withParams:nil
            withCallback:restCallback];
 }
@@ -202,7 +202,7 @@
     [self invokeRequest:GET
             withRequest:[NSString stringWithFormat:@"%@%@",
                          [self getUri],
-                         [ResourceWebServiceClientAdapter REST_FORMAT]]
+                         [ResourceWebServiceClientAdapterBase REST_FORMAT]]
              withParams:nil
            withCallback:restCallback];
 }
@@ -227,7 +227,7 @@
             withRequest:[NSString stringWithFormat:@"%@/%@%@",
                          [self getUri],
                          <#if sync>item.serverId<#else>[NSNumber numberWithInt:item.id]</#if>,
-                         [ResourceWebServiceClientAdapter REST_FORMAT]]
+                         [ResourceWebServiceClientAdapterBase REST_FORMAT]]
              withParams:nil
            withCallback:restCallback];
 }
@@ -270,7 +270,7 @@
     [self invokeRequest:POST
             withRequest:[NSString stringWithFormat:@"%@%@",
                          [self getUri],
-                         [ResourceWebServiceClientAdapter REST_FORMAT]]
+                         [ResourceWebServiceClientAdapterBase REST_FORMAT]]
              withParams:[self itemToJson:item]
            withCallback:restCallback];
 }
@@ -295,7 +295,7 @@
                         [self extract:json withItem:item];
                     } else {
                         item.path = originalPath;
-                        <#if sync>image.sync_uDate = [NSDate date];</#if>
+                        <#if sync>item.sync_uDate = [NSDate date];</#if>
                     }
 
                     if (callback != nil) {
@@ -315,7 +315,7 @@
         [self invokeRequest:PUT withRequest:[NSString stringWithFormat:@"%@/%@%@",
                                              [self getUri],
                                              <#if sync>item.serverId<#else>[NSNumber numberWithInt:item.id]</#if>,
-                                             [ResourceWebServiceClientAdapter REST_FORMAT]]
+                                             [ResourceWebServiceClientAdapterBase REST_FORMAT]]
                  withParams:[self itemToJson:item]
                withCallback:restCallback];
         
@@ -332,7 +332,7 @@
     [self invokeRequest:POST withRequest:[NSString stringWithFormat:@"%@/upload/%@%@",
                                          [self getUri],
                                          <#if sync>item.serverId<#else>[NSNumber numberWithInt:item.id]</#if>,
-                                         [ResourceWebServiceClientAdapter REST_FORMAT]]
+                                         [ResourceWebServiceClientAdapterBase REST_FORMAT]]
              withParams:json
            withCallback:callback];
 }
@@ -342,50 +342,50 @@
 
     if (result) {
         @try {
-        if (![self jsonIsNull:json withProperty:[ResourceWebServiceClientAdapter JSON_ID]]) {
+        if (![self jsonIsNull:json withProperty:[ResourceWebServiceClientAdapterBase JSON_ID]]) {
             <#if sync>
-            id server_id = [json objectForKey:[ResourceWebServiceClientAdapter JSON_ID]];
+            id server_id = [json objectForKey:[ResourceWebServiceClientAdapterBase JSON_ID]];
             
             if (server_id != nil && [server_id isKindOfClass:[NSString class]]) {
                 server_id = [[NSNumberFormatter new]
-                             numberFromString:[json objectForKey:[ResourceWebServiceClientAdapter JSON_ID]]];
+                             numberFromString:[json objectForKey:[ResourceWebServiceClientAdapterBase JSON_ID]]];
             }
             
             if (server_id != 0) {
                 item.serverId = server_id;
             }
             <#else>
-            item.id = [[json objectForKey:[ResourceWebServiceClientAdapter JSON_ID]] intValue];
+            item.id = [[json objectForKey:[ResourceWebServiceClientAdapterBase JSON_ID]] intValue];
             </#if>
         }
 
         <#if sync>
-        if (![self jsonIsNull:json withProperty:[ResourceWebServiceClientAdapter JSON_MOBILE_ID]]) {
-            item.id = [[json objectForKey:[ResourceWebServiceClientAdapter JSON_ID]] intValue];
+        if (![self jsonIsNull:json withProperty:[ResourceWebServiceClientAdapterBase JSON_MOBILE_ID]]) {
+            item.id = [[json objectForKey:[ResourceWebServiceClientAdapterBase JSON_ID]] intValue];
         }
         
-        if (![self jsonIsNull:json withProperty:[ResourceWebServiceClientAdapter JSON_ORIGINALPATH]]) {
-            item.originalPath = [json objectForKey:[ResourceWebServiceClientAdapter JSON_ORIGINALPATH]];
+        if (![self jsonIsNull:json withProperty:[ResourceWebServiceClientAdapterBase JSON_ORIGINALPATH]]) {
+            item.localPath = [json objectForKey:[ResourceWebServiceClientAdapterBase JSON_ORIGINALPATH]];
         }
         
-        if (![self jsonIsNull:json withProperty:[ResourceWebServiceClientAdapter JSON_SYNC_DTAG]]) {
-            item.sync_dtag = [[json objectForKey:[ResourceWebServiceClientAdapter JSON_SYNC_DTAG]] boolValue];
+        if (![self jsonIsNull:json withProperty:[ResourceWebServiceClientAdapterBase JSON_SYNC_DTAG]]) {
+            item.sync_dtag = [[json objectForKey:[ResourceWebServiceClientAdapterBase JSON_SYNC_DTAG]] boolValue];
         }
         
-        if (![self jsonIsNull:json withProperty:[ImageWebServiceClientAdapter JSON_SYNC_UDATE]]) {
+        if (![self jsonIsNull:json withProperty:[ResourceWebServiceClientAdapterBase JSON_SYNC_UDATE]]) {
             NSDateFormatter *dateFormatter = [NSDateFormatter new];
-            [dateFormatter setDateFormat:[ResourceWebServiceClientAdapter SYNC_UPDATE_DATE_FORMAT]];
+            [dateFormatter setDateFormat:[ResourceWebServiceClientAdapterBase SYNC_UPDATE_DATE_FORMAT]];
 
             @try {
                 NSDate *date = [dateFormatter dateFromString:
-                                [json objectForKey:[ResourceWebServiceClientAdapter JSON_SYNC_UDATE]]];
+                                [json objectForKey:[ResourceWebServiceClientAdapterBase JSON_SYNC_UDATE]]];
                 item.sync_uDate = date;
             } @catch(NSException *e) {
                 NSLog(@"Exception: %@", e);
             }
         }
 
-        item.uuid = [json objectForKey:[ResourceWebServiceClientAdapter JSON_HASH]];
+        item.uuid = [json objectForKey:[ResourceWebServiceClientAdapterBase JSON_HASH]];
         </#if>
 
         } @catch (NSException *exception) {
@@ -406,8 +406,8 @@
     @try {
         NSString *path = item.<#if sync>localPath<#else>path</#if>;
     
-        [params setValue:<#if sync>item.serverId<#else>[NSNumber numberWithInt:item.id]</#if> forKey:ResourceWebServiceClientAdapter.JSON_ID];
-        [params setValue:path forKey:ResourceWebServiceClientAdapter.JSON_<#if sync>ORIGINAL</#if>PATH];
+        [params setValue:<#if sync>item.serverId<#else>[NSNumber numberWithInt:item.id]</#if> forKey:ResourceWebServiceClientAdapterBase.JSON_ID];
+        [params setValue:path forKey:ResourceWebServiceClientAdapterBase.JSON_<#if sync>ORIGINAL</#if>PATH];
     } @catch(NSException* e) {
         NSLog(@"Exception: %@", e);
     }
@@ -419,14 +419,14 @@
     bool result = false;
 
     @try {
-        if ([self jsonIsNull:json withProperty:[ResourceWebServiceClientAdapter JSON_PATH]]) {
-            resource.path = [json objectForKey:[ResourceWebServiceClientAdapter JSON_PATH]];
+        if ([self jsonIsNull:json withProperty:[ResourceWebServiceClientAdapterBase JSON_PATH]]) {
+            resource.path = [json objectForKey:[ResourceWebServiceClientAdapterBase JSON_PATH]];
             result = true;
         }
         <#if sync>
 
-        if ([self jsonIsNull:json withProperty:[ResourceWebServiceClientAdapter JSON_ORIGINALPATH]]) {
-            resource.localPath =  [json objectForKey:[ResourceWebServiceClientAdapter JSON_ORIGINALPATH]];
+        if ([self jsonIsNull:json withProperty:[ResourceWebServiceClientAdapterBase JSON_ORIGINALPATH]]) {
+            resource.localPath =  [json objectForKey:[ResourceWebServiceClientAdapterBase JSON_ORIGINALPATH]];
         }
         </#if>
     } @catch (NSException *exception) {
