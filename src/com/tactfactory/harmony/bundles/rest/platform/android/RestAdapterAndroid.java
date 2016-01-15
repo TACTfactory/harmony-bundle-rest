@@ -8,6 +8,7 @@
  */
 package com.tactfactory.harmony.bundles.rest.platform.android;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -88,14 +89,17 @@ public class RestAdapterAndroid extends AndroidAdapter implements RestAdapter {
         filePath = this.getUtilPath();
 
         result.add(new SourceFile(
-                templatePath + "CacheProgressImageLoaderListener.java",
-                filePath + "CacheProgressImageLoaderListener.java",
-                false));
-
-        result.add(new SourceFile(
                 templatePath + "ImageUtils.java",
                 filePath + "ImageUtils.java",
                 false));
+
+        //TODO rewrite that
+        if (new File(this.getWidgetPath(), "ProgressImageLoaderListener.java").exists()) {
+            result.add(new SourceFile(
+                    templatePath + "CacheProgressImageLoaderListener.java",
+                    filePath + "CacheProgressImageLoaderListener.java",
+                    false));
+        }
 
         return result;
     }
