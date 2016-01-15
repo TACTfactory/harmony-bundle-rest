@@ -76,12 +76,12 @@
 
 - (void) update:(EntityResourceBase *) item withCallback:(void(^)(EntityResourceBase *)) callback;
 
-- (void) upload:(id<EntityResourceBase *>) item withCallback:(void(^)(HttpResponse *)) callback;
+- (void) upload:(EntityResourceBase *) item withCallback:(void(^)(HttpResponse *)) callback;
 
 - (bool) extract:(NSMutableDictionary *)json withItem:(EntityResourceBase *)item;
 
 - (NSMutableDictionary *) itemIdToJson:(EntityResourceBase *) item;
 
-- (bool) extractResource:(NSMutableDictionary *) json withResource:(id<EntityResourceBase *>) resource;
+- (bool) extractResource:(NSMutableDictionary *) json withResource:(EntityResourceBase *) resource;
 
 @end

@@ -63,6 +63,17 @@ public class RestAdapterIos extends IosAdapter implements RestAdapter {
                 filePath + "WebServiceClientAdapter.m",
                 false));
 
+        result.add(new SourceFile(
+                templatePath + "ResourceWebServiceClientAdapter.h",
+                filePath + "ResourceWebServiceClientAdapter.h",
+                true));
+
+        result.add(new SourceFile(
+                templatePath + "base/ResourceWebServiceClientAdapterBase.m",
+                filePath + "base/ResourceWebServiceClientAdapterBase.m",
+                true));
+
+
         // Make RestClient
         result.add(new SourceFile(
                 templatePath + "base/RestClientBase.h", 

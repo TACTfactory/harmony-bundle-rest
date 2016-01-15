@@ -49,6 +49,7 @@
 
 /** Resource REST Columns. */
 + (NSArray *) REST_COLS {
+    return [NSArray arrayWithObjects:
             ResourceContract.COL_ID,
             ResourceContract.COL_PATH,<#if sync>
             ResourceContract.COL_SERVERID,
@@ -276,7 +277,7 @@
 
 - (void) update:(EntityResourceBase *) item withCallback:(void(^)(EntityResourceBase *)) callback {
 
-    if (item.serverId != nil && item.serverId != 0) {
+    if (<#if sync>item.serverId != nil && item.serverId != 0<#else>item.id != 0</#if>) {
         void ( ^restCallback )(HttpResponse*) = ^(HttpResponse* object) {
 
         if (object.result != nil) {
@@ -284,7 +285,7 @@
             
             if ([self isValidJSON:json]) {
                 NSString *originalPath = item.path;
-                [self extract:json withItem:image];
+                [self extract:json withItem:item];
                 
                 void ( ^uploadCallback )(HttpResponse *) = ^(HttpResponse *object) {
                     NSMutableDictionary *json = [NSMutableDictionary dictionaryWithDictionary:
@@ -313,19 +314,17 @@
         
         [self invokeRequest:PUT withRequest:[NSString stringWithFormat:@"%@/%@%@",
                                              [self getUri],
-                                             <#if sync>item.serverId<#else>[NSNumber numberWithInt:item.id]</#if>,,
+                                             <#if sync>item.serverId<#else>[NSNumber numberWithInt:item.id]</#if>,
                                              [ResourceWebServiceClientAdapter REST_FORMAT]]
-                 withParams:[self itemToJson:image]
+                 withParams:[self itemToJson:item]
                withCallback:restCallback];
         
     } else {
-        result = [self insert:image withCallback:callback];
+        [self insert:item withCallback:callback];
     }
-
-    return result;
 }
 
-- (void) upload:(id<EntityResourceBase *>) item withCallback:(void(^)(HttpResponse *)) callback {
+- (void) upload:(EntityResourceBase *) item withCallback:(void(^)(HttpResponse *)) callback {
     NSMutableDictionary *json = [self itemToJson:item];
     
     [json setValue:item.<#if sync>localPath<#else>path</#if> forKey:[ImageUtils IMAGE_KEY_JSON]];
@@ -407,8 +406,8 @@
     @try {
         NSString *path = item.<#if sync>localPath<#else>path</#if>;
     
-        [params setValue:item.<#if sync>serverId<#else>id</#if> forKey:ResourceWebServiceClientAdapter.JSON_ID];
-        [params setValue:pathforKey:ResourceWebServiceClientAdapter.JSON_<#if sync>ORIGINAL</#if>PATH];
+        [params setValue:<#if sync>item.serverId<#else>[NSNumber numberWithInt:item.id]</#if> forKey:ResourceWebServiceClientAdapter.JSON_ID];
+        [params setValue:path forKey:ResourceWebServiceClientAdapter.JSON_<#if sync>ORIGINAL</#if>PATH];
     } @catch(NSException* e) {
         NSLog(@"Exception: %@", e);
     }
@@ -416,7 +415,7 @@
     return params;
 }
 
-- (bool) extractResource:(NSMutableDictionary *) json withResource:(id<EntityResourceBase *>) resource {
+- (bool) extractResource:(NSMutableDictionary *) json withResource:(EntityResourceBase *) resource {
     bool result = false;
 
     @try {
