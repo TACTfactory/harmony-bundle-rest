@@ -178,7 +178,7 @@
             <#if (!field.internal)>
                 <#if (!field.relation??)>
                     <#if field.name?lower_case=="id"><#if !InheritanceUtils.isExtended(curr)>
-        [params setValue:<#if curr.options.sync??>${curr.name?uncap_first}.serverId<#else></#if>[NSNumber numberWithInt:${curr.name?uncap_first}.id]
+        [params setValue:<#if curr.options.sync??>${curr.name?uncap_first}.serverId<#else>[NSNumber numberWithInt:${curr.name?uncap_first}.id]</#if>
                   forKey:${curr.name}WebServiceClientAdapter.JSON_ID];
 
                     </#if><#elseif (curr.options.sync?? && field.name=="serverId")><#if !InheritanceUtils.isExtended(curr)>
