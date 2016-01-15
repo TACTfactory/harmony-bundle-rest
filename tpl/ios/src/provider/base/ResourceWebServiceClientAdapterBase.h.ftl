@@ -11,7 +11,7 @@
 <@header?interpret />
 <#assign curr = entities[current_entity] />
 
-#import "ResourceWebServiceClientAdapter.h"
+#import "ResourceWebServiceClientAdapterBase.h"
 #import "WebServiceClientAdapter.h"
 #import "ResourceContract.h"
 #import "EntityResourceBase.h"
