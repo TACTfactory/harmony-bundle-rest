@@ -151,20 +151,6 @@
     return @"${curr.options.rest.uri}";
 }
 
-- (int) getItemId:(${curr.name} *) item {
-    <#if (curr.options.sync??)>
-    int result = 0;
-
-    if (item.serverId != nil) {
-        result = [item.serverId intValue];
-    }
-
-    return result;
-    <#else>
-    return item.${curr.ids[0].name};
-    </#if>
-}
-
 <#if curr.fields?size != 0>
 - (bool) isValidJSON:(NSObject *)json {
     return [json isKindOfClass:[NSDictionary class]];
@@ -192,7 +178,7 @@
             <#if (!field.internal)>
                 <#if (!field.relation??)>
                     <#if field.name?lower_case=="id"><#if !InheritanceUtils.isExtended(curr)>
-        [params setValue:[NSNumber numberWithInt:[self getItemId:${curr.name?uncap_first}]]
+        [params setValue:<#if curr.options.sync??>${curr.name?uncap_first}.serverId<#else></#if>[NSNumber numberWithInt:${curr.name?uncap_first}.id]
                   forKey:${curr.name}WebServiceClientAdapter.JSON_ID];
 
                     </#if><#elseif (curr.options.sync?? && field.name=="serverId")><#if !InheritanceUtils.isExtended(curr)>
@@ -225,6 +211,8 @@
 
                     <#elseif (field.harmony_type=="enum")>
         //TODO enum
+                    <#elseif (field.harmony_type=="byte")>
+        //TODO Byte
                     <#elseif (field.harmony_type=="int")>
         [params setValue:[NSNumber numberWithInt:${curr.name?uncap_first}.${field.name?uncap_first}]
                   forKey:${field.owner}WebServiceClientAdapter.${alias(field.name)}];
@@ -346,6 +334,14 @@
                 item.${field.name?uncap_first} = [[json objectForKey:[${field.owner}WebServiceClientAdapter ${alias(field.name)}]] longLongValue];
                             <#elseif (FieldsUtils.getObjectiveType(field)=="double")>
                 item.${field.name?uncap_first} = [[json objectForKey:[${field.owner}WebServiceClientAdapter ${alias(field.name)}]] doubleValue];
+                            <#elseif (FieldsUtils.getObjectiveType(field)=="char" || FieldsUtils.getObjectiveType(field)=="character")>
+                item.${field.name?uncap_first} = [[json objectForKey:[${field.owner}WebServiceClientAdapter ${alias(field.name)}]] charValue];
+                            <#elseif (FieldsUtils.getObjectiveType(field)=="short")>
+                item.${field.name?uncap_first} = [[json objectForKey:[${field.owner}WebServiceClientAdapter ${alias(field.name)}]] shortValue];
+                            <#elseif (FieldsUtils.getObjectiveType(field)=="enum")>
+                //TODO Enum.
+                            <#elseif (FieldsUtils.getObjectiveType(field)=="byte")>
+                //TODO Byte.
                             <#else>
                 item.${field.name?uncap_first} = [json objectForKey:[${field.owner}WebServiceClientAdapter ${alias(field.name)}]];
                             </#if>
