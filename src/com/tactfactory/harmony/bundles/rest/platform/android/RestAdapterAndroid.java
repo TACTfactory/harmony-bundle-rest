@@ -58,6 +58,13 @@ public class RestAdapterAndroid extends AndroidAdapter implements RestAdapter {
                 false));
 
         result.add(new SourceFile(
+                templatePath + "RestClient.java",
+                filePath + "RestClient.java",
+                false));
+
+        // TODO add following only if an entity has @EntityResource annotation
+
+        result.add(new SourceFile(
                 templatePath + "base/ResourceWebServiceClientAdapterBase.java",
                 filePath + "base/ResourceWebServiceClientAdapterBase.java",
                 true));
@@ -65,11 +72,6 @@ public class RestAdapterAndroid extends AndroidAdapter implements RestAdapter {
         result.add(new SourceFile(
                 templatePath + "ResourceWebServiceClientAdapter.java",
                 filePath + "ResourceWebServiceClientAdapter.java",
-                false));
-
-        result.add(new SourceFile(
-                templatePath + "RestClient.java",
-                filePath + "RestClient.java",
                 false));
 
         templatePath = this.getTemplateSourceEntityBasePath();
@@ -88,6 +90,11 @@ public class RestAdapterAndroid extends AndroidAdapter implements RestAdapter {
         result.add(new SourceFile(
                 templatePath + "CacheProgressImageLoaderListener.java",
                 filePath + "CacheProgressImageLoaderListener.java",
+                false));
+
+        result.add(new SourceFile(
+                templatePath + "ImageUtils.java",
+                filePath + "ImageUtils.java",
                 false));
 
         return result;
