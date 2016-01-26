@@ -100,6 +100,9 @@ public class RestGenerator extends BaseGenerator<RestAdapter> {
                 "No internet connection available",
                 Group.COMMON);
 
+        TranslationMetadata.addDefaultTranslation("image_error_null", "Image is null");
+        TranslationMetadata.addDefaultTranslation("uri_not_supported", "Uri not supported");
+
         ConfigMetadata.addConfiguration(
                 "rest_url_prod",
                 "http://127.0.0.1:80/api/");
@@ -115,6 +118,9 @@ public class RestGenerator extends BaseGenerator<RestAdapter> {
         ConfigMetadata.addConfiguration(
                 "rest_ssl",
                 "ca.cert");
+
+        ConfigMetadata.addConfiguration("image_url_prefix_dev", "http://127.0.0.1:80");
+        ConfigMetadata.addConfiguration("image_url_prefix_prod", "http://127.0.0.1:80");
 
         try {
             new TranslationGenerator(this.getAdapter()).generateStringsXml();

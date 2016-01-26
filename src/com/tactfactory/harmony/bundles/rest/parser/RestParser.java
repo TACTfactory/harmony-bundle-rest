@@ -23,7 +23,6 @@ import com.tactfactory.harmony.bundles.rest.annotation.Rest;
 import com.tactfactory.harmony.bundles.rest.annotation.RestField;
 import com.tactfactory.harmony.bundles.rest.meta.RestFieldMetadata;
 import com.tactfactory.harmony.bundles.rest.meta.RestMetadata;
-import com.tactfactory.harmony.completor.ResourceCompletor;
 import com.tactfactory.harmony.meta.ApplicationMetadata;
 import com.tactfactory.harmony.meta.ClassMetadata;
 import com.tactfactory.harmony.meta.FieldMetadata;
@@ -168,8 +167,6 @@ public class RestParser extends BaseParser {
 
     @Override
     public void callFinalCompletor() {
-        ResourceCompletor.completeEntities();
-
         new RestCompletor().generateApplicationRestMetadata(
                 ApplicationMetadata.INSTANCE);
     }
