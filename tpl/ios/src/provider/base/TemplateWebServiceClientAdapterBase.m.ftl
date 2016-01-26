@@ -106,8 +106,8 @@
     </#list>
 
 /**
- * 
- * <b><i>This class will be overwrited whenever you regenerate the project with Harmony. 
+ *
+ * <b><i>This class will be overwrited whenever you regenerate the project with Harmony.
  * You should edit ${curr.name}WebServiceClientAdapter class instead of this one or you will lose all your modifications.</i></b>
  *
  */
@@ -158,10 +158,10 @@
 
 </#if>
 - (int) extractItems:(NSArray *) jsonArray withItems:(NSMutableArray *) items {
-    
+
     for (NSDictionary *json in jsonArray) {
         ${curr.name} *item = [${curr.name} new];
-        
+
         if ([self extract:[NSMutableDictionary dictionaryWithDictionary:json] withItem:item]) {
             [items addObject:item];
         }
@@ -339,9 +339,9 @@
                             <#elseif (FieldsUtils.getObjectiveType(field)=="short")>
                 item.${field.name?uncap_first} = [[json objectForKey:[${field.owner}WebServiceClientAdapter ${alias(field.name)}]] shortValue];
                             <#elseif (FieldsUtils.getObjectiveType(field)=="enum")>
-                //TODO Enum.
+                item.${field.name?uncap_first} = [[json objectForKey:[${field.owner}WebServiceClientAdapter ${alias(field.name)}]] intValue];
                             <#elseif (FieldsUtils.getObjectiveType(field)=="byte")>
-                //TODO Byte.
+                item.${field.name?uncap_first} = [[json objectForKey:[${field.owner}WebServiceClientAdapter ${alias(field.name)}]] intValue];
                             <#else>
                 item.${field.name?uncap_first} = [json objectForKey:[${field.owner}WebServiceClientAdapter ${alias(field.name)}]];
                             </#if>
@@ -443,7 +443,7 @@
 
         if (object.result != nil) {
             NSMutableDictionary *json = [NSMutableDictionary dictionaryWithDictionary:(NSDictionary *) object.result];
-            
+
             if ([self isValidJSON:json]) {
                 [self extract:json withItem:${curr.name?uncap_first}];
             }
