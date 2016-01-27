@@ -81,8 +81,7 @@ public class RestGenerator extends BaseGenerator<RestAdapter> {
                 this.getAppMetas().getEntities().values();
 
         for (final EntityMetadata entity : entities) {
-            if (entity.getOptions().get("rest") != null
-                    && !entity.getFields().isEmpty()) {
+            if (entity.getOptions().get("rest") != null) {
                 this.getDatamodel().put(
                         TagConstant.CURRENT_ENTITY, entity.getName());
 
