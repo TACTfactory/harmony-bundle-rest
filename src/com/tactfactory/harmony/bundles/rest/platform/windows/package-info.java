@@ -1,4 +1,4 @@
 /**
- * WinPhone Platform
+ * Windows Platform
  */
-package com.tactfactory.harmony.bundles.rest.platform.winphone;
+package com.tactfactory.harmony.bundles.rest.platform.windows;
