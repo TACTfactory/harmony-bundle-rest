@@ -2,16 +2,27 @@
 
 #import "WebServiceClientAdapterBase.h"
 #import "Reachability.h"
+#import "Config.h"
 
 @implementation WebServiceClientAdapterBase
 
 + (NSString *) REST_FORMAT { return @".json"; }
 
 -(instancetype) init {
-    return [self initWithServiceName:@""
+    NSString *defaultHost = REST_URL_HOST_PROD;
+    NSString *defaultScheme = URL_SCHEME_PROD;
+    NSString *defaultPath = URL_PATH_PROD;
+
+#if DEBUG
+    defaultHost = REST_URL_HOST_DEV;
+    defaultScheme = URL_SCHEME_DEV;
+    defaultPath = URL_PATH_DEV;
+#endif
+
+    return [self initWithServiceName:defaultHost
                             withPort:[NSNumber numberWithInt:80]
-                          withScheme:@"http"
-                            withPath:@""];
+                          withScheme:defaultScheme
+                            withPath:defaultPath];
 }
 
 - (NSDictionary *) httpResponse:(NSInteger) statusCode {

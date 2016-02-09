@@ -36,8 +36,8 @@
 </#if>
 
 /**
- * 
- * <b><i>This class will be overwrited whenever you regenerate the project with Harmony. 
+ *
+ * <b><i>This class will be overwrited whenever you regenerate the project with Harmony.
  * You should edit ${curr.name}WebServiceClientAdapter class instead of this one or you will lose all your modifications.</i></b>
  *
  */
@@ -57,7 +57,7 @@
 
 /** Rest Date Format pattern. */
 + (NSString *) REST_UPDATE_DATE_FORMAT;
-    
+
 /** JSON Object ${curr.name} pattern. */
 + (NSString *) ${alias(curr.name, true)};
     <#list curr.fields?values as field>
@@ -141,5 +141,12 @@
  * @return -1 if an error has occurred. 0 if not.
  */
 - (int) insert:(${curr.name} *) ${curr.name?uncap_first} withCallback:(void(^)(${curr.name} *)) callback;
+
+/**
+ * Delete a ${curr.name}. Uses the route : ${curr.options.rest.uri}/%id%.
+ * @param ${curr.name?uncap_first} : The ${curr.name} to delete
+ * @return -1 if an error has occurred. 0 if not.
+ */
+- (void) remove:(${curr.name} *) ${curr.name?uncap_first} withCallback:(void(^)(int)) callback;
 
 @end
