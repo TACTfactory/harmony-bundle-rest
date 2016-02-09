@@ -81,7 +81,7 @@ withWebServiceAdapter:(WebServiceClientAdapter *) adapter {
 
     NSString *jsonString = [NSString stringWithFormat:@"{\"%@\" : [%@]}",
                             entityType,
-                            [TestUtils jsonToString:[[adapter itemsToJson:entities] objectAtIndex:0]]];
+                            [TestUtils jsonListToString:[adapter itemsToJson:entities]]];
 
     stubRequest(@"GET",
                 [NSString stringWithFormat:@"%@%@.json",
