@@ -24,14 +24,10 @@
     [self.entities addObjectsFromArray:[[[${child.name?cap_first}DataLoader get${child.name?cap_first}DataLoader] getItems] allValues]];
 </#list>
 
-    if (self.entities.count > 0) {
-        self.entity = [self.entities objectAtIndex:[TestUtils generateRandomInt:0
-                                                                   withMaxValue:self.entities.count - 1]];
-    }
+    self.entity = [${curr.name?cap_first}TestUtils generateRandom];
+    [self.entities addObject:self.entity];
 
-<#list InheritanceUtils.getAllChildren(curr) as child>
-    self.nbEntities += [[[${child.name?cap_first}DataLoader get${child.name?cap_first}DataLoader] getItems] count];
-</#list>
+    self.nbEntities = self.entities.count;
 }
 
 - (void)tearDown {
