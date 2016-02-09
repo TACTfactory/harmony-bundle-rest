@@ -31,12 +31,12 @@
     NSString *jsonString = [TestUtils jsonToString:[adapter itemToJson:entity]];
 
     stubRequest(@"POST",
-                [NSString stringWithFormat:@"%@%@%.json",
-                 REST_URL_DEV,
+                [NSString stringWithFormat:@"%@%@.json",
+                 Config.REST_URL_DEV,
                  [adapter getUri]])
     .andReturn(201)
     .withBody(jsonString)
-    .withHeaders(@{@"Content-Type", @"application/json"});
+    .withHeaders(@{@"Content-Type" : @"application/json"});
 }
 
 - (void) stubUpdate:(id) entity withWebServiceAdapter:(WebServiceClientAdapter *) adapter {
@@ -44,22 +44,22 @@
 
     stubRequest(@"PUT",
                 [NSString stringWithFormat:@"%@%@/%@.json",
-                 REST_URL_DEV,
+                 Config.REST_URL_DEV,
                  [adapter getUri],
                  [entity valueForKey:@"id"]])
     .andReturn(201)
     .withBody(jsonString)
-    .withHeaders(@{@"Content-Type", @"application/json"});
+    .withHeaders(@{@"Content-Type" : @"application/json"});
 }
 
 - (void) stubDelete:(id) entity withWebServiceAdapter:(WebServiceClientAdapter *) adapter {
     stubRequest(@"DELETE",
                 [NSString stringWithFormat:@"%@%@/%@.json",
-                 REST_URL_DEV,
+                 Config.REST_URL_DEV,
                  [adapter getUri],
                  [entity valueForKey:@"id"]])
     .andReturn(201)
-    .withHeaders(@{@"Content-Type", @"application/json"});
+    .withHeaders(@{@"Content-Type" : @"application/json"});
 }
 
 - (void) stubGet:(id) entity withWebServiceAdapter:(WebServiceClientAdapter *) adapter {
@@ -67,12 +67,12 @@
 
     stubRequest(@"GET",
                 [NSString stringWithFormat:@"%@%@/%@.json",
-                 REST_URL_DEV,
+                 Config.REST_URL_DEV,
                  [adapter getUri],
                  [entity valueForKey:@"id"]])
     .andReturn(201)
     .withBody(jsonString)
-    .withHeaders(@{@"Content-Type", @"application/json"});
+    .withHeaders(@{@"Content-Type" : @"application/json"});
 }
 
 - (void) stubGetAll:(NSString *) entityType
@@ -84,12 +84,12 @@ withWebServiceAdapter:(WebServiceClientAdapter *) adapter {
                             [TestUtils jsonToString:[[adapter itemsToJson:entities] objectAtIndex:0]]];
 
     stubRequest(@"GET",
-                [NSString stringWithFormat:@"%@%@%.json",
-                 REST_URL_DEV,
+                [NSString stringWithFormat:@"%@%@.json",
+                 Config.REST_URL_DEV,
                  [adapter getUri]])
     .andReturn(201)
     .withBody(jsonString)
-    .withHeaders(@{@"Content-Type", @"application/json"});
+    .withHeaders(@{@"Content-Type" : @"application/json"});
 }
 
 - (void) testIsOnline {

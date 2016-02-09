@@ -21,7 +21,7 @@
     self.entities = [NSMutableArray new];
 
 <#list InheritanceUtils.getAllChildren(curr) as child>
-    [self.entities addObjectsFromArray:[[${child.name?cap_first}DataLoader get${child.name?cap_first}DataLoader] getItems] allValues]];
+    [self.entities addObjectsFromArray:[[[${child.name?cap_first}DataLoader get${child.name?cap_first}DataLoader] getItems] allValues]];
 </#list>
 
     if (self.entities.count > 0) {

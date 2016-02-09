@@ -9,14 +9,14 @@
 + (NSString *) REST_FORMAT { return @".json"; }
 
 -(instancetype) init {
-    NSString *defaultHost = REST_URL_HOST_PROD;
-    NSString *defaultScheme = URL_SCHEME_PROD;
-    NSString *defaultPath = URL_PATH_PROD;
+    NSString *defaultHost = Config.REST_URL_HOST_PROD;
+    NSString *defaultScheme = Config.URL_SCHEME_PROD;
+    NSString *defaultPath = Config.URL_PATH_PROD;
 
 #if DEBUG
-    defaultHost = REST_URL_HOST_DEV;
-    defaultScheme = URL_SCHEME_DEV;
-    defaultPath = URL_PATH_DEV;
+    defaultHost = Config.REST_URL_HOST_DEV;
+    defaultScheme = Config.URL_SCHEME_DEV;
+    defaultPath = Config.URL_PATH_DEV;
 #endif
 
     return [self initWithServiceName:defaultHost
