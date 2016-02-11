@@ -6,13 +6,13 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-package com.tactfactory.harmony.bundles.rest.platform.winphone;
+package com.tactfactory.harmony.bundles.rest.platform.windows;
 
 import java.util.List;
 
 import com.tactfactory.harmony.bundles.rest.platform.RestAdapter;
 import com.tactfactory.harmony.meta.EntityMetadata;
-import com.tactfactory.harmony.platform.winphone.WinphoneAdapter;
+import com.tactfactory.harmony.platform.windows.WindowsAdapter;
 import com.tactfactory.harmony.updater.IUpdater;
 
 /**
@@ -20,8 +20,8 @@ import com.tactfactory.harmony.updater.IUpdater;
  * @author Erwan Le Huitouze (erwan.lehuitouze@tactfactory.com)
  *
  */
-public class RestAdapterWinphone
-        extends WinphoneAdapter implements RestAdapter {
+public class RestAdapterWindows
+        extends WindowsAdapter implements RestAdapter {
 
     @Override
     public List<IUpdater> getRestUpdaters() {
