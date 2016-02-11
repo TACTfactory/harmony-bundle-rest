@@ -20,7 +20,7 @@ import com.tactfactory.harmony.bundles.rest.parser.RestParser;
 import com.tactfactory.harmony.bundles.rest.platform.RestAdapter;
 import com.tactfactory.harmony.bundles.rest.platform.android.RestAdapterAndroid;
 import com.tactfactory.harmony.bundles.rest.platform.ios.RestAdapterIos;
-import com.tactfactory.harmony.bundles.rest.platform.winphone.RestAdapterWinphone;
+import com.tactfactory.harmony.bundles.rest.platform.windows.RestAdapterWindows;
 import com.tactfactory.harmony.command.base.CommandBundleBase;
 import com.tactfactory.harmony.meta.ApplicationMetadata;
 import com.tactfactory.harmony.platform.TargetPlatform;
@@ -111,8 +111,8 @@ public class RestCommand extends CommandBundleBase<RestAdapter> {
                 TargetPlatform.ANDROID,
                 RestAdapterAndroid.class);
         this.adapterMapping.put(
-                TargetPlatform.WINPHONE,
-                RestAdapterWinphone.class);
+                TargetPlatform.WINDOWS,
+                RestAdapterWindows.class);
         this.adapterMapping.put(
                 TargetPlatform.IPHONE,
                 RestAdapterIos.class);
