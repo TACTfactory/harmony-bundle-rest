@@ -34,7 +34,7 @@
 <#if (InheritanceUtils.isExtended(curr))>
 #import "${curr.inheritance.superclass.name}WebServiceClientAdapter.h"
 </#if>
-<#if (curr.options.sync??)>#import "${project.name}SyncAdapter.h"</#if>
+<#if (curr.options.sync??)>#import "${project_name}SyncAdapter.h"</#if>
 
 /**
  *
@@ -42,7 +42,7 @@
  * You should edit ${curr.name}WebServiceClientAdapter class instead of this one or you will lose all your modifications.</i></b>
  *
  */
-@interface ${curr.name}WebServiceClientAdapterBase : <#if (curr.options.sync??)>${project.name}SyncAdapter<#else>WebServiceClientAdapter</#if> <#if (InheritanceUtils.isExtended(curr))>{
+@interface ${curr.name}WebServiceClientAdapterBase : <#if (curr.options.sync??)>${project_name}SyncAdapter<#else>WebServiceClientAdapter</#if> <#if (InheritanceUtils.isExtended(curr))>{
 
 @protected
     ${curr.inheritance.superclass.name}WebServiceClientAdapter* motherAdapter;
