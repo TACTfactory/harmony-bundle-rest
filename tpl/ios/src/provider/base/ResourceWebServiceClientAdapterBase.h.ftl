@@ -21,8 +21,8 @@
 </#if>
 
 /**
- * 
- * <b><i>This class will be overwrited whenever you regenerate the project with Harmony. 
+ *
+ * <b><i>This class will be overwrited whenever you regenerate the project with Harmony.
  * You should edit ResourceWebServiceClientAdapter class instead of this one or you will lose all your modifications.</i></b>
  *
  */
@@ -46,8 +46,8 @@
 + (NSString *) JSON_SYNC_DTAG;
 /** JSON_MOBILE_ID attributes. */
 + (NSString *) JSON_MOBILE_ID;
-/** JSON_HASH attributes. */
-+ (NSString *) JSON_HASH;
+/** JSON_UUID attributes. */
++ (NSString *) JSON_UUID;
 
 /** Sync Date Format pattern. */
 + (NSString *) SYNC_UPDATE_DATE_FORMAT;

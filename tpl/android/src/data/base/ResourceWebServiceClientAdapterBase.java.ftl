@@ -70,8 +70,8 @@ public abstract class ResourceWebServiceClientAdapterBase <#if sync>extends Sync
     public static String JSON_SYNC_DTAG = "sync_dTag";
     /** JSON mobile id. */
     public static String JSON_MOBILE_ID = "mobileId";
-    /** JSON_HASH attributes. */
-    protected static String JSON_HASH = "hash";
+    /** JSON_UUID attributes. */
+    protected static String JSON_UUID = "uuid";
 
     /** Sync Date Format pattern. */
     public static final String SYNC_UPDATE_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";</#if>
@@ -142,7 +142,7 @@ public abstract class ResourceWebServiceClientAdapterBase <#if sync>extends Sync
             ResourceContract.COL_SERVERID,
             ResourceContract.COL_SYNC_DTAG,
             ResourceContract.COL_SYNC_UDATE,
-            ResourceContract.COL_HASH</#if>
+            ResourceContract.COL_UUID</#if>
     };
 
     public String getUri() {
@@ -166,8 +166,8 @@ public abstract class ResourceWebServiceClientAdapterBase <#if sync>extends Sync
                 params.put(ResourceWebServiceClientAdapter.JSON_SYNC_UDATE,
                         item.getSync_uDate().toString(SYNC_UPDATE_DATE_FORMAT));
             }
-            params.put(ResourceWebServiceClientAdapter.JSON_HASH,
-                    item.getHash());
+            params.put(ResourceWebServiceClientAdapter.JSON_UUID,
+                    item.getUuid());
 
             String path = item.getLocalPath();
 
@@ -200,8 +200,8 @@ public abstract class ResourceWebServiceClientAdapterBase <#if sync>extends Sync
             params.put(ResourceWebServiceClientAdapter.JSON_SYNC_UDATE,
                     new DateTime(values.get(
                             ResourceContract.COL_SYNC_UDATE)).toString(SYNC_UPDATE_DATE_FORMAT));
-            params.put(ResourceWebServiceClientAdapter.JSON_HASH,
-                    values.get(ResourceContract.COL_HASH));
+            params.put(ResourceWebServiceClientAdapter.JSON_UUID,
+                    values.get(ResourceContract.COL_UUID));
             </#if>
         } catch (JSONException e) {
             Log.e(TAG, e.getMessage());
@@ -485,8 +485,8 @@ public abstract class ResourceWebServiceClientAdapterBase <#if sync>extends Sync
                 }
             }
 
-                resource.setHash(
-                        json.getString(ResourceWebServiceClientAdapter.JSON_HASH));
+                resource.setUuid(
+                        json.getString(ResourceWebServiceClientAdapter.JSON_UUID));
             </#if>
             } catch (JSONException e) {
                 Log.e(TAG, e.getMessage());
@@ -581,8 +581,8 @@ public abstract class ResourceWebServiceClientAdapterBase <#if sync>extends Sync
                 if (json.has(ResourceWebServiceClientAdapter.JSON_SYNC_UDATE)) {
                     row[5] = json.getString(ResourceWebServiceClientAdapter.JSON_SYNC_UDATE);
                 }
-                if (json.has(ResourceWebServiceClientAdapter.JSON_HASH)) {
-                    row[6] = json.getString(ResourceWebServiceClientAdapter.JSON_HASH);
+                if (json.has(ResourceWebServiceClientAdapter.JSON_UUID)) {
+                    row[6] = json.getString(ResourceWebServiceClientAdapter.JSON_UUID);
                 }
                 </#if>
 
