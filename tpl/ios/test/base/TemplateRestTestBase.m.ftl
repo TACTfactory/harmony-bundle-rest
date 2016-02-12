@@ -83,5 +83,11 @@
         dispatch_semaphore_signal(semaphore);
     }];
 }
+<#if (curr.options.sync??)>
+
+- (NSObject *) getId:(id) entity {
+    return [entity valueForKey:@"serverId"];
+}
+</#if>
 
 @end

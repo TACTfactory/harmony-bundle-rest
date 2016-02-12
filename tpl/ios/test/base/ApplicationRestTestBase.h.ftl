@@ -24,5 +24,6 @@ withWebServiceAdapter:(WebServiceClientAdapter *) adapter;
 
 - (void) testIsOnline;
 
+- (NSObject *) getId:(id) entity;
 
 @end

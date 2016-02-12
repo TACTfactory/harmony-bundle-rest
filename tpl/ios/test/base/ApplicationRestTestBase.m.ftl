@@ -46,7 +46,7 @@
                 [NSString stringWithFormat:@"%@%@/%@.json",
                  Config.REST_URL_DEV,
                  [adapter getUri],
-                 [entity valueForKey:@"id"]])
+                 [self getId:entity]])
     .andReturn(201)
     .withBody(jsonString)
     .withHeaders(@{@"Content-Type" : @"application/json"});
@@ -57,7 +57,7 @@
                 [NSString stringWithFormat:@"%@%@/%@.json",
                  Config.REST_URL_DEV,
                  [adapter getUri],
-                 [entity valueForKey:@"id"]])
+                 [self getId:entity]])
     .andReturn(201)
     .withHeaders(@{@"Content-Type" : @"application/json"});
 }
@@ -69,7 +69,7 @@
                 [NSString stringWithFormat:@"%@%@/%@.json",
                  Config.REST_URL_DEV,
                  [adapter getUri],
-                 [entity valueForKey:@"id"]])
+                 [self getId:entity]])
     .andReturn(201)
     .withBody(jsonString)
     .withHeaders(@{@"Content-Type" : @"application/json"});
@@ -93,7 +93,11 @@ withWebServiceAdapter:(WebServiceClientAdapter *) adapter {
 }
 
 - (void) testIsOnline {
-	dispatch_semaphore_signal(semaphore);
+    dispatch_semaphore_signal(semaphore);
+}
+
+- (NSObject *) getId:(id) entity {
+    return [entity valueForKey:@"id"];
 }
 
 @end
