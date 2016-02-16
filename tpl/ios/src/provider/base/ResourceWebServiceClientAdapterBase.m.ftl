@@ -14,8 +14,8 @@
 #import "ResourceWebServiceClientAdapterBase.h"
 
 /**
- * 
- * <b><i>This class will be overwrited whenever you regenerate the project with Harmony. 
+ *
+ * <b><i>This class will be overwrited whenever you regenerate the project with Harmony.
  * You should edit ResourceWebServiceClientAdapter class instead of this one or you will lose all your modifications.</i></b>
  *
  */
@@ -39,8 +39,8 @@
 + (NSString *) JSON_SYNC_DTAG { return @"sync_dTag"; }
 /** JSON_MOBILE_ID attributes. */
 + (NSString *) JSON_MOBILE_ID { return @"mobileId"; }
-/** JSON_HASH attributes. */
-+ (NSString *) JSON_HASH { return @"hash"; }
+/** JSON_UUID attributes. */
++ (NSString *) JSON_UUID { return @"uuid"; }
 
 
 /** Sync Date Format pattern. */
@@ -55,7 +55,7 @@
             ResourceContract.COL_SERVERID,
             ResourceContract.COL_SYNC_DTAG,
             ResourceContract.COL_SYNC_UDATE,
-            ResourceContract.COL_HASH,</#if>
+            ResourceContract.COL_UUID,</#if>
             nil];
 };
 
@@ -82,7 +82,7 @@
         [params setValue:[NSNumber numberWithInt:item.id]
                   forKey:ResourceWebServiceClientAdapterBase.JSON_MOBILE_ID];
 
-        [params setValue:[NSNumber numberWithBool:item.sync_dtag]
+        [params setValue:[NSNumber numberWithBool:item.sync_dTag]
                   forKey:ResourceWebServiceClientAdapterBase.JSON_SYNC_DTAG];
 
         if (item.sync_uDate != nil) {
@@ -94,7 +94,7 @@
         }
 
         [params setValue:item.uuid
-                  forKey:ResourceWebServiceClientAdapterBase.JSON_HASH];
+                  forKey:ResourceWebServiceClientAdapterBase.JSON_UUID];
 
         NSString *path = item.localPath;
 
@@ -212,7 +212,7 @@
 
         if (object.result != nil) {
             NSMutableDictionary *json = [NSMutableDictionary dictionaryWithDictionary:(NSDictionary *) object.result];
-            
+
             if ([self isValidJSON:json]) {
                 [self extract:json withItem:item];
             }
@@ -237,11 +237,11 @@
 
         if (object.result != nil) {
             NSMutableDictionary* json = [NSMutableDictionary dictionaryWithDictionary:(NSDictionary*) object.result];
-            
+
             if ([self isValidJSON:json]) {
                 NSString *originalPath = item.path;
                 [self extract:json withItem:item];
-                
+
                 void (^uploadCallback )(HttpResponse *) = ^(HttpResponse *object) {
                     NSMutableDictionary *json = [NSMutableDictionary dictionaryWithDictionary:
                                                  (NSDictionary *) object.result];
@@ -257,7 +257,7 @@
                         callback(item);
                     }
                 };
-                
+
                 [self upload:item withCallback:uploadCallback];
             }
         } else {
@@ -282,11 +282,11 @@
 
         if (object.result != nil) {
             NSMutableDictionary *json = [NSMutableDictionary dictionaryWithDictionary:(NSDictionary *) object.result];
-            
+
             if ([self isValidJSON:json]) {
                 NSString *originalPath = item.path;
                 [self extract:json withItem:item];
-                
+
                 void ( ^uploadCallback )(HttpResponse *) = ^(HttpResponse *object) {
                     NSMutableDictionary *json = [NSMutableDictionary dictionaryWithDictionary:
                                                  (NSDictionary *) object.result];
@@ -302,7 +302,7 @@
                         callback(item);
                     }
                 };
-                
+
                 [self upload:item withCallback:uploadCallback];
             }
         } else {
@@ -311,14 +311,14 @@
             }
         }
     };
-        
+
         [self invokeRequest:PUT withRequest:[NSString stringWithFormat:@"%@/%@%@",
                                              [self getUri],
                                              <#if sync>item.serverId<#else>[NSNumber numberWithInt:item.id]</#if>,
                                              [ResourceWebServiceClientAdapterBase REST_FORMAT]]
                  withParams:[self itemToJson:item]
                withCallback:restCallback];
-        
+
     } else {
         [self insert:item withCallback:callback];
     }
@@ -326,9 +326,9 @@
 
 - (void) upload:(EntityResourceBase *) item withCallback:(void(^)(HttpResponse *)) callback {
     NSMutableDictionary *json = [self itemToJson:item];
-    
+
     [json setValue:item.<#if sync>localPath<#else>path</#if> forKey:[ImageUtils IMAGE_KEY_JSON]];
-    
+
     [self invokeRequest:POST withRequest:[NSString stringWithFormat:@"%@/upload/%@%@",
                                          [self getUri],
                                          <#if sync>item.serverId<#else>[NSNumber numberWithInt:item.id]</#if>,
@@ -345,12 +345,12 @@
         if (![self jsonIsNull:json withProperty:[ResourceWebServiceClientAdapterBase JSON_ID]]) {
             <#if sync>
             id server_id = [json objectForKey:[ResourceWebServiceClientAdapterBase JSON_ID]];
-            
+
             if (server_id != nil && [server_id isKindOfClass:[NSString class]]) {
                 server_id = [[NSNumberFormatter new]
                              numberFromString:[json objectForKey:[ResourceWebServiceClientAdapterBase JSON_ID]]];
             }
-            
+
             if (server_id != 0) {
                 item.serverId = server_id;
             }
@@ -363,15 +363,15 @@
         if (![self jsonIsNull:json withProperty:[ResourceWebServiceClientAdapterBase JSON_MOBILE_ID]]) {
             item.id = [[json objectForKey:[ResourceWebServiceClientAdapterBase JSON_ID]] intValue];
         }
-        
+
         if (![self jsonIsNull:json withProperty:[ResourceWebServiceClientAdapterBase JSON_ORIGINALPATH]]) {
             item.localPath = [json objectForKey:[ResourceWebServiceClientAdapterBase JSON_ORIGINALPATH]];
         }
-        
+
         if (![self jsonIsNull:json withProperty:[ResourceWebServiceClientAdapterBase JSON_SYNC_DTAG]]) {
-            item.sync_dtag = [[json objectForKey:[ResourceWebServiceClientAdapterBase JSON_SYNC_DTAG]] boolValue];
+            item.sync_dTag = [[json objectForKey:[ResourceWebServiceClientAdapterBase JSON_SYNC_DTAG]] boolValue];
         }
-        
+
         if (![self jsonIsNull:json withProperty:[ResourceWebServiceClientAdapterBase JSON_SYNC_UDATE]]) {
             NSDateFormatter *dateFormatter = [NSDateFormatter new];
             [dateFormatter setDateFormat:[ResourceWebServiceClientAdapterBase SYNC_UPDATE_DATE_FORMAT]];
@@ -385,14 +385,14 @@
             }
         }
 
-        item.uuid = [json objectForKey:[ResourceWebServiceClientAdapterBase JSON_HASH]];
+        item.uuid = [json objectForKey:[ResourceWebServiceClientAdapterBase JSON_UUID]];
         </#if>
 
         } @catch (NSException *exception) {
-            
+
         }
     }
-    
+
     return result;
 }
 
@@ -405,7 +405,7 @@
 
     @try {
         NSString *path = item.<#if sync>localPath<#else>path</#if>;
-    
+
         [params setValue:<#if sync>item.serverId<#else>[NSNumber numberWithInt:item.id]</#if> forKey:ResourceWebServiceClientAdapterBase.JSON_ID];
         [params setValue:path forKey:ResourceWebServiceClientAdapterBase.JSON_<#if sync>ORIGINAL</#if>PATH];
     } @catch(NSException* e) {

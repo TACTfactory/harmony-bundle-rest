@@ -580,7 +580,7 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
                         ${curr.name?uncap_first}.setServerId(server_id);
                     }
                 }
-                        </#if><#elseif (curr.options.sync?? && field.name=="hash")><#if !InheritanceUtils.isExtended(curr)>
+                        </#if><#elseif (curr.options.sync?? && field.name=="uuid")><#if !InheritanceUtils.isExtended(curr)>
                     ${curr.name?uncap_first}.set${field.name?cap_first}(
                             json.get${typeToJsonType(field)}(${field.owner}WebServiceClientAdapter.${alias(field.name)}));
                         </#if><#else>
@@ -853,9 +853,9 @@ public abstract class ${curr.name}WebServiceClientAdapterBase
             params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)},
                     new DateTime(values.get(
                             ${ContractUtils.getContractCol(field)})).toString(SYNC_UPDATE_DATE_FORMAT));
-            </#if><#elseif (curr.options.sync?? && field.name == "hash")><#if !InheritanceUtils.isExtended(curr)>
+            </#if><#elseif (curr.options.sync?? && field.name == "uuid")><#if !InheritanceUtils.isExtended(curr)>
             params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)},
-                    values.get(${curr.name?cap_first}Contract.COL_HASH));
+                    values.get(${curr.name?cap_first}Contract.COL_UUID));
                     </#if><#else>
                         <#if FieldsUtils.getJavaType(field)?lower_case == "datetime">
             params.put(${field.owner}WebServiceClientAdapter.${alias(field.name)},

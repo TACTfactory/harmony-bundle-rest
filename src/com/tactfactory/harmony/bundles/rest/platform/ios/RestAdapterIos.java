@@ -31,35 +31,35 @@ public class RestAdapterIos extends IosAdapter implements RestAdapter {
         String templatePath = this.getTemplateSourceProviderPath();
         String filePath = this.getSourcePath()
                 + "/Data/WebService/";
-        
+
         result.add(new SourceFile(
                 templatePath + "base/WebServiceClientAdapterBase.h",
-                filePath + "base/WebServiceClientAdapterBase.h",
+                filePath + "Base/WebServiceClientAdapterBase.h",
                 true));
 
         result.add(new SourceFile(
                 templatePath + "base/WebServiceClientAdapterBase.m",
-                filePath + "base/WebServiceClientAdapterBase.m",
+                filePath + "Base/WebServiceClientAdapterBase.m",
                 true));
- 
+
         result.add(new SourceFile(
                 templatePath + "base/ResourceWebServiceClientAdapterBase.h",
-                filePath + "base/ResourceWebServiceClientAdapterBase.h",
+                filePath + "Base/ResourceWebServiceClientAdapterBase.h",
                 true));
 
         result.add(new SourceFile(
                 templatePath + "base/ResourceWebServiceClientAdapterBase.m",
-                filePath + "base/ResourceWebServiceClientAdapterBase.m",
+                filePath + "Base/ResourceWebServiceClientAdapterBase.m",
                 true));
 
         // Make Abstract Adapter Base general for all entities
         result.add(new SourceFile(
-                templatePath + "WebServiceClientAdapter.h", 
+                templatePath + "WebServiceClientAdapter.h",
                 filePath + "WebServiceClientAdapter.h",
                 false));
-        
+
         result.add(new SourceFile(
-                templatePath + "WebServiceClientAdapter.m", 
+                templatePath + "WebServiceClientAdapter.m",
                 filePath + "WebServiceClientAdapter.m",
                 false));
 
@@ -76,49 +76,49 @@ public class RestAdapterIos extends IosAdapter implements RestAdapter {
 
         // Make RestClient
         result.add(new SourceFile(
-                templatePath + "base/RestClientBase.h", 
-                filePath + "base/RestClientBase.h",
+                templatePath + "base/RestClientBase.h",
+                filePath + "Base/RestClientBase.h",
                 true));
 
         result.add(new SourceFile(
-                templatePath + "base/RestClientBase.m", 
-                filePath + "base/RestClientBase.m",
+                templatePath + "base/RestClientBase.m",
+                filePath + "Base/RestClientBase.m",
                 true));
-        
+
         // Make RestClient
         result.add(new SourceFile(
-                templatePath + "RestClient.h", 
+                templatePath + "RestClient.h",
                 filePath + "RestClient.h",
                 false));
 
         result.add(new SourceFile(
-                templatePath + "RestClient.m", 
+                templatePath + "RestClient.m",
                 filePath + "RestClient.m",
                 false));
 
         // Make RestClient
         result.add(new SourceFile(
-                templatePath + "HttpResponse.h", 
+                templatePath + "HttpResponse.h",
                 filePath + "HttpResponse.h",
                 false));
 
         result.add(new SourceFile(
-                templatePath + "HttpResponse.m", 
+                templatePath + "HttpResponse.m",
                 filePath + "HttpResponse.m",
                 false));
 
         result.add(new SourceFile(
-                templatePath + "Reachability.h", 
+                templatePath + "Reachability.h",
                 filePath + "Reachability.h",
                 false));
 
         result.add(new SourceFile(
-                templatePath + "Reachability.m", 
+                templatePath + "Reachability.m",
                 filePath + "Reachability.m",
                 false));
 
         result.add(new SourceFile(
-                this.getTemplateSourceEntityBasePath() + "RestResource.h", 
+                this.getTemplateSourceEntityBasePath() + "RestResource.h",
                 this.getSourcePath() + "/Entity/Base/RestResource.h",
                 true));
 
@@ -128,7 +128,7 @@ public class RestAdapterIos extends IosAdapter implements RestAdapter {
     @Override
     public List<IUpdater> getRestEntityUpdaters(EntityMetadata entity) {
         List<IUpdater> result = new ArrayList<IUpdater>();
-        
+
         String templatePath = this.getTemplateSourceProviderPath();
         String filePath = this.getSourcePath()
                 + "/Data/WebService/";
@@ -146,7 +146,7 @@ public class RestAdapterIos extends IosAdapter implements RestAdapter {
                         filePath,
                         entity.getName()),
                 true));
-        
+
         result.add(new SourceFile(
                 templatePath + "TemplateWebServiceClientAdapter.h",
                 String.format("%s/%sWebServiceClientAdapter.h",
@@ -160,7 +160,7 @@ public class RestAdapterIos extends IosAdapter implements RestAdapter {
                         filePath,
                         entity.getName()),
                 false));
-        
+
         return result;
     }
 
@@ -171,7 +171,7 @@ public class RestAdapterIos extends IosAdapter implements RestAdapter {
         String templatePath = this.getTemplateTestsPath();
         String filePath = this.getTestPath()
                 + "/WebService/";
- 
+
         result.add(new SourceFile(
                 templatePath + "base/ApplicationRestTestBase.h",
                 filePath + "Base/RestTestBase.h",
@@ -181,7 +181,7 @@ public class RestAdapterIos extends IosAdapter implements RestAdapter {
                 templatePath + "base/ApplicationRestTestBase.m",
                 filePath + "Base/RestTestBase.m",
                 true));
-        
+
         result.add(new SourceFile(
                 templatePath + "ApplicationRestTest.h",
                 filePath + "RestTest.h",
@@ -199,7 +199,7 @@ public class RestAdapterIos extends IosAdapter implements RestAdapter {
     public List<IUpdater> getRestEntityUpdatersTest(EntityMetadata entity) {
         List<IUpdater> result = new ArrayList<IUpdater>();
 
-        
+
         String templatePath = this.getTemplateTestsPath();
         String filePath = this.getTestPath()
                 + "/WebService/";
@@ -217,7 +217,7 @@ public class RestAdapterIos extends IosAdapter implements RestAdapter {
                         filePath,
                         entity.getName()),
                 true));
-        
+
         result.add(new SourceFile(
                 templatePath + "TemplateRestTest.h",
                 String.format("%s/%sRestTest.h",
@@ -231,7 +231,7 @@ public class RestAdapterIos extends IosAdapter implements RestAdapter {
                         filePath,
                         entity.getName()),
                 false));
-        
+
         return result;
     }
 

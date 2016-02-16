@@ -528,7 +528,7 @@
 - (int) insert:(${curr.name}*) ${curr.name?uncap_first} withCallback:(void(^)(${curr.name} *)) callback {
     int result = -1;
 
-    void ( ^restCallback )( HttpResponse* ) = ^(HttpResponse* object) {
+    void (^restCallback)(HttpResponse *) = ^(HttpResponse *object) {
         NSLog(@"Convert to item ${curr.name}.");
 
         if (object.result != nil) {
@@ -552,6 +552,29 @@
            withCallback:restCallback];
 
     return result;
+}
+
+- (void) remove:(${curr.name} *) ${curr.name?uncap_first} withCallback:(void(^)(int)) callback {
+    void (^restCallback)(HttpResponse *) = ^(HttpResponse *object) {
+        NSLog(@"Delete item ${curr.name}.");
+        int result = -1;
+
+        if (object.statusCode == 201) {
+            result = 0;
+        }
+
+        if (callback != nil) {
+            callback(result);
+        }
+    };
+
+    [self invokeRequest:DELETE
+            withRequest:[NSString stringWithFormat:@"%@<#if (curr.options.sync??)>/%@<#else><#list curr_ids as id>/%@</#list></#if>%@",
+                         [self getUri],
+                         <#if (curr.options.sync??)>${curr.name?uncap_first}.serverId,<#else><#list curr_ids as id>[NSNumber numberWithInt:${curr.name?uncap_first}.${id.name}],</#list></#if>
+                         [${curr.name}WebServiceClientAdapter REST_FORMAT]]
+             withParams:nil
+           withCallback:restCallback];
 }
 
 @end
