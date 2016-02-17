@@ -19,12 +19,12 @@ public class RestDemactFactory extends DemactFactory {
 
     /**
      * Generate the test metadata.
-     * 
+     *
      * @return The test metadata
      */
-    public static ApplicationMetadata generateTestMetadata() {
-        ApplicationMetadata applicationMetadata =
-                DemactFactory.generateTestMetadata();
+    @Override
+    public ApplicationMetadata getTestMetadata() {
+        ApplicationMetadata applicationMetadata = super.getTestMetadata();
 
         EntityMetadata user = applicationMetadata.getEntities().get("User");
         EntityMetadata client = applicationMetadata.getEntities().get("Client");
