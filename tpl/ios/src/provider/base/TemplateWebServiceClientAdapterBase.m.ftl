@@ -130,7 +130,7 @@
     </#list>
 <#if (curr.options.sync??)>
 /** JSON mobile id. */
-+ (NSString *) JSON_MOBILE_ID { return @"mobile_id"; }
++ (NSString *) JSON_MOBILE_ID { return @"mobileId"; }
 /** Sync Date Format pattern. */
 + (NSString *) SYNC_UPDATE_DATE_FORMAT { return @"${curr.options.sync.updateDateFormatJava}"; }
 </#if>
@@ -302,8 +302,8 @@
             }
                         </#if><#elseif (curr.options.sync?? && field.name=="serverId")><#if !InheritanceUtils.isExtended(curr)>
             if (![self jsonIsNull:json withProperty:[${field.owner}WebServiceClientAdapter JSON_ID]]) {
-                NSNumber *server_id = [[NSNumberFormatter new]
-                                       numberFromString:[json objectForKey:[${field.owner}WebServiceClientAdapter JSON_ID]]];
+                NSNumber *server_id = [NSNumber numberWithLong:
+                        [[json objectForKey:[${field.owner}WebServiceClientAdapter JSON_ID]] longValue]];
 
                 if (server_id != 0) {
                     item.serverId = server_id;
