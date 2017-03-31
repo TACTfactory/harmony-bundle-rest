@@ -32,10 +32,10 @@ import com.tactfactory.harmony.utils.TactFileUtils;
 @RunWith(Parameterized.class)
 public class RestGlobalTest extends CommonTest {
     /** Path of entity folder. */
-    private static final String ENTITY_PATH = "android/src/%s/entity/%s.java";
+    private static final String ENTITY_PATH = ANDROID_SRC_PATH + "%s/entity/%s.java";
 
     /** Path of data folder. */
-    private static final String DATA_PATH = "android/src/%s/data/%s.java";
+    private static final String DATA_PATH = ANDROID_SRC_PATH + "%s/data/%s.java";
 
     public RestGlobalTest(ApplicationMetadata currentMetadata)
             throws Exception {
@@ -66,9 +66,9 @@ public class RestGlobalTest extends CommonTest {
 
     /**
      * JUnit Parameters method.
-     * This should return the various application metadata associated 
+     * This should return the various application metadata associated
      * to your various test projects. (ie. Demact, Tracscan, etc.)
-     * 
+     *
      * @return The collection of application metadatas.
      */
     @Parameters
@@ -105,7 +105,7 @@ public class RestGlobalTest extends CommonTest {
         getHarmony().findAndExecute(
                 RestCommand.GENERATE_ADAPTERS, new String[] {}, null);
 
-        final RestCommand command = 
+        final RestCommand command =
                 (RestCommand) Harmony.getInstance().getCommand(
                         RestCommand.class);
         command.generateMetas();
@@ -118,17 +118,27 @@ public class RestGlobalTest extends CommonTest {
      */
     @Test
     public final void testImport() {
-        for (EntityMetadata entity 
+        for (EntityMetadata entity
                 : this.currentMetadata.getEntities().values()) {
-            EntityMetadata parsedEntity = 
+            EntityMetadata parsedEntity =
                     parsedMetadata.getEntities().get(entity.getName());
 
+            if (parsedEntity == null || parsedEntity.getImports() == null) {
+                int i = 0;
+                i++;
+            }
+
             for (String impor : entity.getImports()) {
-                Assert.assertTrue(String.format(
-                        "Import : %s should import %s in project %s",
-                        entity.getName(),
-                        impor,
-                        this.currentMetadata.getName()),
+                if (parsedEntity == null || parsedEntity.getImports() == null || impor == null) {
+                    int i = 0;
+                    i++;
+                }
+                Assert.assertTrue(
+                        String.format(
+                                "Import : %s should import %s in project %s",
+                                entity.getName(),
+                                impor,
+                                this.currentMetadata.getName()),
                         parsedEntity.getImports().contains(impor));
             }
 
@@ -155,7 +165,7 @@ public class RestGlobalTest extends CommonTest {
                     "Entity %s not found in project : %s.",
                     entity.getName(),
                     this.currentMetadata.getName()),
-                    parsedEntity); 
+                    parsedEntity);
 
             if (!entity.isInternal()) {
                 CommonTest.hasFindFile(
@@ -204,7 +214,7 @@ public class RestGlobalTest extends CommonTest {
      */
     @Test
     public void testRepositories() {
-        for (EntityMetadata entity 
+        for (EntityMetadata entity
                 : this.currentMetadata.getEntities().values()) {
 
             if (entity.getOptions().containsKey(RestMetadata.NAME)) {
@@ -223,21 +233,22 @@ public class RestGlobalTest extends CommonTest {
     }
 
     /**
-     * Copy the test entities in the test project. 
+     * Copy the test entities in the test project.
      */
     protected static void makeEntities() {
-        final String pathNameSpace = 
+        final String pathNameSpace =
                 ApplicationMetadata.INSTANCE.getProjectNameSpace()
                 .replaceAll("\\.", "/");
 
         String srcDir = String.format("%s/resources/%s/%s/",
                 Harmony.getCommandPath(RestCommand.class),
-                pathNameSpace, 
+                pathNameSpace,
                 "entity");
 
-        String destDir = String.format("%s/src/%s/%s/", 
-                Harmony.getProjectAndroidPath(), 
-                pathNameSpace, 
+        String destDir = String.format(
+                "%s/app/src/main/java/%s/%s/",
+                Harmony.getProjectAndroidPath(),
+                pathNameSpace,
                 "entity");
 
         TactFileUtils.makeFolderRecursive(srcDir, destDir, true);
@@ -248,11 +259,11 @@ public class RestGlobalTest extends CommonTest {
 
         srcDir = String.format("%s/resources/%s/%s/%s/",
                 Harmony.getCommandPath(RestCommand.class),
-                pathNameSpace, 
+                pathNameSpace,
                 "fixture",
                 "yml");
 
-        destDir = String.format("%s/%s/", 
+        destDir = String.format("%s/app/src/main/%s/",
                 Harmony.getProjectAndroidPath(),
                 "assets");
 
