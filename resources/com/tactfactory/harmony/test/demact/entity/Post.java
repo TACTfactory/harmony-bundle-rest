@@ -56,9 +56,9 @@ public class Post implements Serializable {
 	@OneToMany(mappedBy = "post")
 	private ArrayList<Comment> comments;
 
-	/** The different categories of this post. */
-	@ManyToMany
-	private ArrayList<Category> categories;
+	/** The different groups of this post. */
+    @ManyToMany
+    private ArrayList<Group> groups;
 
 	/** Creation Date. */
 	@Column(name = "created_at")
