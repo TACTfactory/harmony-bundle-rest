@@ -3,6 +3,7 @@ package com.tactfactory.harmony.bundles.rest.test;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -23,6 +24,7 @@ import com.tactfactory.harmony.command.ProjectCommand;
 import com.tactfactory.harmony.meta.ApplicationMetadata;
 import com.tactfactory.harmony.meta.EntityMetadata;
 import com.tactfactory.harmony.test.CommonTest;
+import com.tactfactory.harmony.test.factory.ProjectMetadataFactory;
 import com.tactfactory.harmony.utils.ConsoleUtils;
 import com.tactfactory.harmony.utils.TactFileUtils;
 
@@ -37,8 +39,7 @@ public class RestGlobalTest extends CommonTest {
     /** Path of data folder. */
     private static final String DATA_PATH = ANDROID_SRC_PATH + "%s/data/%s.java";
 
-    public RestGlobalTest(ApplicationMetadata currentMetadata)
-            throws Exception {
+    public RestGlobalTest(ApplicationMetadata currentMetadata) throws Exception {
         super(currentMetadata);
     }
 
@@ -73,19 +74,27 @@ public class RestGlobalTest extends CommonTest {
      */
     @Parameters
     public static Collection<Object[]> getParameters() {
-        Collection<Object[]> result = new ArrayList<Object[]>();
+        return new RestTestConfiguration().getParameters();
+    }
 
-        //		result.add(new ApplicationMetadata[] {
-        //				TracScanFactory.generateTestMetadata()
-        //		});
-        result.add(new ApplicationMetadata[] {
-                RestDemactFactory.generateTestMetadata()
-        });
-        result.add(new ApplicationMetadata[] {
-                RestManagementFactory.generateTestMetadata()
-        });
+    /**
+     * Rest Test Configuration class wich expose parameters for test runner.
+     *
+     * @author Erwan Le Huitouze (erwan.lehuitouze@tactfactory.com)
+     *
+     */
+    protected static class RestTestConfiguration extends CommonTestConfiguration {
+        @Override
+        protected List<Class<? extends ProjectMetadataFactory>> getFactories() {
+            List<Class<? extends ProjectMetadataFactory>> result =
+                    new ArrayList<Class<? extends ProjectMetadataFactory>>();
 
-        return result;
+//            result.add(RestTracScanFactory.class);
+            result.add(RestDemactFactory.class);
+            result.add(RestManagementFactory.class);
+
+            return result;
+        }
     }
 
     /**
@@ -96,18 +105,14 @@ public class RestGlobalTest extends CommonTest {
 
         getHarmony().findAndExecute(ProjectCommand.INIT_ANDROID, null, null);
         makeEntities();
-        getHarmony().findAndExecute(
-                OrmCommand.GENERATE_ENTITIES, new String[] {}, null);
-        getHarmony().findAndExecute(
-                OrmCommand.GENERATE_CRUD, new String[] {}, null);
-        getHarmony().findAndExecute(
-                FixtureCommand.FIXTURE_INIT, new String[] {}, null);
-        getHarmony().findAndExecute(
-                RestCommand.GENERATE_ADAPTERS, new String[] {}, null);
 
-        final RestCommand command =
-                (RestCommand) Harmony.getInstance().getCommand(
-                        RestCommand.class);
+        getHarmony().findAndExecute(OrmCommand.GENERATE_ENTITIES, new String[] {}, null);
+        getHarmony().findAndExecute(OrmCommand.GENERATE_CRUD, new String[] {}, null);
+        getHarmony().findAndExecute(FixtureCommand.FIXTURE_INIT, new String[] {}, null);
+        getHarmony().findAndExecute(RestCommand.GENERATE_ADAPTERS, new String[] {}, null);
+
+        final RestCommand command = (RestCommand) Harmony.getInstance().getCommand(RestCommand.class);
+
         command.generateMetas();
 
         parsedMetadata = ApplicationMetadata.INSTANCE;
@@ -118,21 +123,10 @@ public class RestGlobalTest extends CommonTest {
      */
     @Test
     public final void testImport() {
-        for (EntityMetadata entity
-                : this.currentMetadata.getEntities().values()) {
-            EntityMetadata parsedEntity =
-                    parsedMetadata.getEntities().get(entity.getName());
-
-            if (parsedEntity == null || parsedEntity.getImports() == null) {
-                int i = 0;
-                i++;
-            }
+        for (EntityMetadata entity : this.currentMetadata.getEntities().values()) {
+            EntityMetadata parsedEntity = parsedMetadata.getEntities().get(entity.getName());
 
             for (String impor : entity.getImports()) {
-                if (parsedEntity == null || parsedEntity.getImports() == null || impor == null) {
-                    int i = 0;
-                    i++;
-                }
                 Assert.assertTrue(
                         String.format(
                                 "Import : %s should import %s in project %s",
@@ -142,10 +136,11 @@ public class RestGlobalTest extends CommonTest {
                         parsedEntity.getImports().contains(impor));
             }
 
-            Assert.assertEquals(String.format(
-                    "Import : %s has a wrong number of imports in project %s",
-                    entity.getName(),
-                    this.currentMetadata.getName()),
+            Assert.assertEquals(
+                    String.format(
+                            "Import : %s has a wrong number of imports in project %s",
+                            entity.getName(),
+                            this.currentMetadata.getName()),
                     entity.getImports().size(),
                     parsedEntity.getImports().size());
         }
@@ -158,8 +153,7 @@ public class RestGlobalTest extends CommonTest {
     @Test
     public final void testEntities() {
         for (EntityMetadata entity : this.currentMetadata.getEntities().values()) {
-            EntityMetadata parsedEntity = parsedMetadata.getEntities().get(
-                    entity.getName());
+            EntityMetadata parsedEntity = parsedMetadata.getEntities().get(entity.getName());
 
             Assert.assertNotNull(String.format(
                     "Entity %s not found in project : %s.",
@@ -168,34 +162,28 @@ public class RestGlobalTest extends CommonTest {
                     parsedEntity);
 
             if (!entity.isInternal()) {
-                CommonTest.hasFindFile(
-                        String.format(
-                                ENTITY_PATH,
-                                this.currentMetadata.getProjectNameSpace(),
-                                entity.getName()));
+                CommonTest.hasFindFile(String.format(
+                        ENTITY_PATH,
+                        this.currentMetadata.getProjectNameSpace(),
+                        entity.getName()));
             }
 
-            RestMetadata currentRestMetadata = (RestMetadata) entity
-                    .getOptions().get(RestMetadata.NAME);
+            RestMetadata currentRestMetadata = (RestMetadata) entity.getOptions().get(RestMetadata.NAME);
 
             if (currentRestMetadata != null) {
-                RestMetadata parsedRestMetadata = (RestMetadata) parsedEntity
-                        .getOptions().get(RestMetadata.NAME);
+                RestMetadata parsedRestMetadata = (RestMetadata) parsedEntity.getOptions().get(RestMetadata.NAME);
 
-                Assert.assertNotNull(String.format(
-                        "Entity %s must have rest annotation",
-                        entity.getName()),
+                Assert.assertNotNull(
+                        String.format("Entity %s must have rest annotation", entity.getName()),
                         parsedRestMetadata);
 
-                Assert.assertEquals(String.format(
-                        "Entity %s hasn't right rest uri",
-                        entity.getName()),
+                Assert.assertEquals(
+                        String.format("Entity %s hasn't right rest uri", entity.getName()),
                         currentRestMetadata.getUri(),
                         parsedRestMetadata.getUri());
 
-                Assert.assertEquals(String.format(
-                        "Entity %s hasn't right rest security",
-                        entity.getName()),
+                Assert.assertEquals(
+                        String.format("Entity %s hasn't right rest security", entity.getName()),
                         currentRestMetadata.getSecurity(),
                         parsedRestMetadata.getSecurity());
             }
@@ -205,8 +193,8 @@ public class RestGlobalTest extends CommonTest {
                 String.format(
                         "Found a wrong number of entities in project : %s",
                         this.currentMetadata.getName()),
-                        this.currentMetadata.getEntities().size(),
-                        parsedMetadata.getEntities().size());
+                this.currentMetadata.getEntities().size(),
+                parsedMetadata.getEntities().size());
     }
 
     /**
@@ -214,9 +202,7 @@ public class RestGlobalTest extends CommonTest {
      */
     @Test
     public void testRepositories() {
-        for (EntityMetadata entity
-                : this.currentMetadata.getEntities().values()) {
-
+        for (EntityMetadata entity : this.currentMetadata.getEntities().values()) {
             if (entity.getOptions().containsKey(RestMetadata.NAME)) {
                 CommonTest.hasFindFile(String.format(
                         DATA_PATH,

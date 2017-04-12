@@ -18,12 +18,12 @@ public class RestManagementFactory extends ManagementFactory {
 
     /**
      * Generate the test metadata.
-     * 
+     *
      * @return The test metadata
      */
-    public static ApplicationMetadata generateTestMetadata() {
-        ApplicationMetadata applicationMetadata =
-                ManagementFactory.generateTestMetadata();
+    @Override
+    public ApplicationMetadata getTestMetadata() {
+        ApplicationMetadata applicationMetadata = super.getTestMetadata();
 
         for (EntityMetadata entity : applicationMetadata.getEntities().values()) {
             if (!entity.isInternal()) {
