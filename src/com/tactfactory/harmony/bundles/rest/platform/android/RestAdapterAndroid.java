@@ -136,10 +136,11 @@ public class RestAdapterAndroid extends AndroidAdapter implements RestAdapter {
         result.addAll(this.getLibrariesTestCopyFile(libraries));
 
         String templatePath = this.getTemplateTestsPath();
-        String filePath = this.getTestPath()
-                + this.getSource() + "/"
-                + this.getApplicationMetadata().getProjectNameSpace() + "/"
-                + "test/";
+                
+        String filePath = String.format("%s/%s/%s/",
+                this.getTestPath(),
+                this.getApplicationMetadata().getProjectNameSpace(),
+                this.getTest());
 
         result.add(new SourceFile(
                 templatePath + "base/TestWSBase.java",
@@ -154,10 +155,11 @@ public class RestAdapterAndroid extends AndroidAdapter implements RestAdapter {
         List<IUpdater> result = new ArrayList<IUpdater>();
 
         String templatePath = this.getTemplateTestsPath();
-        String filePath = this.getTestPath()
-                + this.getSource() + "/"
-                + this.getApplicationMetadata().getProjectNameSpace() + "/"
-                + "test/";
+        
+        String filePath = String.format("%s/%s/%s/",
+                this.getTestPath(),
+                this.getApplicationMetadata().getProjectNameSpace(),
+                this.getTest());
 
         result.add(new SourceFile(
                 templatePath + "base/TemplateTestWSBase.java",
