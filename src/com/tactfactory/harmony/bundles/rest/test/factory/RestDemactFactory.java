@@ -31,6 +31,8 @@ public class RestDemactFactory extends DemactFactory {
         EntityMetadata comment =
                 applicationMetadata.getEntities().get("Comment");
         EntityMetadata post = applicationMetadata.getEntities().get("Post");
+        EntityMetadata group = applicationMetadata.getEntities().get("Group");
+        EntityMetadata groupToComment = applicationMetadata.getEntities().get("GroupToComment");
 
         // Set import
         user.getImports().add(Rest.class.getSimpleName());
@@ -38,6 +40,8 @@ public class RestDemactFactory extends DemactFactory {
         client.getImports().add(Rest.class.getSimpleName());
         comment.getImports().add(Rest.class.getSimpleName());
         post.getImports().add(Rest.class.getSimpleName());
+        group.getImports().add(Rest.class.getSimpleName());
+        groupToComment.getImports().add(Rest.class.getSimpleName());
 
         // Set rest metadata
         RestMetadata restMetadata = new RestMetadata();
@@ -56,6 +60,14 @@ public class RestDemactFactory extends DemactFactory {
         restMetadata = new RestMetadata();
         restMetadata.setUri("Post");
         post.getOptions().put(RestMetadata.NAME, restMetadata);
+
+        restMetadata = new RestMetadata();
+        restMetadata.setUri("Group");
+        group.getOptions().put(RestMetadata.NAME, restMetadata);
+
+        restMetadata = new RestMetadata();
+        restMetadata.setUri("GroupToComment");
+        groupToComment.getOptions().put(RestMetadata.NAME, restMetadata);
 
         return applicationMetadata;
     }

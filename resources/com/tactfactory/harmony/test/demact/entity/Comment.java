@@ -60,10 +60,6 @@ public class Comment implements Serializable { //TODO extends EntityBase {
 	@Column
 	private boolean validate = false;
 
-	/** Categories of this comment. */
-	@OneToMany
-	private ArrayList<CategoryToComment> categories;
-
 	/**
 	 * Constructor.
 	 */

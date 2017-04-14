@@ -34,10 +34,10 @@ import com.tactfactory.harmony.utils.TactFileUtils;
 @RunWith(Parameterized.class)
 public class RestGlobalTest extends CommonTest {
     /** Path of entity folder. */
-    private static final String ENTITY_PATH = "android/src/%s/entity/%s.java";
+    private static final String ENTITY_PATH = ANDROID_SRC_PATH + "%s/entity/%s.java";
 
     /** Path of data folder. */
-    private static final String DATA_PATH = "android/src/%s/data/%s.java";
+    private static final String DATA_PATH = ANDROID_SRC_PATH + "%s/data/%s.java";
 
     public RestGlobalTest(ApplicationMetadata currentMetadata) throws Exception {
         super(currentMetadata);
@@ -105,12 +105,14 @@ public class RestGlobalTest extends CommonTest {
 
         getHarmony().findAndExecute(ProjectCommand.INIT_ANDROID, null, null);
         makeEntities();
+
         getHarmony().findAndExecute(OrmCommand.GENERATE_ENTITIES, new String[] {}, null);
         getHarmony().findAndExecute(OrmCommand.GENERATE_CRUD, new String[] {}, null);
         getHarmony().findAndExecute(FixtureCommand.FIXTURE_INIT, new String[] {}, null);
         getHarmony().findAndExecute(RestCommand.GENERATE_ADAPTERS, new String[] {}, null);
 
         final RestCommand command = (RestCommand) Harmony.getInstance().getCommand(RestCommand.class);
+
         command.generateMetas();
 
         parsedMetadata = ApplicationMetadata.INSTANCE;
@@ -153,11 +155,10 @@ public class RestGlobalTest extends CommonTest {
         for (EntityMetadata entity : this.currentMetadata.getEntities().values()) {
             EntityMetadata parsedEntity = parsedMetadata.getEntities().get(entity.getName());
 
-            Assert.assertNotNull(
-                    String.format(
-                            "Entity %s not found in project : %s.",
-                            entity.getName(),
-                            this.currentMetadata.getName()),
+            Assert.assertNotNull(String.format(
+                    "Entity %s not found in project : %s.",
+                    entity.getName(),
+                    this.currentMetadata.getName()),
                     parsedEntity);
 
             if (!entity.isInternal()) {
@@ -230,7 +231,8 @@ public class RestGlobalTest extends CommonTest {
                 pathNameSpace,
                 "entity");
 
-        String destDir = String.format("%s/src/%s/%s/",
+        String destDir = String.format(
+                "%s/app/src/main/java/%s/%s/",
                 Harmony.getProjectAndroidPath(),
                 pathNameSpace,
                 "entity");
@@ -247,7 +249,7 @@ public class RestGlobalTest extends CommonTest {
                 "fixture",
                 "yml");
 
-        destDir = String.format("%s/%s/",
+        destDir = String.format("%s/app/src/main/%s/",
                 Harmony.getProjectAndroidPath(),
                 "assets");
 

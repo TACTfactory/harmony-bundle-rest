@@ -32,8 +32,8 @@ import android.media.Image;
 import android.util.Log;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.DiscCacheUtil;
-import com.nostra13.universalimageloader.core.assist.MemoryCacheUtil;
+import com.nostra13.universalimageloader.utils.DiskCacheUtils;
+import com.nostra13.universalimageloader.utils.MemoryCacheUtils;
 
 import ${data_namespace}.ResourceWebServiceClientAdapter;
 import ${data_namespace}.RestClient.Verb;
@@ -387,12 +387,12 @@ public abstract class ResourceWebServiceClientAdapterBase <#if sync>extends Sync
                             this.extract(new JSONObject(upload), item);
                             result = 0;
 
-                            MemoryCacheUtil.removeFromCache(ImageUtils.getImageUri(
+                            MemoryCacheUtils.removeFromCache(ImageUtils.getImageUri(
                                     this.context, item.getPath()),
                                     ImageLoader.getInstance().getMemoryCache());
-                            DiscCacheUtil.removeFromCache(ImageUtils.getImageUri(
+                            DiskCacheUtils.removeFromCache(ImageUtils.getImageUri(
                                     this.context, item.getPath()),
-                                    ImageLoader.getInstance().getDiscCache());
+                                    ImageLoader.getInstance().getDiskCache());
                         } else {
                             item.setPath(originalPath);
                             <#if sync>item.setSync_uDate(DateTime.now());</#if>

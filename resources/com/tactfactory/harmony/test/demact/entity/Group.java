@@ -14,12 +14,14 @@ import com.tactfactory.harmony.annotation.Column;
 import com.tactfactory.harmony.annotation.Entity;
 import com.tactfactory.harmony.annotation.GeneratedValue;
 import com.tactfactory.harmony.annotation.GeneratedValue.Strategy;
+import com.tactfactory.harmony.bundles.rest.annotation.Rest;
 import com.tactfactory.harmony.annotation.Id;
 import com.tactfactory.harmony.annotation.OneToMany;
 
-/** Category class. */
+/** Group class. */
 @Entity
-public class Category {
+@Rest
+public class Group {
 
 	/** Entity's technical id. */
 	@Id
@@ -28,10 +30,10 @@ public class Category {
 	private int id;
 
 	/** Name of the category. */
-	@Column(defaultValue="Default Category Name")
+	@Column(defaultValue="Default Group Name")
 	private String name;
 
 	/** List of comments of this category. */
-	@OneToMany(mappedBy = "category")
-	private ArrayList<CategoryToComment> comments;
+	@OneToMany(mappedBy = "group")
+	private ArrayList<GroupToComment> comments;
 }

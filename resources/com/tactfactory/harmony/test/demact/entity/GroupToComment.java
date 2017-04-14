@@ -13,23 +13,25 @@ import com.tactfactory.harmony.annotation.Entity;
 import com.tactfactory.harmony.annotation.Id;
 import com.tactfactory.harmony.annotation.ManyToOne;
 import com.tactfactory.harmony.annotation.View;
+import com.tactfactory.harmony.bundles.rest.annotation.Rest;
 
 @Entity
+@Rest
 @View(list = false)
-/** Link entity between category and comment. */
-public class CategoryToComment {
+/** Link entity between group and comment. */
+public class GroupToComment {
 
 	@Id
 	@Column
 	/** Entity's technical id. */
 	private int id;
 
-	/** The displayed name of the category. */
+	/** The displayed name of the group. */
 	@Column
 	private String displayName;
 
-	/** The category in which this CategoryToComment is. */
+	/** The group in which this GroupToComment is. */
 	@ManyToOne(inversedBy="comments")
-	private Category category;
+	private Group group;
 }
 
